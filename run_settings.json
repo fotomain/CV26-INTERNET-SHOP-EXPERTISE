@@ -1,0 +1,8 @@
+{
+  "DEFAULT_USE_FIRST_ITEMS": 200,
+  "NUMBER_PALLETS_OF_NEWCOUNTRY_REQUIRED": 3,
+  "description": "Global configuration settings for product catalog calculations, 3 country reference palettes, and DSS benchmarking",
+  "target_market_country": "United States",
+  "target_market_iso": "USA",
+  "target_country_dir": "step5_new_country"
+}

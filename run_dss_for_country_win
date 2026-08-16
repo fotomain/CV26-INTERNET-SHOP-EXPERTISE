@@ -1,0 +1,83 @@
+@echo off
+REM ==============================================================================
+REM Dynamic Country DSS Marketing Runner for Windows
+REM Trains marketing compatibility model for ANY target country library and
+REM executes DSS decision evaluation.
+REM
+REM Usage:
+REM   run_dss_for_country_win [COUNTRY_DIR] [COUNTRY_NAME] [ISO_CODE]
+REM
+REM Examples:
+REM   run_dss_for_country_win step5_new_country "United States" USA
+REM   run_dss_for_country_win step5_new_country "Germany" DEU
+REM ==============================================================================
+
+setlocal enabledelayedexpansion
+cd /d "%~dp0"
+
+set "COUNTRY_DIR=%~1"
+set "COUNTRY_NAME=%~2"
+set "ISO_CODE=%~3"
+
+if "!COUNTRY_DIR!"=="" set "COUNTRY_DIR=step5_new_country"
+
+if "!COUNTRY_NAME!"=="" set "COUNTRY_NAME=United States"
+
+if "!ISO_CODE!"=="" set "ISO_CODE=USA"
+
+echo ================================================================================
+echo    DYNAMIC COUNTRY DSS MARKETING EVALUATION (Windows)
+echo ================================================================================
+echo Target Country : !COUNTRY_NAME! (!ISO_CODE!)
+echo Image Library  : !COUNTRY_DIR!
+echo ================================================================================
+
+REM Identify Python executable
+if exist ".venv\Scripts\python.exe" (
+    set "PYTHON_EXEC=.venv\Scripts\python.exe"
+) else if defined VIRTUAL_ENV (
+    set "PYTHON_EXEC=python.exe"
+) else (
+    set "PYTHON_EXEC=python.exe"
+)
+
+REM 1. Train Country Model with YOLOv8 + OpenCV Multi-Stage Exclusions
+echo.
+echo ^>^>^> [1/4] Training Model for !COUNTRY_NAME! using !COUNTRY_DIR!...
+!PYTHON_EXEC! step4_learn\train_marketing_model.py --country-dir "!COUNTRY_DIR!" --country-name "!COUNTRY_NAME!" --iso-code "!ISO_CODE!"
+if errorlevel 1 goto :error
+
+REM 2. Run DSS Marketing Decision Engine
+echo.
+echo ^>^>^> [2/4] Executing DSS Marketing Decision Engine...
+!PYTHON_EXEC! step5_dss\dss_decision_engine.py
+if errorlevel 1 goto :error
+
+REM 3. Generate DSS Executive Summary Analysis
+echo.
+echo ^>^>^> [3/4] Compiling DSS Summary Analysis...
+!PYTHON_EXEC! step5_dss\dss_analysis.py
+if errorlevel 1 goto :error
+
+REM 4. Generate Interactive Capstone Web Report
+echo.
+echo ^>^>^> [4/4] Updating Executive Web Report (CAPSTONE_REPORT.html)...
+!PYTHON_EXEC! build_capstone_report.py
+if errorlevel 1 goto :error
+
+echo.
+echo ================================================================================
+echo [SUCCESS] DSS RUN FOR '!COUNTRY_NAME!' COMPLETED SUCCESSFULLY!
+echo   - Trained Model : step4_learn\market_model.pkl
+echo   - Market Profile: step4_learn\market_profile.json
+echo   - Approved SKUs : step5_dss\result_good_for_new_marketing.csv
+echo   - Excluded SKUs : step5_dss\result_not_good_for_new_marketing.csv
+echo   - Master DSS CSV: step5_dss\result5.csv
+echo   - Web Dashboard : CAPSTONE_REPORT.html
+echo ================================================================================
+goto :eof
+
+:error
+echo.
+echo [ERROR] Country DSS pipeline execution failed.
+exit /b 1

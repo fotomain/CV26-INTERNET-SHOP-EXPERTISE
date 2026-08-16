@@ -1,0 +1,133 @@
+{
+  "benchmark_sample_size": 200,
+  "measured_total_seconds": 24.505636739730836,
+  "prognosis_10k_items": {
+    "sequential_baseline_seconds": 1225.2818369865417,
+    "sequential_baseline_formatted": "20m 25s (1225.3s)",
+    "optimized_8core_formatted": "3m 08s (188.5s)"
+  },
+  "prognosis_1m_items": {
+    "sequential_baseline_seconds": 122528.18369865417,
+    "sequential_baseline_formatted": "1d 10h 2m (34:02:08)",
+    "optimized_8core_formatted": "5h 14m (05:14:10)"
+  },
+  "step_breakdown": [
+    {
+      "step_id": "1",
+      "step_name": "Dataset I/O & CSV Ingestion",
+      "category": "I/O",
+      "time_200_items_sec": 0.008,
+      "per_item_ms": 0.042,
+      "time_10k_seq_sec": 0.42,
+      "time_10k_seq_formatted": "0.42s",
+      "time_10k_opt_formatted": "0.06s",
+      "time_1m_seq_sec": 41.64,
+      "time_1m_seq_formatted": "41.64s",
+      "time_1m_opt_formatted": "6.12s"
+    },
+    {
+      "step_id": "2",
+      "step_name": "CNN Fashion-MNIST Classification",
+      "category": "Deep Learning Inference",
+      "time_200_items_sec": 9.544,
+      "per_item_ms": 47.718,
+      "time_10k_seq_sec": 477.18,
+      "time_10k_seq_formatted": "7m 57s (477.2s)",
+      "time_10k_opt_formatted": "56.14s",
+      "time_1m_seq_sec": 47718.05,
+      "time_1m_seq_formatted": "13h 15m (13:15:18)",
+      "time_1m_opt_formatted": "1h 33m (01:33:33)"
+    },
+    {
+      "step_id": "3",
+      "step_name": "Haar Face & Head Exclusion Detection",
+      "category": "Computer Vision",
+      "time_200_items_sec": 4.725,
+      "per_item_ms": 23.626,
+      "time_10k_seq_sec": 236.26,
+      "time_10k_seq_formatted": "3m 56s (236.3s)",
+      "time_10k_opt_formatted": "34.74s",
+      "time_1m_seq_sec": 23625.5,
+      "time_1m_seq_formatted": "6h 33m (06:33:45)",
+      "time_1m_opt_formatted": "57m 54s (3474.3s)"
+    },
+    {
+      "step_id": "4",
+      "step_name": "Skin Mask Extraction (HSV + YCrCb)",
+      "category": "Computer Vision",
+      "time_200_items_sec": 0.124,
+      "per_item_ms": 0.62,
+      "time_10k_seq_sec": 6.2,
+      "time_10k_seq_formatted": "6.20s",
+      "time_10k_opt_formatted": "0.91s",
+      "time_1m_seq_sec": 620.34,
+      "time_1m_seq_formatted": "10m 20s (620.3s)",
+      "time_1m_opt_formatted": "1m 31s (91.2s)"
+    },
+    {
+      "step_id": "5",
+      "step_name": "Studio Background Segmentation & Morphology",
+      "category": "Computer Vision",
+      "time_200_items_sec": 0.768,
+      "per_item_ms": 3.84,
+      "time_10k_seq_sec": 38.4,
+      "time_10k_seq_formatted": "38.40s",
+      "time_10k_opt_formatted": "5.65s",
+      "time_1m_seq_sec": 3839.98,
+      "time_1m_seq_formatted": "1h 03m (01:03:59)",
+      "time_1m_opt_formatted": "9m 24s (564.7s)"
+    },
+    {
+      "step_id": "6",
+      "step_name": "K-Means Color Palette Clustering (palette_of_image)",
+      "category": "Machine Learning / Clustering",
+      "time_200_items_sec": 9.039,
+      "per_item_ms": 45.193,
+      "time_10k_seq_sec": 451.93,
+      "time_10k_seq_formatted": "7m 31s (451.9s)",
+      "time_10k_opt_formatted": "1m 06s (66.5s)",
+      "time_1m_seq_sec": 45193.18,
+      "time_1m_seq_formatted": "12h 33m (12:33:13)",
+      "time_1m_opt_formatted": "1h 50m (01:50:46)"
+    },
+    {
+      "step_id": "7",
+      "step_name": "Gender Attribute Classification",
+      "category": "Text & Rule NLP",
+      "time_200_items_sec": 0.009,
+      "per_item_ms": 0.047,
+      "time_10k_seq_sec": 0.47,
+      "time_10k_seq_formatted": "0.47s",
+      "time_10k_opt_formatted": "0.07s",
+      "time_1m_seq_sec": 46.89,
+      "time_1m_seq_formatted": "46.89s",
+      "time_1m_opt_formatted": "6.89s"
+    },
+    {
+      "step_id": "8",
+      "step_name": "Mission 2: ready_to_sale Matching",
+      "category": "Semantic Text Processing",
+      "time_200_items_sec": 0.009,
+      "per_item_ms": 0.044,
+      "time_10k_seq_sec": 0.44,
+      "time_10k_seq_formatted": "0.44s",
+      "time_10k_opt_formatted": "0.06s",
+      "time_1m_seq_sec": 43.76,
+      "time_1m_seq_formatted": "43.76s",
+      "time_1m_opt_formatted": "6.44s"
+    },
+    {
+      "step_id": "9",
+      "step_name": "Mission 3: Palette Formatting & HTML Previews",
+      "category": "Data Structuring & Export",
+      "time_200_items_sec": 0.05,
+      "per_item_ms": 0.25,
+      "time_10k_seq_sec": 2.5,
+      "time_10k_seq_formatted": "2.50s",
+      "time_10k_opt_formatted": "0.37s",
+      "time_1m_seq_sec": 250.0,
+      "time_1m_seq_formatted": "4m 10s (250.0s)",
+      "time_1m_opt_formatted": "36.76s"
+    }
+  ]
+}

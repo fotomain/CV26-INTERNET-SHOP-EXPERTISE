@@ -1,0 +1,19 @@
+# Exclude raw start dataset (symlink, folder, and contents)
+dataset_start
+dataset_start/
+dataset_start/*
+
+# Virtual Environment & Python Caches
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS & IDE Files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.tmp

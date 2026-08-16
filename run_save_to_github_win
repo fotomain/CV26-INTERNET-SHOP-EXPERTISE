@@ -1,0 +1,3 @@
+@echo off
+REM Shortcut to run_save_to_github_win.bat
+call "%~dp0run_save_to_github_win.bat" %*

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Opens CAPSTONE_REPORT.html or HOW_IT_WORKS.html in default browser or runs local HTTP server
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+TARGET_FILE="${1:-CAPSTONE_REPORT.html}"
+
+if command -v open >/dev/null 2>&1; then
+    echo "Opening $TARGET_FILE in default browser..."
+    open "$TARGET_FILE"
+else
+    echo "Starting local HTTP server at http://localhost:8000/$TARGET_FILE ..."
+    python3 -m http.server 8000
+fi

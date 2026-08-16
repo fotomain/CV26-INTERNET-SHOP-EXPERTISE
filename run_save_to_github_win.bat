@@ -5,12 +5,12 @@ REM ============================================================================
 REM Script: run_save_to_github_win.bat
 REM Purpose: Saves codebase to GitHub on a new branch named ok_YY-MM-DD-HH-MM
 REM Excludes: dataset_start/
-REM Remote: https://github.com/fotomain/cv26repo.git
+REM Remote: https://github.com/fotomain/CV26-INTERNET-SHOP-EXPERTISE.git
 REM ==============================================================================
 
 cd /d "%~dp0"
 
-set REMOTE_URL=https://github.com/fotomain/cv26repo.git
+set REMOTE_URL=https://github.com/fotomain/CV26-INTERNET-SHOP-EXPERTISE.git
 
 echo ================================================================================
 echo ^>^>^> [1/5] Checking Git Repository ^& Remote Configuration...

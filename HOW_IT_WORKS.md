@@ -254,6 +254,6 @@ To avoid oversimplifying market taste into a single flat color list, the system 
   run_save_to_github_win.bat
   REM or: run_save_to_github_win
   ```
-- **Remote**: `https://github.com/fotomain/cv26repo.git`
+- **Remote**: `https://github.com/fotomain/CV26-INTERNET-SHOP-EXPERTISE.git`
 - **Excludes**: `dataset_start/` (raw dataset files)
 - **Branch Format**: `ok_YY-MM-DD-HH-MM` (e.g. `ok_26-08-16-19-19`)

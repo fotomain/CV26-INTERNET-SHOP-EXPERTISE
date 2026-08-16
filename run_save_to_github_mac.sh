@@ -3,7 +3,7 @@
 # Script: run_save_to_github_mac.sh
 # Purpose: Saves codebase to GitHub on a new branch named ok_YY-MM-DD-HH-MM
 # Excludes: dataset_start/
-# Remote: https://github.com/fotomain/cv26repo.git
+# Remote: https://github.com/fotomain/CV26-INTERNET-SHOP-EXPERTISE.git
 # ==============================================================================
 
 set -e
@@ -11,7 +11,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-REMOTE_URL="https://github.com/fotomain/cv26repo.git"
+REMOTE_URL="https://github.com/fotomain/CV26-INTERNET-SHOP-EXPERTISE.git"
 
 echo "================================================================================"
 echo ">>> [1/5] Checking Git Repository & Remote Configuration..."

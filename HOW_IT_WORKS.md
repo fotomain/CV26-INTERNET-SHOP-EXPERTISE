@@ -242,3 +242,18 @@ To avoid oversimplifying market taste into a single flat color list, the system 
   ```cmd
   run_dss_for_country_win.bat step5_new_country "United States" USA
   ```
+
+### Save Codebase to GitHub (Automated Branch `ok_YY-MM-DD-HH-MM`)
+- **macOS / Linux**:
+  ```bash
+  ./run_save_to_github_mac
+  # or: ./run_save_to_github
+  ```
+- **Windows**:
+  ```cmd
+  run_save_to_github_win.bat
+  REM or: run_save_to_github_win
+  ```
+- **Remote**: `https://github.com/fotomain/cv26repo.git`
+- **Excludes**: `dataset_start/` (raw dataset files)
+- **Branch Format**: `ok_YY-MM-DD-HH-MM` (e.g. `ok_26-08-16-19-19`)

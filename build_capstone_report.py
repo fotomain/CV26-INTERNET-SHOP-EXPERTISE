@@ -1535,14 +1535,21 @@ def build_html_report():
       </div>
     </div>
 
-    <div class="chart-grid">
-      <div class="chart-box">
-        <h4 style="margin-bottom: 8px; font-size: 14px; font-weight: 700; color: var(--text-headings);">Processing Time Share by Pipeline Step (200 Items)</h4>
-        <canvas id="chartTimingDonut"></canvas>
+    <div class="chart-grid" style="align-items: start;">
+      <!-- DONUT + DESCENDING TABLE SIDE BY SIDE -->
+      <div class="chart-box" style="display: flex; flex-direction: column; gap: 12px;">
+        <h4 style="margin-bottom: 4px; font-size: 14px; font-weight: 700; color: var(--text-headings);">Processing Time Share by Pipeline Step (200 Items)</h4>
+        <canvas id="chartTimingDonut" style="max-height: 200px;"></canvas>
+        <!-- Descending table legend rendered by JS into this div -->
+        <div id="timingLegendTable" style="overflow-x: auto;"></div>
       </div>
-      <div class="chart-box">
-        <h4 style="margin-bottom: 8px; font-size: 14px; font-weight: 700; color: var(--text-headings);">Scaling Speedup: Sequential vs 8-Core Parallel (Log Scale)</h4>
+      <!-- SCALING: HUMAN-FRIENDLY TIME COMPARISON -->
+      <div class="chart-box" style="display: flex; flex-direction: column; gap: 10px;">
+        <h4 style="margin-bottom: 2px; font-size: 14px; font-weight: 700; color: var(--text-headings);">How Much Faster is Parallel Processing?</h4>
+        <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Comparison of total pipeline runtime at different catalog sizes &mdash; single CPU core vs. using 8 cores simultaneously. Smaller bar = faster.</p>
         <canvas id="chartScalingBar"></canvas>
+        <!-- Speedup callouts rendered by JS -->
+        <div id="speedupCallouts" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px;"></div>
       </div>
     </div>
 
@@ -1934,9 +1941,20 @@ def build_html_report():
       }});
     }}
 
-    // Chart 3: Timing Donut
+    // Chart 3: Timing Donut with descending table legend
     const elTiming = document.getElementById('chartTimingDonut');
+    const legendDiv = document.getElementById('timingLegendTable');
     if (elTiming) {{
+      const STEP_COLORS = ['#0284c7','#f59e0b','#7c3aed','#10b981','#ea580c','#e11d48','#6366f1','#8b5cf6','#64748b'];
+
+      // Sort by time descending for legend table
+      const sortedTiming = [...timingData]
+        .map((d, i) => ({{ ...d, color: STEP_COLORS[i % STEP_COLORS.length] }}))
+        .sort((a, b) => b.time_200_items_sec - a.time_200_items_sec);
+
+      const totalTime = timingData.reduce((s, d) => s + d.time_200_items_sec, 0);
+
+      // Keep original order for donut chart
       const stepNames = timingData.map(d => d.step_name);
       const stepTimes = timingData.map(d => d.time_200_items_sec);
 
@@ -1946,7 +1964,7 @@ def build_html_report():
           labels: stepNames,
           datasets: [{{
             data: stepTimes,
-            backgroundColor: ['#0284c7', '#f59e0b', '#7c3aed', '#10b981', '#ea580c', '#e11d48', '#6366f1', '#8b5cf6', '#64748b'],
+            backgroundColor: STEP_COLORS,
             borderColor: '#ffffff',
             borderWidth: 2
           }}]
@@ -1955,29 +1973,52 @@ def build_html_report():
           responsive: true,
           maintainAspectRatio: false,
           plugins: {{
-            legend: {{ position: 'bottom', labels: {{ color: '#475569', font: {{ family: 'Plus Jakarta Sans', size: 11 }}, boxWidth: 12 }} }}
+            legend: {{ display: false }}
           }}
         }}
       }});
+
+      // Build descending legend table
+      if (legendDiv) {{
+        let tbl = `<table style="width:100%;border-collapse:collapse;font-size:12px;">`;
+        tbl += `<thead><tr>`;
+        tbl += `<th style="padding:5px 6px;text-align:left;background:#f8fafc;border-bottom:2px solid #e2e8f0;color:#64748b;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.5px;">Step</th>`;
+        tbl += `<th style="padding:5px 6px;text-align:right;background:#f8fafc;border-bottom:2px solid #e2e8f0;color:#64748b;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.5px;">Time (s)</th>`;
+        tbl += `<th style="padding:5px 6px;text-align:right;background:#f8fafc;border-bottom:2px solid #e2e8f0;color:#64748b;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.5px;">Share %</th>`;
+        tbl += `</tr></thead><tbody>`;
+        sortedTiming.forEach(d => {{
+          const pct = totalTime > 0 ? (d.time_200_items_sec / totalTime * 100).toFixed(1) : '0.0';
+          const barW = totalTime > 0 ? Math.round(d.time_200_items_sec / totalTime * 60) : 0;
+          tbl += `<tr style="border-bottom:1px solid rgba(0,0,0,.04);">`;
+          tbl += `<td style="padding:5px 6px;display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${{d.color}};flex-shrink:0;"></span><span style="color:#0f172a;">${{d.step_name}}</span></td>`;
+          tbl += `<td style="padding:5px 6px;text-align:right;font-weight:600;color:#0f172a;font-family:'JetBrains Mono',monospace;">${{d.time_200_items_sec.toFixed(2)}}</td>`;
+          tbl += `<td style="padding:5px 6px;text-align:right;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;"><div style="width:60px;height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="width:${{barW}}px;height:100%;background:${{d.color}};border-radius:3px;"></div></div><span style="color:#475569;min-width:32px;text-align:right;">${{pct}}%</span></div></td>`;
+          tbl += `</tr>`;
+        }});
+        tbl += `</tbody></table>`;
+        legendDiv.innerHTML = tbl;
+      }}
     }}
 
-    // Chart 4: Scaling Bar
+    // Chart 4: Human-Friendly Scaling Comparison (no log scale)
     const elScale = document.getElementById('chartScalingBar');
+    const calloutDiv = document.getElementById('speedupCallouts');
     if (elScale) {{
+      // Use minutes for 10k, hours for 1M — more intuitive units
       new Chart(elScale, {{
         type: 'bar',
         data: {{
-          labels: ['10,000 Items', '1,000,000 Items (hrs)'],
+          labels: ['10,000 products\n(minutes)', '1,000,000 products\n(hours)'],
           datasets: [
             {{
-              label: 'Single-Core Sequential',
-              data: [1231.9, 34.2],
+              label: '🐢 One CPU core (slow)',
+              data: [20.5, 34.2],
               backgroundColor: '#f43f5e',
               borderRadius: 6
             }},
             {{
-              label: '8-Core Parallel Optimized',
-              data: [189.5, 5.25],
+              label: '🚀 8 CPU cores (fast)',
+              data: [3.2, 5.25],
               backgroundColor: '#10b981',
               borderRadius: 6
             }}
@@ -1987,14 +2028,49 @@ def build_html_report():
           responsive: true,
           maintainAspectRatio: false,
           plugins: {{
-            legend: {{ position: 'bottom', labels: {{ color: '#475569', font: {{ family: 'Plus Jakarta Sans', size: 12 }} }} }}
+            legend: {{ position: 'bottom', labels: {{ color: '#475569', font: {{ family: 'Plus Jakarta Sans', size: 12 }}, padding: 14 }} }},
+            tooltip: {{
+              callbacks: {{
+                label: (ctx) => {{
+                  const v = ctx.parsed.y;
+                  const unit = ctx.dataIndex === 0 ? ' min' : ' hrs';
+                  return ` ${{ctx.dataset.label.replace(/^[^ ]+ /, '')}}: ${{v.toFixed(1)}}${{unit}}`;
+                }}
+              }}
+            }}
           }},
           scales: {{
-            y: {{ ticks: {{ color: '#475569' }}, grid: {{ color: 'rgba(0, 0, 0, 0.06)' }} }},
-            x: {{ ticks: {{ color: '#475569' }}, grid: {{ display: false }} }}
+            y: {{
+              title: {{ display: true, text: 'Runtime (min / hrs)', color: '#94a3b8', font: {{ size: 11 }} }},
+              ticks: {{ color: '#475569', callback: (v) => v + (v < 5 ? ' min' : ' hrs') }},
+              grid: {{ color: 'rgba(0, 0, 0, 0.06)' }}
+            }},
+            x: {{ ticks: {{ color: '#475569', font: {{ size: 11 }} }}, grid: {{ display: false }} }}
           }}
         }}
       }});
+
+      // Speedup callout pills
+      if (calloutDiv) {{
+        const speedup10k = (20.5 / 3.2).toFixed(1);
+        const speedup1m  = (34.2 / 5.25).toFixed(1);
+        calloutDiv.innerHTML = `
+          <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;flex:1;min-width:120px;">
+            <div style="font-size:11px;color:#15803d;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">10k Products</div>
+            <div style="font-size:22px;font-weight:800;color:#14532d;">&times;${{speedup10k}} faster</div>
+            <div style="font-size:11px;color:#166534;">20.5 min &rarr; 3.2 min</div>
+          </div>
+          <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;flex:1;min-width:120px;">
+            <div style="font-size:11px;color:#c2410c;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">1 Million Products</div>
+            <div style="font-size:22px;font-weight:800;color:#7c2d12;">&times;${{speedup1m}} faster</div>
+            <div style="font-size:11px;color:#9a3412;">34.2 hrs &rarr; 5.3 hrs</div>
+          </div>
+          <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;flex:1;min-width:140px;">
+            <div style="font-size:11px;color:#1d4ed8;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">What does this mean?</div>
+            <div style="font-size:12px;color:#1e40af;line-height:1.5;">Adding more CPU cores is like opening extra checkout lanes — all products processed at the same time instead of one by one.</div>
+          </div>
+        `;
+      }}
     }}
   }});
 </script>

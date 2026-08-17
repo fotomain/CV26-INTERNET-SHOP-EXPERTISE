@@ -15,17 +15,7 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [
-          'session/addDatasetFiles',
-          'session/addCountryImages',
-          'session/EXECUTE_ML_REQUEST',
-        ],
-        ignoredPaths: [
-          'session.customDatasetFiles',
-          'session.customCountryImages',
-        ],
-      },
+      serializableCheck: false, // File objects are stored for binary upload
     }).concat(sagaMiddleware),
 });
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { Activity, CheckCircle2, AlertTriangle, Layers } from 'lucide-react';
+import { Activity, CheckCircle, AlertTriangle, Layers } from 'lucide-react';
 
 export const ProgressTracker: React.FC = () => {
   const { isActive, progress, history } = useSelector((state: RootState) => state.progress);
@@ -14,38 +14,39 @@ export const ProgressTracker: React.FC = () => {
   const isCompleted = progress.percent >= 100;
   const isError = progress.stepId === -1;
 
-  const getStepColor = () => {
-    if (isError) return '#ef4444';
-    if (isCompleted) return '#10b981';
-    return '#3b82f6';
-  };
-
   return (
     <div style={{
       background: '#ffffff',
       borderRadius: '16px',
-      border: `1px solid ${isCompleted ? '#a7f3d0' : isError ? '#fecaca' : '#bfdbfe'}`,
-      padding: '24px',
-      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)',
+      border: `1px solid ${isCompleted ? '#bbf7d0' : isError ? '#fecaca' : 'rgba(0, 0, 0, 0.08)'}`,
+      padding: '20px 24px',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.02), 0 6px 24px -4px rgba(0, 0, 0, 0.04)',
       display: 'flex',
       flexDirection: 'column',
-      gap: '16px'
+      gap: '14px'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {isCompleted ? (
-            <CheckCircle2 size={22} color="#10b981" />
+            <CheckCircle size={20} color="#16a34a" />
           ) : isError ? (
-            <AlertTriangle size={22} color="#ef4444" />
+            <AlertTriangle size={20} color="#dc2626" />
           ) : (
-            <Activity size={22} color="#3b82f6" className="animate-spin" />
+            <div style={{
+              width: '18px',
+              height: '18px',
+              border: '2px solid #09090b',
+              borderTopColor: 'transparent',
+              borderRadius: '50%',
+              animation: 'spin 0.8s linear infinite'
+            }} />
           )}
           <div>
-            <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-              {progress.stepName || 'Processing ML Pipeline'}
+            <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#09090b', letterSpacing: '-0.01em', margin: 0 }}>
+              {progress.stepName || 'Processing Pipeline'}
             </h3>
-            <p style={{ fontSize: '12px', color: '#64748b', margin: '2px 0 0 0' }}>
-              {progress.details || 'Evaluating catalog against target market preferences...'}
+            <p style={{ fontSize: '12px', color: '#71717a', margin: '2px 0 0 0' }}>
+              {progress.details || 'Calculating color distributions and scoring catalog SKUs...'}
             </p>
           </div>
         </div>
@@ -54,14 +55,15 @@ export const ProgressTracker: React.FC = () => {
           <span style={{
             fontSize: '11px',
             fontWeight: 700,
-            background: isCompleted ? '#d1fae5' : isError ? '#fee2e2' : '#dbeafe',
-            color: isCompleted ? '#065f46' : isError ? '#991b1b' : '#1e40af',
-            padding: '3px 10px',
-            borderRadius: '999px'
+            background: isCompleted ? '#f0fdf4' : isError ? '#fef2f2' : '#f4f4f5',
+            color: isCompleted ? '#166534' : isError ? '#991b1b' : '#18181b',
+            border: `1px solid ${isCompleted ? '#bbf7d0' : isError ? '#fecaca' : '#e4e4e7'}`,
+            padding: '2px 8px',
+            borderRadius: '6px'
           }}>
             {isCompleted ? 'Finished' : isError ? 'Error' : `Step ${progress.stepId} of 5`}
           </span>
-          <span style={{ fontSize: '18px', fontWeight: 800, color: getStepColor(), fontFamily: 'JetBrains Mono, monospace' }}>
+          <span style={{ fontSize: '16px', fontWeight: 800, color: '#09090b', fontFamily: 'JetBrains Mono, monospace' }}>
             {progress.percent}%
           </span>
         </div>
@@ -70,41 +72,41 @@ export const ProgressTracker: React.FC = () => {
       {/* Progress Bar */}
       <div style={{
         width: '100%',
-        height: '10px',
-        background: '#f1f5f9',
+        height: '6px',
+        background: '#f4f4f5',
         borderRadius: '999px',
         overflow: 'hidden'
       }}>
         <div style={{
           width: `${Math.min(100, Math.max(0, progress.percent))}%`,
           height: '100%',
-          background: `linear-gradient(90deg, #3b82f6 0%, ${getStepColor()} 100%)`,
+          background: isCompleted ? '#16a34a' : isError ? '#dc2626' : '#09090b',
           borderRadius: '999px',
-          transition: 'width 0.4s ease'
+          transition: 'width 0.3s ease'
         }} />
       </div>
 
       {/* Step History Chips */}
       {history.length > 0 && (
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '2px' }}>
           {history.map((h, idx) => (
             <div
               key={idx}
               style={{
                 fontSize: '11px',
-                background: '#f8fafc',
-                border: '1px solid #e2e8f0',
+                background: '#fafafa',
+                border: '1px solid #e4e4e7',
                 borderRadius: '6px',
-                padding: '4px 8px',
-                color: '#475569',
+                padding: '3px 7px',
+                color: '#52525b',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px'
+                gap: '5px'
               }}
             >
-              <Layers size={12} color="#94a3b8" />
+              <Layers size={11} color="#a1a1aa" />
               <span>{h.stepName}</span>
-              <strong style={{ color: '#0f172a' }}>{h.percent}%</strong>
+              <strong style={{ color: '#09090b' }}>{h.percent}%</strong>
             </div>
           ))}
         </div>

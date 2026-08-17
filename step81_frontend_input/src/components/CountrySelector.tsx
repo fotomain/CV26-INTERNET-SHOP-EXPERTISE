@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe } from 'lucide-react';
+import { Globe2 } from 'lucide-react';
 import { SUPPORTED_COUNTRIES } from '../constants/config';
 
 interface CountrySelectorProps {
@@ -17,44 +17,45 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
     <div style={{
       background: '#ffffff',
       borderRadius: '16px',
-      border: '1px solid #e2e8f0',
+      border: '1px solid rgba(0, 0, 0, 0.08)',
       padding: '24px',
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.02), 0 6px 24px -4px rgba(0, 0, 0, 0.04)',
       display: 'flex',
       flexDirection: 'column',
       gap: '12px'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Globe size={18} color="#0284c7" />
-          <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+          <Globe2 size={16} color="#09090b" />
+          <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#09090b', letterSpacing: '-0.02em', margin: 0 }}>
             Target Country Market Lookbook
           </h2>
         </div>
         <span style={{
-          background: '#f0fdf4',
-          color: '#15803d',
-          border: '1px solid #bbf7d0',
+          background: '#f4f4f5',
+          color: '#18181b',
+          border: '1px solid #e4e4e7',
           fontSize: '11px',
           fontWeight: 700,
-          padding: '2px 8px',
-          borderRadius: '999px'
+          padding: '2px 7px',
+          borderRadius: '6px'
         }}>
           ISO: {current.code}
         </span>
       </div>
 
-      <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
-        Select the target country to evaluate consumer color preferences against 3 reference fashion palettes.
+      <p style={{ fontSize: '12px', color: '#71717a', margin: 0 }}>
+        Select target country to evaluate consumer color preferences against 3 reference fashion palettes.
       </p>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '4px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
         <div style={{
-          fontSize: '28px',
-          background: '#f8fafc',
-          padding: '4px 10px',
+          fontSize: '24px',
+          background: '#fafafa',
+          padding: '6px 10px',
           borderRadius: '8px',
-          border: '1px solid #e2e8f0'
+          border: '1px solid #e4e4e7',
+          lineHeight: 1
         }}>
           {current.flag}
         </div>
@@ -63,15 +64,16 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
           onChange={(e) => onChangeCountry(e.target.value)}
           style={{
             flex: 1,
-            padding: '12px 16px',
+            padding: '10px 14px',
             borderRadius: '10px',
-            border: '1px solid #cbd5e1',
+            border: '1px solid #d4d4d8',
             background: '#ffffff',
-            fontSize: '14px',
+            fontSize: '13px',
             fontWeight: 600,
-            color: '#0f172a',
+            color: '#09090b',
             cursor: 'pointer',
-            outline: 'none'
+            outline: 'none',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.02)'
           }}
         >
           {SUPPORTED_COUNTRIES.map((c) => (

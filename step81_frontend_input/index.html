@@ -3,30 +3,67 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
-    <title>CV26 DSS Marketing Intelligence &amp; Catalog ML App</title>
+    <title>CV26 DSS Marketing Intelligence &amp; Catalog ML</title>
     <script>
       window.global = window.globalThis || window;
       window.process = window.process || { env: { NODE_ENV: 'development', TAMAGUI_TARGET: 'web' } };
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         --font-mono: 'JetBrains Mono', monospace;
+        --bg-page: #fafafa;
+        --bg-surface: #ffffff;
+        --border-subtle: rgba(0, 0, 0, 0.07);
+        --border-hover: rgba(0, 0, 0, 0.15);
+        --text-primary: #09090b;
+        --text-secondary: #71717a;
+        --text-muted: #a1a1aa;
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 10px 30px -4px rgba(0, 0, 0, 0.08);
       }
+
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
       }
+
       body {
         font-family: var(--font-sans);
-        background-color: #f8fafc;
-        color: #0f172a;
+        background-color: var(--bg-page);
+        color: var(--text-primary);
         -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
         min-width: 350px;
+        line-height: 1.5;
+      }
+
+      button, input, select {
+        font-family: inherit;
+      }
+
+      ::selection {
+        background: #e4e4e7;
+        color: #09090b;
+      }
+
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes pulseSlow {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
       }
     </style>
   </head>

@@ -34,7 +34,14 @@ export const CapstoneReportComponent: React.FC = () => {
     searchQuery,
   } = useSelector((state: RootState) => state.result);
 
+  const {
+    customDatasetFiles = [],
+    customCountryImagesMan = [],
+    customCountryImagesWoman = [],
+  } = useSelector((state: RootState) => state.session);
+
   const [activeTab, setActiveTab] = useState<'catalog' | 'palettes' | 'categories' | 'json'>('catalog');
+  const [showFileDetails, setShowFileDetails] = useState(false);
 
   if (!resultData || !resultData.kpis) {
     return null;
@@ -62,6 +69,10 @@ export const CapstoneReportComponent: React.FC = () => {
     downloadAnchor.click();
     downloadAnchor.remove();
   };
+
+  const totalLookbookPhotosCount = (customCountryImagesMan.length + customCountryImagesWoman.length) > 0
+    ? (customCountryImagesMan.length + customCountryImagesWoman.length)
+    : 100;
 
   return (
     <div style={{
@@ -119,7 +130,7 @@ export const CapstoneReportComponent: React.FC = () => {
             </h2>
           </div>
           <p style={{ fontSize: '13px', color: '#64748b', margin: '4px 0 0 0' }}>
-            Target Country: <strong style={{ color: '#0f172a' }}>{targetCountry?.name} ({targetCountry?.isoCode})</strong> &bull; Duration: <strong style={{ color: '#ea580c' }}>{metadata?.executionDuration || '00:00'}</strong>
+            Target Country: <strong style={{ color: '#0f172a' }}>{targetCountry?.name} ({targetCountry?.isoCode})</strong> &bull; Duration: <strong style={{ color: '#ea580c' }}>{metadata?.executionDuration || '00:00'}</strong> &bull; Session: <code style={{ fontSize: '11.5px', background: '#f1f5f9', padding: '2px 6px', borderRadius: '6px', color: '#475569' }}>{metadata?.userSessionGUID ? String(metadata.userSessionGUID).substring(0, 13) + '...' : 'Live'}</code>
           </p>
         </div>
 
@@ -148,89 +159,381 @@ export const CapstoneReportComponent: React.FC = () => {
         </div>
       </div>
 
-      {/* 4 Colorful KPI Cards Grid (Directly matching CAPSTONE_REPORT) */}
+      {/* =========================================================================
+           1ST SECTION: TOTAL CATALOG CANDIDATES FROM FILES
+         ========================================================================= */}
       <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-        gap: '16px'
+        background: 'linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%)',
+        border: '2px solid #bae6fd',
+        borderRadius: '20px',
+        padding: '24px',
+        boxShadow: '0 4px 18px rgba(14, 165, 233, 0.08)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '18px'
       }}>
-        {/* Card 1: Total Catalog Candidates from files (Blue) */}
+        {/* Section Header Banner */}
         <div style={{
-          background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
-          border: '2px solid #bae6fd',
-          borderRadius: '16px',
-          padding: '18px 20px',
-          boxShadow: '0 4px 14px rgba(14, 165, 233, 0.08)'
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '12px',
+          borderBottom: '1.5px solid #e0f2fe',
+          paddingBottom: '14px'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#0284c7', fontSize: '11.5px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            <span>Total Catalog Candidates from files:</span>
-            <Layers size={18} color="#0284c7" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{
+              background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+              color: '#ffffff',
+              width: '28px',
+              height: '28px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 900,
+              fontSize: '14px',
+              boxShadow: '0 2px 6px rgba(2, 132, 199, 0.35)'
+            }}>
+              1
+            </span>
+            <div>
+              <h3 style={{ fontSize: '17px', fontWeight: 900, color: '#0369a1', margin: 0, letterSpacing: '-0.02em' }}>
+                1st section total Catalog Candidates from files: {kpis.totalItems}
+              </h3>
+              <p style={{ fontSize: '12.5px', color: '#0284c7', margin: '2px 0 0 0', fontWeight: 600 }}>
+                Input candidate catalog items and dataset specifications ingested into the DSS Pipeline
+              </p>
+            </div>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: 900, color: '#0369a1', letterSpacing: '-0.03em', marginTop: '4px' }}>
-            {kpis.totalItems}
-          </div>
-          <div style={{ fontSize: '12px', color: '#0284c7', marginTop: '2px', fontWeight: 600 }}>
-            Total Catalog Candidates from files: <strong>{kpis.totalItems}</strong>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{
+              background: '#e0f2fe',
+              color: '#0369a1',
+              border: '1px solid #7dd3fc',
+              fontSize: '12px',
+              fontWeight: 800,
+              padding: '4px 12px',
+              borderRadius: '999px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}>
+              <Layers size={14} />
+              {kpis.totalItems} Active Candidate Items
+            </span>
+            {customDatasetFiles.length > 0 && (
+              <button
+                onClick={() => setShowFileDetails(!showFileDetails)}
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #bae6fd',
+                  color: '#0284c7',
+                  padding: '4px 10px',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                {showFileDetails ? 'Hide File List' : `View ${customDatasetFiles.length} Files`}
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Card 2: Approved % (Emerald Green) */}
+        {/* 4 Summary KPI Mini-Cards for 1st Section */}
         <div style={{
-          background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
-          border: '2px solid #bbf7d0',
-          borderRadius: '16px',
-          padding: '18px 20px',
-          boxShadow: '0 4px 14px rgba(22, 163, 74, 0.08)'
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+          gap: '14px'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#15803d', fontSize: '11.5px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            <span>Approved for Market</span>
-            <CheckCircle2 size={18} color="#16a34a" />
+          {/* Sub-Card 1: Catalog Candidates */}
+          <div style={{
+            background: '#ffffff',
+            border: '1.5px solid #bae6fd',
+            borderRadius: '14px',
+            padding: '14px 16px',
+            boxShadow: '0 2px 8px rgba(14, 165, 233, 0.05)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#0284c7', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span>Catalog Sample Size</span>
+              <span style={{ background: '#e0f2fe', color: '#0369a1', padding: '1px 6px', borderRadius: '4px', fontSize: '10.5px' }}>{kpis.totalItems} Items</span>
+            </div>
+            <div style={{ fontSize: '26px', fontWeight: 900, color: '#0369a1', marginTop: '4px' }}>
+              {kpis.totalItems}
+            </div>
+            <div style={{ fontSize: '11.5px', color: '#64748b', marginTop: '2px' }}>
+              Candidate catalog items from files (subset)
+            </div>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: 900, color: '#14532d', letterSpacing: '-0.03em', marginTop: '4px' }}>
-            {kpis.goodForMarketingPct}%
+
+          {/* Sub-Card 2: Target Market Lookbook Library */}
+          <div style={{
+            background: '#ffffff',
+            border: '1.5px solid #e9d5ff',
+            borderRadius: '14px',
+            padding: '14px 16px',
+            boxShadow: '0 2px 8px rgba(124, 58, 237, 0.05)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#7c3aed', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span>Target Market Library</span>
+              <span style={{ background: '#f3e8ff', color: '#6b21a8', padding: '1px 6px', borderRadius: '4px', fontSize: '10.5px' }}>{totalLookbookPhotosCount} Photos</span>
+            </div>
+            <div style={{ fontSize: '26px', fontWeight: 900, color: '#6b21a8', marginTop: '4px' }}>
+              {totalLookbookPhotosCount}
+            </div>
+            <div style={{ fontSize: '11.5px', color: '#64748b', marginTop: '2px' }}>
+              {targetCountry?.name} reference lookbook photos
+            </div>
           </div>
-          <div style={{ fontSize: '12px', color: '#15803d', marginTop: '2px', fontWeight: 600 }}>
-            {kpis.goodForMarketingCount} of {kpis.totalItems} match {targetCountry?.name} styles
+
+          {/* Sub-Card 3: Taxonomy Classes */}
+          <div style={{
+            background: '#ffffff',
+            border: '1.5px solid #fed7aa',
+            borderRadius: '14px',
+            padding: '14px 16px',
+            boxShadow: '0 2px 8px rgba(245, 158, 11, 0.05)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#ea580c', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span>Catalog Taxonomy</span>
+              <span style={{ background: '#ffedd5', color: '#c2410c', padding: '1px 6px', borderRadius: '4px', fontSize: '10.5px' }}>{categoriesList.length} Classes</span>
+            </div>
+            <div style={{ fontSize: '26px', fontWeight: 900, color: '#c2410c', marginTop: '4px' }}>
+              {categoriesList.length}
+            </div>
+            <div style={{ fontSize: '11.5px', color: '#64748b', marginTop: '2px' }}>
+              Fashion-MNIST mapped category classes
+            </div>
+          </div>
+
+          {/* Sub-Card 4: Market Palettes */}
+          <div style={{
+            background: '#ffffff',
+            border: '1.5px solid #bbf7d0',
+            borderRadius: '14px',
+            padding: '14px 16px',
+            boxShadow: '0 2px 8px rgba(22, 163, 74, 0.05)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#16a34a', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span>Market Style DNA</span>
+              <span style={{ background: '#dcfce7', color: '#15803d', padding: '1px 6px', borderRadius: '4px', fontSize: '10.5px' }}>3 Discrete</span>
+            </div>
+            <div style={{ fontSize: '26px', fontWeight: 900, color: '#15803d', marginTop: '4px' }}>
+              3 Palettes
+            </div>
+            <div style={{ fontSize: '11.5px', color: '#64748b', marginTop: '2px' }}>
+              Core Neutrals, Street &amp; Statement tones
+            </div>
           </div>
         </div>
 
-        {/* Card 3: Compatibility Score (Warm Amber / Orange) */}
-        <div style={{
-          background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
-          border: '2px solid #fde68a',
-          borderRadius: '16px',
-          padding: '18px 20px',
-          boxShadow: '0 4px 14px rgba(245, 158, 11, 0.1)'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#b45309', fontSize: '11.5px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            <span>Compatibility Score</span>
-            <TrendingUp size={18} color="#d97706" />
+        {/* Uploaded Files Breakdown (if user uploaded custom files) */}
+        {showFileDetails && customDatasetFiles.length > 0 && (
+          <div style={{
+            background: '#ffffff',
+            border: '1.5px solid #bae6fd',
+            borderRadius: '14px',
+            padding: '14px 16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px'
+          }}>
+            <div style={{ fontSize: '13px', fontWeight: 800, color: '#0369a1' }}>
+              📁 Ingested Catalog Candidate Files ({customDatasetFiles.length} files attached):
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', maxHeight: '140px', overflowY: 'auto' }}>
+              {customDatasetFiles.map((file, idx) => (
+                <div key={file.id || idx} style={{
+                  background: '#f0f9ff',
+                  border: '1px solid #bae6fd',
+                  borderRadius: '8px',
+                  padding: '4px 10px',
+                  fontSize: '11.5px',
+                  fontWeight: 600,
+                  color: '#0369a1',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  <span>#{idx + 1} {file.name}</span>
+                  <span style={{ color: '#64748b', fontSize: '10px' }}>({(file.size / 1024).toFixed(1)} KB)</span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: 900, color: '#78350f', letterSpacing: '-0.03em', marginTop: '4px' }}>
-            {kpis.averageCompatibilityScore}
-          </div>
-          <div style={{ fontSize: '12px', color: '#b45309', marginTop: '2px', fontWeight: 600 }}>
-            Avg &Delta;E: <strong>{kpis.averageDeltaEDistance}</strong> (&le; 13.5 target)
-          </div>
+        )}
+
+        {/* Candidate Datasets Specification Matrix Table */}
+        <div style={{ overflowX: 'auto', border: '1.5px solid #e2e8f0', borderRadius: '12px', background: '#ffffff' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', textAlign: 'left' }}>
+            <thead>
+              <tr style={{ background: '#f8fafc', borderBottom: '1.5px solid #e2e8f0' }}>
+                <th style={{ padding: '10px 14px', color: '#475569', fontWeight: 800 }}>Dataset / Parameter Area</th>
+                <th style={{ padding: '10px 14px', color: '#475569', fontWeight: 800 }}>Source / Lineage</th>
+                <th style={{ padding: '10px 14px', color: '#475569', fontWeight: 800 }}>Specification &amp; Dimensions</th>
+                <th style={{ padding: '10px 14px', color: '#475569', fontWeight: 800 }}>Operational Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <td style={{ padding: '10px 14px', fontWeight: 700, color: '#0f172a' }}>
+                  <strong>Candidate Catalog Items</strong>
+                </td>
+                <td style={{ padding: '10px 14px', fontFamily: 'JetBrains Mono, monospace', color: '#0284c7', fontSize: '11.5px' }}>
+                  {customDatasetFiles.length > 0 ? `custom_dataset_start/ (${customDatasetFiles.length} files)` : 'step1_eda/result3.csv / GLAMI-1M'}
+                </td>
+                <td style={{ padding: '10px 14px' }}>
+                  <strong>{kpis.totalItems} items</strong> active sample ({categoriesList.length} categories)
+                </td>
+                <td style={{ padding: '10px 14px', color: '#64748b' }}>
+                  Candidate product catalog ingested for AI classification, color extraction, and DSS marketing scoring.
+                </td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <td style={{ padding: '10px 14px', fontWeight: 700, color: '#0f172a' }}>
+                  <strong>Target Market Lookbook</strong>
+                </td>
+                <td style={{ padding: '10px 14px', fontFamily: 'JetBrains Mono, monospace', color: '#7c3aed', fontSize: '11.5px' }}>
+                  {targetCountry?.name} ({targetCountry?.isoCode}) Library
+                </td>
+                <td style={{ padding: '10px 14px' }}>
+                  <strong>{totalLookbookPhotosCount} curated photos</strong> (Men &amp; Women lookbooks)
+                </td>
+                <td style={{ padding: '10px 14px', color: '#64748b' }}>
+                  Discovers target country fashion DNA via YOLOv8 segmentation and CIELAB multi-palette clustering.
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: '10px 14px', fontWeight: 700, color: '#0f172a' }}>
+                  <strong>DSS Matchmaker Engine</strong>
+                </td>
+                <td style={{ padding: '10px 14px', fontFamily: 'JetBrains Mono, monospace', color: '#ea580c', fontSize: '11.5px' }}>
+                  CIELAB &Delta;E Matcher
+                </td>
+                <td style={{ padding: '10px 14px' }}>
+                  &Delta;E &le; 13.5 &bull; Compatibility &ge; 0.60
+                </td>
+                <td style={{ padding: '10px 14px', color: '#64748b' }}>
+                  Assigns candidate items into Tier 1 (Prime), Tier 2 (Standard), and Tier 3 (Non-Priority).
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* =========================================================================
+           2ND SECTION: MARKETING DECISION KPIS & APPROVAL SUMMARY
+         ========================================================================= */}
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+          <span style={{
+            background: 'linear-gradient(135deg, #ea580c 0%, #e11d48 100%)',
+            color: '#ffffff',
+            width: '24px',
+            height: '24px',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 800,
+            fontSize: '12px'
+          }}>
+            2
+          </span>
+          <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+            2nd section: Marketing Decision KPIs &amp; Executive Summary
+          </h3>
         </div>
 
-        {/* Card 4: Quality Ready (Purple) */}
+        {/* 4 Colorful KPI Cards Grid (Directly matching CAPSTONE_REPORT) */}
         <div style={{
-          background: 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)',
-          border: '2px solid #e9d5ff',
-          borderRadius: '16px',
-          padding: '18px 20px',
-          boxShadow: '0 4px 14px rgba(124, 58, 237, 0.08)'
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+          gap: '16px'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#7c3aed', fontSize: '11.5px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            <span>Quality Ready</span>
-            <Award size={18} color="#7c3aed" />
+          {/* Card 1: Total Catalog Candidates from files (Blue) */}
+          <div style={{
+            background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+            border: '2px solid #bae6fd',
+            borderRadius: '16px',
+            padding: '18px 20px',
+            boxShadow: '0 4px 14px rgba(14, 165, 233, 0.08)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#0284c7', fontSize: '11.5px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <span>Total Catalog Candidates from files:</span>
+              <Layers size={18} color="#0284c7" />
+            </div>
+            <div style={{ fontSize: '32px', fontWeight: 900, color: '#0369a1', letterSpacing: '-0.03em', marginTop: '4px' }}>
+              {kpis.totalItems}
+            </div>
+            <div style={{ fontSize: '12px', color: '#0284c7', marginTop: '2px', fontWeight: 600 }}>
+              Total Catalog Candidates from files: <strong>{kpis.totalItems}</strong>
+            </div>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: 900, color: '#581c87', letterSpacing: '-0.03em', marginTop: '4px' }}>
-            {kpis.readyToSalePct}%
+
+          {/* Card 2: Approved % (Emerald Green) */}
+          <div style={{
+            background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+            border: '2px solid #bbf7d0',
+            borderRadius: '16px',
+            padding: '18px 20px',
+            boxShadow: '0 4px 14px rgba(22, 163, 74, 0.08)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#15803d', fontSize: '11.5px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <span>Approved for Market</span>
+              <CheckCircle2 size={18} color="#16a34a" />
+            </div>
+            <div style={{ fontSize: '32px', fontWeight: 900, color: '#14532d', letterSpacing: '-0.03em', marginTop: '4px' }}>
+              {kpis.goodForMarketingPct}%
+            </div>
+            <div style={{ fontSize: '12px', color: '#15803d', marginTop: '2px', fontWeight: 600 }}>
+              {kpis.goodForMarketingCount} of {kpis.totalItems} match {targetCountry?.name} styles
+            </div>
           </div>
-          <div style={{ fontSize: '12px', color: '#7c3aed', marginTop: '2px', fontWeight: 600 }}>
-            {kpis.readyToSaleCount} pass title &amp; image checks
+
+          {/* Card 3: Compatibility Score (Warm Amber / Orange) */}
+          <div style={{
+            background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+            border: '2px solid #fde68a',
+            borderRadius: '16px',
+            padding: '18px 20px',
+            boxShadow: '0 4px 14px rgba(245, 158, 11, 0.1)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#b45309', fontSize: '11.5px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <span>Compatibility Score</span>
+              <TrendingUp size={18} color="#d97706" />
+            </div>
+            <div style={{ fontSize: '32px', fontWeight: 900, color: '#78350f', letterSpacing: '-0.03em', marginTop: '4px' }}>
+              {kpis.averageCompatibilityScore}
+            </div>
+            <div style={{ fontSize: '12px', color: '#b45309', marginTop: '2px', fontWeight: 600 }}>
+              Avg &Delta;E: <strong>{kpis.averageDeltaEDistance}</strong> (&le; 13.5 target)
+            </div>
+          </div>
+
+          {/* Card 4: Quality Ready (Purple) */}
+          <div style={{
+            background: 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)',
+            border: '2px solid #e9d5ff',
+            borderRadius: '16px',
+            padding: '18px 20px',
+            boxShadow: '0 4px 14px rgba(124, 58, 237, 0.08)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#7c3aed', fontSize: '11.5px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <span>Quality Ready</span>
+              <Award size={18} color="#7c3aed" />
+            </div>
+            <div style={{ fontSize: '32px', fontWeight: 900, color: '#581c87', letterSpacing: '-0.03em', marginTop: '4px' }}>
+              {kpis.readyToSalePct}%
+            </div>
+            <div style={{ fontSize: '12px', color: '#7c3aed', marginTop: '2px', fontWeight: 600 }}>
+              {kpis.readyToSaleCount} pass title &amp; image checks
+            </div>
           </div>
         </div>
       </div>

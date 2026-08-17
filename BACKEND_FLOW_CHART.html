@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Backend System Flow Chart & Gantt Calculation Matrix | CV26 AI Matchmaker</title>
+  
+  <!-- Modern Google Fonts with System Fallback for Offline Compatibility -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       Tamagui Theme Tokens & Design System (tamagui.dev Light Theme)
+       ========================================================================== */
+    :root {
+      --bg-base: #fbfbfc;
+      --bg-surface: #ffffff;
+      --bg-surface-elevated: #ffffff;
+      --bg-surface-hover: #f8fafc;
+      --bg-subtle: #f8fafc;
+      --bg-muted: #f1f5f9;
+      
+      --border-subtle: rgba(0, 0, 0, 0.08);
+      --border-medium: rgba(0, 0, 0, 0.15);
+      --border-focus: #f59e0b;
+      
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --text-headings: #09090b;
+      
+      --tamagui-gold: #f59e0b;
+      --tamagui-amber: #d97706;
+      --tamagui-gold-dark: #b45309;
+      --accent-blue: #0284c7;
+      --accent-purple: #7c3aed;
+      --accent-green: #10b981;
+      --accent-red: #e11d48;
+      --accent-orange: #ea580c;
+      --accent-cyan: #0891b2;
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+      --shadow-md: 0 4px 16px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+      --shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.08);
+      --shadow-glow: 0 0 35px -5px rgba(245, 158, 11, 0.12);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      min-width: 350px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      min-width: 350px;
+      width: 100%;
+      position: relative;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 70px;
+      box-sizing: border-box;
+    }
+
+    /* Ambient Radial Mesh Glow Backgrounds */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -12vw;
+      left: -8vw;
+      width: 50vw;
+      height: 50vw;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(245, 158, 11, 0.09) 0%, rgba(251, 191, 36, 0.02) 45%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -15vw;
+      right: -10vw;
+      width: 55vw;
+      height: 55vw;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(14, 165, 233, 0.07) 0%, rgba(124, 58, 237, 0.03) 50%, transparent 75%);
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 100%;
+      width: 100%;
+      margin: 0 auto;
+      padding: clamp(12px, 2vw, 28px) clamp(10px, 2vw, 24px);
+      position: relative;
+      z-index: 1;
+      box-sizing: border-box;
+    }
+
+    /* Sticky Top Navigation */
+    .sticky-nav {
+      position: sticky;
+      top: 8px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      align-items: center;
+      flex-wrap: wrap;
+      scrollbar-width: none;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    .sticky-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .nav-link:hover {
+      color: #b45309;
+      background: #fffbeb;
+      border-color: rgba(245, 158, 11, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .nav-link.active, .nav-link.primary {
+      background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;
+      color: #ffffff !important;
+      font-weight: 700;
+      border-color: transparent !important;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.40) !important;
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: var(--bg-surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 2px solid #fed7aa;
+      border-radius: var(--radius-lg);
+      padding: clamp(20px, 3vw, 36px) clamp(16px, 3vw, 40px);
+      margin-bottom: 24px;
+      box-shadow: 0 12px 36px -4px rgba(245, 158, 11, 0.12), var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    .hero-rainbow-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #f59e0b 0%, #ea580c 25%, #e11d48 50%, #8b5cf6 75%, #0ea5e9 100%);
+    }
+
+    .hero h1 {
+      font-size: clamp(22px, 4vw, 34px);
+      font-weight: 900;
+      letter-spacing: -0.6px;
+      color: var(--text-headings);
+      margin-bottom: 10px;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .hero p.lead {
+      font-size: clamp(14px, 2vw, 16px);
+      color: var(--text-secondary);
+      max-width: 100%;
+      margin-bottom: 16px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    /* Badges & Pills */
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .badge-tamagui { background: rgba(245, 158, 11, 0.12); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.32); }
+    .badge-blue { background: rgba(2, 132, 199, 0.10); color: #0369a1; border: 1px solid rgba(2, 132, 199, 0.28); }
+    .badge-green { background: rgba(16, 185, 129, 0.12); color: #047857; border: 1px solid rgba(16, 185, 129, 0.30); }
+    .badge-purple { background: rgba(124, 58, 237, 0.10); color: #6d28d9; border: 1px solid rgba(124, 58, 237, 0.28); }
+    .badge-orange { background: rgba(234, 88, 12, 0.10); color: #c2410c; border: 1px solid rgba(234, 88, 12, 0.28); }
+    .badge-red { background: rgba(225, 29, 72, 0.10); color: #be123c; border: 1px solid rgba(225, 29, 72, 0.28); }
+    .badge-cyan { background: rgba(8, 145, 178, 0.10); color: #0e7490; border: 1px solid rgba(8, 145, 178, 0.28); }
+
+    /* Section Styles */
+    .plane-section {
+      margin-bottom: 35px;
+      scroll-margin-top: 70px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .section-header-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border-subtle);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .section-header-title {
+      font-size: clamp(18px, 3.5vw, 22px);
+      font-weight: 800;
+      color: var(--text-headings);
+      letter-spacing: -0.4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      word-break: break-word;
+    }
+
+    .section-number {
+      background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+      flex-shrink: 0;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: clamp(16px, 2.5vw, 26px);
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+      box-sizing: border-box;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: clamp(16px, 3vw, 18px);
+      font-weight: 800;
+      color: var(--text-headings);
+      letter-spacing: -0.02em;
+      word-break: break-word;
+    }
+
+    /* Gantt Visual Timeline Chart */
+    .gantt-chart-container {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 20px 16px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    .gantt-axis {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 2px solid #cbd5e1;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .gantt-stage-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .gantt-stage-label {
+      width: 220px;
+      min-width: 180px;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .gantt-track-bg {
+      flex: 1;
+      min-width: 240px;
+      background: #f1f5f9;
+      height: 24px;
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gantt-bar {
+      height: 100%;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #ffffff;
+      position: absolute;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+      transition: width 0.3s ease;
+      white-space: nowrap;
+    }
+
+    /* Master Gantt Matrix Table */
+    .table-responsive {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: var(--radius-md);
+      border: 1.5px solid #e2e8f0;
+      background: #ffffff;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .gantt-matrix-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 12.5px;
+      text-align: left;
+      table-layout: auto;
+      box-sizing: border-box;
+    }
+
+    .gantt-matrix-table th {
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      color: #334155;
+      font-weight: 800;
+      padding: 12px 14px;
+      border-bottom: 2px solid #cbd5e1;
+      border-right: 1px solid #e2e8f0;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .gantt-matrix-table th:last-child {
+      border-right: none;
+    }
+
+    .gantt-matrix-table td {
+      padding: 13px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      border-right: 1px solid #f1f5f9;
+      vertical-align: top;
+      line-height: 1.5;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      hyphens: auto;
+    }
+
+    .gantt-matrix-table td:last-child {
+      border-right: none;
+    }
+
+    .stage-group-header-row td {
+      background: #f8fafc;
+      border-top: 2px solid #e2e8f0;
+      border-bottom: 2px solid #cbd5e1;
+      padding: 12px 14px;
+    }
+
+    .stage-group-header-title {
+      font-size: 14.5px;
+      font-weight: 900;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .gantt-matrix-table tr:hover:not(.stage-group-header-row) td {
+      background: #fffdfa;
+    }
+
+    /* Program Module Tags */
+    .module-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0369a1;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 4px;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      max-width: 100%;
+    }
+
+    .func-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #6d28d9;
+      background: #faf5ff;
+      border: 1px solid #e9d5ff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      max-width: 100%;
+    }
+
+    /* Cell Block Elements */
+    .io-label {
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 2px;
+    }
+
+    .io-label-in { color: #0369a1; }
+    .io-label-out { color: #15803d; }
+    .io-label-math { color: #b45309; }
+
+    .io-content {
+      font-size: 12px;
+      color: #475569;
+      margin-bottom: 8px;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .formula-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: #fdf4ff;
+      border: 1px solid #f5d0fe;
+      color: #86198f;
+      padding: 3px 7px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-top: 4px;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      max-width: 100%;
+    }
+
+    .code-pill {
+      font-family: 'JetBrains Mono', monospace;
+      background: #f1f5f9;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      display: inline-block;
+    }
+
+    /* Gantt Progress Milestone Pill */
+    .timeline-milestone {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #334155;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+    }
+
+    /* Footer */
+    footer {
+      background: #ffffff;
+      border-top: 2px solid #fef3c7;
+      padding: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 40px;
+      border-radius: var(--radius-lg);
+      box-sizing: border-box;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Sticky Top Navigation -->
+    <nav class="sticky-nav">
+      <a href="#section-hero" class="nav-link primary">⚡ Overview</a>
+      <a href="#section-gantt-chart" class="nav-link">📊 Gantt Timeline</a>
+      <a href="#section-gantt-table" class="nav-link">📋 Gantt Calculation Table</a>
+      <a href="#section-deep-dive" class="nav-link">🔬 Math &amp; Formulas</a>
+      <a href="#section-artifacts" class="nav-link">📦 Output Artifacts</a>
+    </nav>
+
+    <!-- Header & Hero Section -->
+    <header id="section-hero" class="hero">
+      <div class="hero-rainbow-bar"></div>
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+        <span class="badge-pill badge-tamagui">✨ Tamagui UI Architecture</span>
+        <span class="badge-pill badge-blue">Gantt-Structured Workflow</span>
+        <span class="badge-pill badge-green">FastAPI + OpenCV + Scikit-Learn</span>
+        <span class="badge-pill badge-purple">CIELAB ΔE Matchmaker</span>
+      </div>
+
+      <h1>Backend System Flow Chart &amp; Gantt Calculation Matrix</h1>
+      <p class="lead">
+        Comprehensive execution blueprint structured in Gantt diagram format. Represents the <strong>Steps of Work (Main Stages)</strong> alongside the <strong>Significant Calculations (Tasks of Main Stages)</strong> with precise program modules, input schemas, mathematical formulations, and output artifacts.
+      </p>
+
+      <div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--text-secondary);">
+        <span>⚙️ <strong>Orchestrator:</strong> <code>step82_backend_exec/pipeline_orchestrator.py</code></span>
+        <span>🌐 <strong>API Framework:</strong> FastAPI + Uvicorn (Port 8000)</span>
+        <span>🔄 <strong>Execution Engine:</strong> 5 Sequential Missions + Realtime SSE</span>
+      </div>
+    </header>
+
+    <!-- =========================================================================
+         SECTION 1: GANTT DIAGRAM TIMELINE
+         ========================================================================= -->
+    <section id="section-gantt-chart" class="plane-section">
+      <div class="section-header-banner">
+        <div class="section-header-title">
+          <span class="section-number">1</span>
+          <span>Gantt Diagram: Main Stages Timeline &amp; Progress Milestones</span>
+        </div>
+        <span class="badge-pill badge-tamagui">Execution Progress (0% &rarr; 100%)</span>
+      </div>
+
+      <div class="gantt-chart-container">
+        <!-- Gantt Time Axis -->
+        <div class="gantt-axis">
+          <span>0% (Init)</span>
+          <span>20% (Ingestion)</span>
+          <span>40% (Quality)</span>
+          <span>60% (Palettes)</span>
+          <span>80% (Learning)</span>
+          <span>95% (DSS)</span>
+          <span>100% (Complete)</span>
+        </div>
+
+        <!-- Stage 1 -->
+        <div class="gantt-stage-row">
+          <div class="gantt-stage-label">
+            <span class="badge-pill badge-blue" style="font-size: 10px;">Step 1</span>
+            <span>Candidate Ingestion &amp; CNN</span>
+          </div>
+          <div class="gantt-track-bg">
+            <div class="gantt-bar" style="left: 0%; width: 20%; background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);">
+              <span>Mission 1 (0% &rarr; 20%)</span>
+              <span>~0.20s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="gantt-stage-row">
+          <div class="gantt-stage-label">
+            <span class="badge-pill badge-purple" style="font-size: 10px;">Step 2</span>
+            <span>Quality &amp; Sales Readiness</span>
+          </div>
+          <div class="gantt-track-bg">
+            <div class="gantt-bar" style="left: 20%; width: 20%; background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);">
+              <span>Mission 2 (20% &rarr; 40%)</span>
+              <span>~0.15s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="gantt-stage-row">
+          <div class="gantt-stage-label">
+            <span class="badge-pill badge-tamagui" style="font-size: 10px;">Step 3</span>
+            <span>Fabric Palette Extraction</span>
+          </div>
+          <div class="gantt-track-bg">
+            <div class="gantt-bar" style="left: 40%; width: 20%; background: linear-gradient(135deg, #d97706 0%, #ea580c 100%);">
+              <span>Mission 3 (40% &rarr; 60%)</span>
+              <span>~0.45s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 4 -->
+        <div class="gantt-stage-row">
+          <div class="gantt-stage-label">
+            <span class="badge-pill badge-green" style="font-size: 10px;">Step 4</span>
+            <span>Target Style AI Learning</span>
+          </div>
+          <div class="gantt-track-bg">
+            <div class="gantt-bar" style="left: 60%; width: 20%; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+              <span>Mission 4 (60% &rarr; 80%)</span>
+              <span>~0.85s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 5 -->
+        <div class="gantt-stage-row">
+          <div class="gantt-stage-label">
+            <span class="badge-pill badge-orange" style="font-size: 10px;">Step 5</span>
+            <span>DSS Marketing Matchmaker</span>
+          </div>
+          <div class="gantt-track-bg">
+            <div class="gantt-bar" style="left: 80%; width: 18%; background: linear-gradient(135deg, #ea580c 0%, #e11d48 100%);">
+              <span>Mission 5 (80% &rarr; 98%)</span>
+              <span>~0.30s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 6 -->
+        <div class="gantt-stage-row">
+          <div class="gantt-stage-label">
+            <span class="badge-pill badge-cyan" style="font-size: 10px;">Step 6</span>
+            <span>Realtime Sync &amp; Deploy</span>
+          </div>
+          <div class="gantt-track-bg">
+            <div class="gantt-bar" style="left: 98%; width: 2%; background: linear-gradient(135deg, #0891b2 0%, #0284c7 100%);">
+              <span>100%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 2: MASTER GANTT CALCULATION MATRIX TABLE
+         ========================================================================= -->
+    <section id="section-gantt-table" class="plane-section">
+      <div class="section-header-banner">
+        <div class="section-header-title">
+          <span class="section-number">2</span>
+          <span>Master Gantt Table: Main Stages &amp; Significant Calculations</span>
+        </div>
+        <span class="badge-pill badge-green">Main Stages (Steps) &bull; Tasks (Calculations) &bull; Modules &bull; I/O</span>
+      </div>
+
+      <div class="card" style="padding: 16px;">
+        <div class="table-responsive">
+          <table class="gantt-matrix-table">
+            <thead>
+              <tr>
+                <th style="width: 18%;">Task / Significant Calculation</th>
+                <th style="width: 12%;">Gantt Milestone</th>
+                <th style="width: 18%;">Program Module &amp; Function</th>
+                <th style="width: 18%;">Input Description</th>
+                <th style="width: 18%;">Output Description</th>
+                <th style="width: 16%;">Mathematical &amp; Algorithmic Core</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <!-- =============================================================
+                   MAIN STAGE 1: STEP 1 - CANDIDATE INGESTION & CLASSIFICATION
+                   ============================================================= -->
+              <tr class="stage-group-header-row">
+                <td colspan="6">
+                  <div class="stage-group-header-title">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span class="badge-pill badge-blue">Step 1</span>
+                      <span>Main Stage 1: Candidate Catalog Ingestion &amp; Neural Classification</span>
+                    </div>
+                    <span style="font-size: 12px; font-weight: 700; color: #0284c7;">Directory: step1_eda/ &bull; Target: 200 Catalog Candidates</span>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Task 1.1 -->
+              <tr>
+                <td>
+                  <strong style="color: #0f172a;">Task 1.1: File Discovery &amp; Schema Validation</strong>
+                  <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Ingestion of catalog CSV/photos, null-filtering &amp; dimension checks.</div>
+                </td>
+                <td>
+                  <span class="timeline-milestone">
+                    <span style="color: #0284c7;">●</span> 0% &rarr; 10%
+                  </span>
+                  <div style="font-size: 10.5px; color: #64748b; margin-top: 4px;">Predecessor: Upload</div>
+                </td>
+                <td>
+                  <span class="module-badge">step1_eda/eda_clean.py</span><br>
+                  <span class="func-badge">pipeline_orchestrator.run_custom_ml_pipeline()</span>
+                </td>
+                <td>
+                  <span class="io-label io-label-in">📥 Input Data:</span>
+                  <div class="io-content">
+                    <code>GLAMI-1M-train.csv</code> (1M+ rows) or uploaded CSV / raw candidate images in <code>custom_dataset_start/*.*</code>.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-out">📤 Output Data:</span>
+                  <div class="io-content">
+                    Sanitized pandas DataFrame <code>df_catalog</code> (200 items) with verified <code>item_id</code>, <code>image_path</code>, <code>name</code>.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-math">⚙️ Algorithmic Logic:</span>
+                  <div class="io-content">
+                    Caps dataset to <code>N = min(total, DEFAULT_USE_FIRST_ITEMS = 200)</code>. Drops corrupt nulls and validates JPEG/PNG headers.
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Task 1.2 -->
+              <tr>
+                <td>
+                  <strong style="color: #0f172a;">Task 1.2: Fashion-MNIST CNN Category Classification</strong>
+                  <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Automated categorization into 10 Fashion classes.</div>
+                </td>
+                <td>
+                  <span class="timeline-milestone">
+                    <span style="color: #0284c7;">●</span> 10% &rarr; 20%
+                  </span>
+                  <div style="font-size: 10.5px; color: #64748b; margin-top: 4px;">Predecessor: Task 1.1</div>
+                </td>
+                <td>
+                  <span class="module-badge">step1_eda/fashion_mnist_cnn.keras</span><br>
+                  <span class="func-badge">pipeline_orchestrator.classify_single_image()</span>
+                </td>
+                <td>
+                  <span class="io-label io-label-in">📥 Input Data:</span>
+                  <div class="io-content">
+                    28&times;28 grayscale image tensor <code>norm = (255.0 - resized) / 255.0</code> normalized to Fashion-MNIST standard.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-out">📤 Output Data:</span>
+                  <div class="io-content">
+                    <code>category</code> (0..9) &amp; <code>category_name</code> (e.g. "T-Shirt / Top", "Dress", "Coat", "Bag").
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-math">⚙️ Algorithmic Logic:</span>
+                  <div class="io-content">
+                    CNN Softmax inference: <code>preds = model.predict(inp)</code> &rarr; <code>argmax(preds)</code>. Aspect ratio heuristic fallback ($H/W > 1.6 \rightarrow \text{Dress}$).
+                  </div>
+                  <div class="formula-pill">preds = CNN.predict(x) &rarr; argmax(preds)</div>
+                </td>
+              </tr>
+
+              <!-- =============================================================
+                   MAIN STAGE 2: STEP 2 - QUALITY CONTROL & SALES READINESS
+                   ============================================================= -->
+              <tr class="stage-group-header-row">
+                <td colspan="6">
+                  <div class="stage-group-header-title">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span class="badge-pill badge-purple">Step 2</span>
+                      <span>Main Stage 2: Quality Control &amp; Sales Readiness Verification</span>
+                    </div>
+                    <span style="font-size: 12px; font-weight: 700; color: #7c3aed;">Directory: step2_eda/ &bull; Target: Resolution &amp; Title Quality</span>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Task 2.1 -->
+              <tr>
+                <td>
+                  <strong style="color: #0f172a;">Task 2.1: Image Quality, Resolution &amp; Title Audit</strong>
+                  <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Evaluates asset integrity, blurriness &amp; title length.</div>
+                </td>
+                <td>
+                  <span class="timeline-milestone">
+                    <span style="color: #7c3aed;">●</span> 20% &rarr; 40%
+                  </span>
+                  <div style="font-size: 10.5px; color: #64748b; margin-top: 4px;">Predecessor: Task 1.2</div>
+                </td>
+                <td>
+                  <span class="module-badge">step2_eda/process_ready_to_sale.py</span><br>
+                  <span class="func-badge">pipeline_orchestrator (Step 2 Block)</span>
+                </td>
+                <td>
+                  <span class="io-label io-label-in">📥 Input Data:</span>
+                  <div class="io-content">
+                    Catalog DataFrame <code>df_catalog</code>, image file paths on disk, image pixel dimensions $(W, H)$.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-out">📤 Output Data:</span>
+                  <div class="io-content">
+                    Boolean column <code>ready_to_sale</code> (True/False) appended to <code>df_catalog</code>.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-math">⚙️ Algorithmic Logic:</span>
+                  <div class="io-content">
+                    Logical conjunct test:
+                    <div class="formula-pill">ready_to_sale = (len(name) &ge; 3) &and; (W &ge; 32 &and; H &ge; 32) &and; (file_exists)</div>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- =============================================================
+                   MAIN STAGE 3: STEP 3 - FABRIC PALETTE EXTRACTION
+                   ============================================================= -->
+              <tr class="stage-group-header-row">
+                <td colspan="6">
+                  <div class="stage-group-header-title">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span class="badge-pill badge-tamagui">Step 3</span>
+                      <span>Main Stage 3: Product Fabric Color Intelligence &amp; Palette Extraction</span>
+                    </div>
+                    <span style="font-size: 12px; font-weight: 700; color: #d97706;">Directory: step3_eda/ &bull; Target: 4 Dominant Swatches/Item</span>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Task 3.1 -->
+              <tr>
+                <td>
+                  <strong style="color: #0f172a;">Task 3.1: Background Exclusion &amp; Pixel Sampling</strong>
+                  <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Filters out white backdrops and black borders.</div>
+                </td>
+                <td>
+                  <span class="timeline-milestone">
+                    <span style="color: #d97706;">●</span> 40% &rarr; 50%
+                  </span>
+                  <div style="font-size: 10.5px; color: #64748b; margin-top: 4px;">Predecessor: Task 2.1</div>
+                </td>
+                <td>
+                  <span class="module-badge">step3_eda/extract_palette.py</span><br>
+                  <span class="func-badge">pipeline_orchestrator.extract_image_palette()</span>
+                </td>
+                <td>
+                  <span class="io-label io-label-in">📥 Input Data:</span>
+                  <div class="io-content">
+                    Product image resized to $100 \times 100$ via Lanczos resampling, flattened to $(10000, 3)$ RGB matrix.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-out">📤 Output Data:</span>
+                  <div class="io-content">
+                    Denoised fabric pixel array $(M \times 3)$ containing pure garment fabric tones.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-math">⚙️ Algorithmic Logic:</span>
+                  <div class="io-content">
+                    Luminance threshold mask:
+                    <div class="formula-pill">valid_mask = (15 &lt; mean(RGB) &lt; 240)</div>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Task 3.2 -->
+              <tr>
+                <td>
+                  <strong style="color: #0f172a;">Task 3.2: MiniBatchKMeans Color Clustering ($k=4$)</strong>
+                  <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Extracts 4 dominant hex swatches per catalog item.</div>
+                </td>
+                <td>
+                  <span class="timeline-milestone">
+                    <span style="color: #d97706;">●</span> 50% &rarr; 60%
+                  </span>
+                  <div style="font-size: 10.5px; color: #64748b; margin-top: 4px;">Predecessor: Task 3.1</div>
+                </td>
+                <td>
+                  <span class="module-badge">sklearn.cluster.MiniBatchKMeans</span><br>
+                  <span class="func-badge">extract_image_palette() &bull; rgb_to_hex()</span>
+                </td>
+                <td>
+                  <span class="io-label io-label-in">📥 Input Data:</span>
+                  <div class="io-content">
+                    Filtered fabric pixel array $(M \times 3)$, parameters <code>n_clusters=4, max_iter=20</code>.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-out">📤 Output Data:</span>
+                  <div class="io-content">
+                    Array of 4 hex color strings <code>[#hex1, #hex2, #hex3, #hex4]</code> saved in <code>df_catalog['palette_of_image']</code>.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-math">⚙️ Algorithmic Logic:</span>
+                  <div class="io-content">
+                    Minimizes cluster inertia:
+                    <div class="formula-pill">&sum; ||x_i - &mu;_j||&sup2; &rarr; Centers &rarr; Hex</div>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- =============================================================
+                   MAIN STAGE 4: STEP 4 - TARGET MARKET STYLE AI LEARNING
+                   ============================================================= -->
+              <tr class="stage-group-header-row">
+                <td colspan="6">
+                  <div class="stage-group-header-title">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span class="badge-pill badge-green">Step 4</span>
+                      <span>Main Stage 4: Target Country Market Style AI Learning &amp; Demographic Lookbooks</span>
+                    </div>
+                    <span style="font-size: 12px; font-weight: 700; color: #047857;">Directory: step4_learn/ &bull; Target: 3 Discrete Palettes (Men &amp; Women)</span>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Task 4.1 -->
+              <tr>
+                <td>
+                  <strong style="color: #0f172a;">Task 4.1: Demographic Lookbook YOLOv8 Torso Crop</strong>
+                  <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Isolates apparel from human lookbook street photos.</div>
+                </td>
+                <td>
+                  <span class="timeline-milestone">
+                    <span style="color: #10b981;">●</span> 60% &rarr; 70%
+                  </span>
+                  <div style="font-size: 10.5px; color: #64748b; margin-top: 4px;">Predecessor: Task 3.2</div>
+                </td>
+                <td>
+                  <span class="module-badge">step4_learn/country_palette_extractor.py</span><br>
+                  <span class="func-badge">extract_country_profiles_from_images()</span>
+                </td>
+                <td>
+                  <span class="io-label io-label-in">📥 Input Data:</span>
+                  <div class="io-content">
+                    50 Men and 50 Women lookbook street photos from <code>custom_country_images/man/</code> and <code>woman/</code>.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-out">📤 Output Data:</span>
+                  <div class="io-content">
+                    Segmented torso crops excluding face, skin, and street backgrounds.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-math">⚙️ Algorithmic Logic:</span>
+                  <div class="io-content">
+                    Torso bounding box calculation:
+                    <div class="formula-pill">Crop = Img[0.20*H : 0.85*H, 0.15*W : 0.85*W]</div>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Task 4.2 -->
+              <tr>
+                <td>
+                  <strong style="color: #0f172a;">Task 4.2: Meta-Clustering into 3 Style Palettes</strong>
+                  <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Extracts Core Neutrals, Street, and Vibrant Accent themes.</div>
+                </td>
+                <td>
+                  <span class="timeline-milestone">
+                    <span style="color: #10b981;">●</span> 70% &rarr; 80%
+                  </span>
+                  <div style="font-size: 10.5px; color: #64748b; margin-top: 4px;">Predecessor: Task 4.1</div>
+                </td>
+                <td>
+                  <span class="module-badge">step4_learn/country_palette_extractor.py</span><br>
+                  <span class="func-badge">CountryMarketingSuitabilityModel.__init__()</span>
+                </td>
+                <td>
+                  <span class="io-label io-label-in">📥 Input Data:</span>
+                  <div class="io-content">
+                    Pooled lookbook color vectors (250+ colors per demographic) in RGB space.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-out">📤 Output Data:</span>
+                  <div class="io-content">
+                    <code>market_profile.json</code> with 3 ranked 4-color palettes for Men and Women in CIELAB coordinates.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-math">⚙️ Algorithmic Logic:</span>
+                  <div class="io-content">
+                    KMeans clustering ($k=3$), non-linear RGB $\rightarrow$ CIE $L^*a^*b^*$ conversion (D65 white point).
+                  </div>
+                  <div class="formula-pill">KMeans(k=3) &rarr; RGB_to_CIELAB(D65)</div>
+                </td>
+              </tr>
+
+              <!-- =============================================================
+                   MAIN STAGE 5: STEP 5 - DSS MARKETING MATCHMAKER
+                   ============================================================= -->
+              <tr class="stage-group-header-row">
+                <td colspan="6">
+                  <div class="stage-group-header-title">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span class="badge-pill badge-orange">Step 5</span>
+                      <span>Main Stage 5: ML Perceptual Matching &amp; DSS Multi-Tier Marketing Engine</span>
+                    </div>
+                    <span style="font-size: 12px; font-weight: 700; color: #ea580c;">Directory: step5_dss/ &bull; Target: CIELAB ΔE ≤ 13.5 &amp; 3 Priority Tiers</span>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Task 5.1 -->
+              <tr>
+                <td>
+                  <strong style="color: #0f172a;">Task 5.1: NearestNeighbors Perceptual Distance (ΔE)</strong>
+                  <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Calculates Euclidean distance in CIELAB color space.</div>
+                </td>
+                <td>
+                  <span class="timeline-milestone">
+                    <span style="color: #ea580c;">●</span> 80% &rarr; 90%
+                  </span>
+                  <div style="font-size: 10.5px; color: #64748b; margin-top: 4px;">Predecessor: Task 4.2</div>
+                </td>
+                <td>
+                  <span class="module-badge">step4_learn/train_marketing_model.py</span><br>
+                  <span class="func-badge">CountryMarketingSuitabilityModel.evaluate_palette()</span>
+                </td>
+                <td>
+                  <span class="io-label io-label-in">📥 Input Data:</span>
+                  <div class="io-content">
+                    Candidate 4-color palette, gender routing flags (<code>for_man</code>, <code>for_woman</code>), target country style profile.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-out">📤 Output Data:</span>
+                  <div class="io-content">
+                    <code>market_palette_match_distance</code> ($\Delta E$), <code>market_compatibility_score</code> ($0.0 \dots 1.0$).
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-math">⚙️ Algorithmic Logic:</span>
+                  <div class="io-content">
+                    CIE76 Euclidean distance + linear normalization:
+                    <div class="formula-pill">&Delta;E = &radic;((&Delta;L*)&sup2; + (&Delta;a*)&sup2; + (&Delta;b*)&sup2;)</div>
+                    <div class="formula-pill">Score = max(0, 1 - &Delta;E / 30.0)</div>
+                    <div class="formula-pill">Composite = 0.60*Score_dom + 0.40*Score_mean</div>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Task 5.2 -->
+              <tr>
+                <td>
+                  <strong style="color: #0f172a;">Task 5.2: DSS Multi-Tier Rule Classification &amp; Export</strong>
+                  <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Assigns marketing priority tiers and writes result CSVs.</div>
+                </td>
+                <td>
+                  <span class="timeline-milestone">
+                    <span style="color: #ea580c;">●</span> 90% &rarr; 98%
+                  </span>
+                  <div style="font-size: 10.5px; color: #64748b; margin-top: 4px;">Predecessor: Task 5.1</div>
+                </td>
+                <td>
+                  <span class="module-badge">step5_dss/dss_decision_engine.py</span><br>
+                  <span class="func-badge">pipeline_orchestrator (Step 5 Block)</span>
+                </td>
+                <td>
+                  <span class="io-label io-label-in">📥 Input Data:</span>
+                  <div class="io-content">
+                    Computed $\Delta E$, compatibility score, and sales readiness flag <code>ready_to_sale</code>.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-out">📤 Output Data:</span>
+                  <div class="io-content">
+                    <code>result5.csv</code>, <code>result_good_for_new_marketing.csv</code>, <code>result_not_good_for_new_marketing.csv</code>.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-math">⚙️ Algorithmic Logic:</span>
+                  <div class="io-content">
+                    Multi-tier heuristics:
+                    <div class="formula-pill">Tier 1: &Delta;E &le; 8.5 &and; Score &ge; 0.70 &and; ready (Hero Ads)</div>
+                    <div class="formula-pill">Tier 2: &Delta;E &le; 13.5 &and; Score &ge; 0.60 (Standard Catalog)</div>
+                    <div class="formula-pill">Tier 3: Non-Priority Outlier (Reposition)</div>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- =============================================================
+                   MAIN STAGE 6: STEP 6 - REALTIME ORCHESTRATION & CAPSTONE
+                   ============================================================= -->
+              <tr class="stage-group-header-row">
+                <td colspan="6">
+                  <div class="stage-group-header-title">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span class="badge-pill badge-cyan">Step 6</span>
+                      <span>Main Stage 6: Asynchronous Orchestrator, Supabase Realtime &amp; Capstone Assembly</span>
+                    </div>
+                    <span style="font-size: 12px; font-weight: 700; color: #0e7490;">Directory: step82_backend_exec/ &bull; Target: resultDataJSON.json &amp; Live WebSocket</span>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Task 6.1 -->
+              <tr>
+                <td>
+                  <strong style="color: #0f172a;">Task 6.1: Realtime Milestone SSE Event Streaming</strong>
+                  <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Broadcasts asynchronous pipeline progress to client UI.</div>
+                </td>
+                <td>
+                  <span class="timeline-milestone">
+                    <span style="color: #0891b2;">●</span> 0% &rarr; 100% (Continuous)
+                  </span>
+                  <div style="font-size: 10.5px; color: #64748b; margin-top: 4px;">Lifecycle-wide</div>
+                </td>
+                <td>
+                  <span class="module-badge">step82_backend_exec/supabase_service.py</span><br>
+                  <span class="func-badge">update_progress() &bull; upsert_user_session()</span>
+                </td>
+                <td>
+                  <span class="io-label io-label-in">📥 Input Data:</span>
+                  <div class="io-content">
+                    Session GUID, milestone percentage (<code>percent=20, 40, 60, 80, 98, 100</code>), step name, detailed activity message.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-out">📤 Output Data:</span>
+                  <div class="io-content">
+                    Postgres row in <code>cv26ShopProgressTable</code> broadcast via WebSocket to Step 81 Frontend.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-math">⚙️ Algorithmic Logic:</span>
+                  <div class="io-content">
+                    Asynchronous non-blocking threading model with Supabase Realtime Postgres change stream.
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Task 6.2 -->
+              <tr>
+                <td>
+                  <strong style="color: #0f172a;">Task 6.2: Master `resultDataJSON.json` Compilation</strong>
+                  <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Compiles unified analytics payload for Executive Report.</div>
+                </td>
+                <td>
+                  <span class="timeline-milestone">
+                    <span style="color: #0891b2;">●</span> 98% &rarr; 100%
+                  </span>
+                  <div style="font-size: 10.5px; color: #64748b; margin-top: 4px;">Predecessor: Task 5.2</div>
+                </td>
+                <td>
+                  <span class="module-badge">step82_backend_exec/pipeline_orchestrator.py</span><br>
+                  <span class="func-badge">supabase_service.upsert_results()</span>
+                </td>
+                <td>
+                  <span class="io-label io-label-in">📥 Input Data:</span>
+                  <div class="io-content">
+                    All compiled KPIs, category breakdown stats, product payload with color swatches, step timings.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-out">📤 Output Data:</span>
+                  <div class="io-content">
+                    <code>resultDataJSON.json</code> written to <code>custom_data/{guid}/</code> and <code>cv26ShopResultsTable</code>.
+                  </div>
+                </td>
+                <td>
+                  <span class="io-label io-label-math">⚙️ Algorithmic Logic:</span>
+                  <div class="io-content">
+                    Computes executive metrics: $\text{goodPct} = 32.5\%$, $\text{readyPct} = 49.0\%$, $\text{avgScore} = 0.51$, $\text{avg}\Delta E = 14.7$. Triggers frontend UI auto-render.
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 3: MATHEMATICAL & COMPUTATIONAL CORE
+         ========================================================================= -->
+    <section id="section-deep-dive" class="plane-section">
+      <div class="section-header-banner">
+        <div class="section-header-title">
+          <span class="section-number">3</span>
+          <span>Mathematical Formulations &amp; Computational Logic</span>
+        </div>
+        <span class="badge-pill badge-purple">Algorithmic Deep Dive</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px;">
+        
+        <!-- Formula Card 1: CIELAB Delta-E Distance -->
+        <div class="card" style="margin-bottom: 0;">
+          <div class="card-header">
+            <h4 class="card-title">📐 1. Perceptual Color Distance (CIE76 &Delta;E)</h4>
+            <span class="badge-pill badge-green">Scikit-Learn KDTree</span>
+          </div>
+          <p style="font-size: 13px; color: #475569; margin-bottom: 10px;">
+            Measures Euclidean distance between candidate product dominant color and target market style palettes in the non-linear CIE $L^*a^*b^*$ color space:
+          </p>
+          <div style="background: #0f172a; color: #38bdf8; padding: 12px 14px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-bottom: 10px; line-height: 1.6;">
+            &Delta;E = &radic;[ (L*&sub1; - L*&sub2;)&sup2; + (a*&sub1; - a*&sub2;)&sup2; + (b*&sub1; - b*&sub2;)&sup2; ]
+          </div>
+          <ul style="font-size: 12px; color: #64748b; padding-left: 18px; line-height: 1.5;">
+            <li><strong>L* (Lightness):</strong> 0 (black) to 100 (diffuse white)</li>
+            <li><strong>a* (Green-Red Axis):</strong> negative = green, positive = red</li>
+            <li><strong>b* (Blue-Yellow Axis):</strong> negative = blue, positive = yellow</li>
+            <li><strong>Target Threshold:</strong> &Delta;E &le; 13.5 denotes acceptable fashion harmony</li>
+          </ul>
+        </div>
+
+        <!-- Formula Card 2: Composite Compatibility Metric -->
+        <div class="card" style="margin-bottom: 0;">
+          <div class="card-header">
+            <h4 class="card-title">🎯 2. Compatibility Score Normalization</h4>
+            <span class="badge-pill badge-tamagui">Normalized Score (0..1)</span>
+          </div>
+          <p style="font-size: 13px; color: #475569; margin-bottom: 10px;">
+            Converts unbounded Euclidean color distance into a bounded $[0, 1]$ suitability index, weighting dominant tone higher than average palette distance:
+          </p>
+          <div style="background: #0f172a; color: #fde047; padding: 12px 14px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-bottom: 10px; line-height: 1.6;">
+            Score = max(0.0, 1.0 - (&Delta;E / 30.0))<br>
+            Composite = 0.60 &times; Score_dominant + 0.40 &times; Score_mean
+          </div>
+          <ul style="font-size: 12px; color: #64748b; padding-left: 18px; line-height: 1.5;">
+            <li><strong>Score &ge; 0.70:</strong> High color alignment (Prime candidate)</li>
+            <li><strong>Score &ge; 0.60:</strong> Standard market fit (Approved)</li>
+            <li><strong>Score &lt; 0.60:</strong> Outlier / Non-priority tone</li>
+          </ul>
+        </div>
+
+        <!-- Formula Card 3: Multi-Tier Decision Rules -->
+        <div class="card" style="margin-bottom: 0;">
+          <div class="card-header">
+            <h4 class="card-title">⚖️ 3. Multi-Tier Marketing Rules</h4>
+            <span class="badge-pill badge-orange">DSS Rule Engine</span>
+          </div>
+          <p style="font-size: 13px; color: #475569; margin-bottom: 10px;">
+            Assigns marketing priority tiers based on simultaneous evaluation of perceptual color match, sales readiness, and demographic fit:
+          </p>
+          <div style="background: #0f172a; color: #a7f3d0; padding: 12px 14px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; margin-bottom: 10px; line-height: 1.6;">
+            IF (&Delta;E &le; 8.5 &amp; Score &ge; 0.70 &amp; ready_to_sale) &rarr; Tier 1 (Prime)<br>
+            ELSE IF (&Delta;E &le; 13.5 &amp; Score &ge; 0.60) &rarr; Tier 2 (Standard)<br>
+            ELSE &rarr; Tier 3 (Non-Priority Outlier)
+          </div>
+          <ul style="font-size: 12px; color: #64748b; padding-left: 18px; line-height: 1.5;">
+            <li><strong>Tier 1 Action:</strong> Immediate Hero Product Ads &amp; Paid Acquisition</li>
+            <li><strong>Tier 2 Action:</strong> Standard Catalog Inclusion &amp; Organic Search</li>
+            <li><strong>Tier 3 Action:</strong> Reposition / Re-shoot in alternative colorway</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 4: DATA LINEAGE & ARTIFACT REPOSITORY
+         ========================================================================= -->
+    <section id="section-artifacts" class="plane-section">
+      <div class="section-header-banner">
+        <div class="section-header-title">
+          <span class="section-number">4</span>
+          <span>Data Lineage &amp; Output Artifact Specifications</span>
+        </div>
+        <span class="badge-pill badge-blue">File System &amp; Schemas</span>
+      </div>
+
+      <div class="card">
+        <div class="table-responsive">
+          <table style="width: 100%; border-collapse: collapse; font-size: 12.5px; table-layout: auto; word-wrap: break-word; overflow-wrap: break-word;">
+            <thead>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
+                <th style="padding: 12px; width: 22%;">Artifact File Path</th>
+                <th style="padding: 12px; width: 14%;">Stage / Generator</th>
+                <th style="padding: 12px; width: 18%;">Schema / Format</th>
+                <th style="padding: 12px; width: 26%;">Key Columns / JSON Fields</th>
+                <th style="padding: 12px; width: 20%;">Consumer Subsystem</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 12px;"><code class="code-pill">step1_eda/result3.csv</code></td>
+                <td style="padding: 12px;"><span class="badge-pill badge-blue">Stage 1</span></td>
+                <td style="padding: 12px;">CSV (200 rows &times; 10 cols)</td>
+                <td style="padding: 12px;"><code>item_id, image_id, name, description, category_name, ready_to_sale, for_man, for_woman, for_unisex</code></td>
+                <td style="padding: 12px;">Stage 4 (ML Matcher) &amp; Stage 5 (DSS Engine)</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 12px;"><code class="code-pill">step4_learn/market_profile.json</code></td>
+                <td style="padding: 12px;"><span class="badge-pill badge-green">Stage 4</span></td>
+                <td style="padding: 12px;">JSON Structured Palettes</td>
+                <td style="padding: 12px;"><code>palette_1, palette_2, palette_3, man_profile, woman_profile, themes</code></td>
+                <td style="padding: 12px;">Stage 5 (ML Matcher) &amp; Capstone Report Component</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 12px;"><code class="code-pill">step4_learn/result4_ml_log.json</code></td>
+                <td style="padding: 12px;"><span class="badge-pill badge-green">Stage 4</span></td>
+                <td style="padding: 12px;">JSON Model Audit Trail</td>
+                <td style="padding: 12px;"><code>algorithm, k, metric, deltaEThreshold, latency_ms, demographic_split</code></td>
+                <td style="padding: 12px;">Data Science Audit &amp; Technical Verification</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 12px;"><code class="code-pill">step5_dss/result5.csv</code></td>
+                <td style="padding: 12px;"><span class="badge-pill badge-orange">Stage 5</span></td>
+                <td style="padding: 12px;">CSV (200 rows &times; 18 cols)</td>
+                <td style="padding: 12px;"><code>item_id, name, is_good, market_compatibility_score, ΔE, matched_palette, marketing_priority_tier</code></td>
+                <td style="padding: 12px;">Purchase Manager Full Catalog View &amp; ERP Sync</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 12px;"><code class="code-pill">step5_dss/result_good_for_new_marketing.csv</code></td>
+                <td style="padding: 12px;"><span class="badge-pill badge-orange">Stage 5</span></td>
+                <td style="padding: 12px;">CSV (Approved Subset)</td>
+                <td style="padding: 12px;">Approved items only (Tier 1 &amp; Tier 2), sorted by highest compatibility score</td>
+                <td style="padding: 12px;">Ad Campaign Manager / Google Ads &amp; Meta Feed</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px;"><code class="code-pill">step82_backend_exec/resultDataJSON.json</code></td>
+                <td style="padding: 12px;"><span class="badge-pill badge-cyan">Stage 6</span></td>
+                <td style="padding: 12px;">JSON Master Payload</td>
+                <td style="padding: 12px;"><code>metadata, targetCountry, kpis, categoryBreakdown, tierDistribution, products[]</code></td>
+                <td style="padding: 12px;">Step 81 Frontend React/Redux-Saga Capstone Component</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div style="font-weight: 700; color: #0f172a; margin-bottom: 4px;">
+        ✨ CV26 Internet Shop Market Matchmaking Pipeline &bull; Gantt Flow Chart Matrix
+      </div>
+      <div>
+        Styled with Tamagui UI Design System &bull; Offline-first Standalone HTML &bull; Project Root: <code>BACKEND_FLOW_CHART.html</code>
+      </div>
+    </footer>
+
+  </div>
+
+</body>
+</html>

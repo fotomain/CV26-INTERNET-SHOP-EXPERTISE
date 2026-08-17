@@ -5,6 +5,7 @@
 export const DEFAULT_FILE_SIZE_LIMIT_MB = 1;
 export const DEFAULT_FILE_SIZE_LIMIT_BYTES = DEFAULT_FILE_SIZE_LIMIT_MB * 1024 * 1024; // 1MB
 export const DEFAULT_NUMBER_OF_FILES = 200;
+export const FILES_PER_1_BATCH = 10;
 
 export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://czgrxgzdmodkkmbmraub.supabase.co';

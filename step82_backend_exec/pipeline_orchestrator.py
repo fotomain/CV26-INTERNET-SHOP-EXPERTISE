@@ -343,6 +343,11 @@ def run_custom_ml_pipeline(
         df_catalog['marketing_priority_tier'] = tiers
         df_catalog['dss_recommendation_reason'] = reasons
 
+        # Ensure image_path column is the very last column in all CSV files
+        if 'image_path' in df_catalog.columns:
+            ordered_cols = [c for c in df_catalog.columns if c != 'image_path'] + ['image_path']
+            df_catalog = df_catalog[ordered_cols]
+
         # Export dedicated Good and Not Good marketing CSV subsets
         df_good = df_catalog[df_catalog['product_is_good_for_new_marketing'] == True].copy()
         df_not_good = df_catalog[df_catalog['product_is_good_for_new_marketing'] == False].copy()
@@ -358,7 +363,8 @@ def run_custom_ml_pipeline(
         os.makedirs(step5_dir, exist_ok=True)
         df_good.to_csv(os.path.join(step5_dir, 'result_good_for_new_marketing.csv'), index=False)
         df_not_good.to_csv(os.path.join(step5_dir, 'result_not_good_for_new_marketing.csv'), index=False)
-        logger.info(f"Saved DSS CSVs for session {user_session_guid}: good={len(df_good)}, not_good={len(df_not_good)}")
+        df_catalog.to_csv(os.path.join(step5_dir, 'result5.csv'), index=False)
+        logger.info(f"Saved DSS CSVs for session {user_session_guid} (image_path is last column): good={len(df_good)}, not_good={len(df_not_good)}")
 
         step_timings['step5_dss'] = round(time.time() - t5_start, 3)
 

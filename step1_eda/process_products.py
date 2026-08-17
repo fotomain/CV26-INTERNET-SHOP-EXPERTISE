@@ -214,6 +214,8 @@ def main():
         'classification_confidence'
     ]
     final_cols = [c for c in ordered_cols if c in df.columns] + [c for c in df.columns if c not in ordered_cols]
+    if 'image_path' in final_cols:
+        final_cols = [c for c in final_cols if c != 'image_path'] + ['image_path']
     df = df[final_cols]
 
     os.makedirs(os.path.dirname(output_csv_path), exist_ok=True)

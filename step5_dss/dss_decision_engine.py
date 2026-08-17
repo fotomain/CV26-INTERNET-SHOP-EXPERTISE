@@ -100,6 +100,11 @@ def execute_dss_engine(input_csv_path: str = None, output_csv_path: str = None) 
     df_out['marketing_priority_tier'] = tiers
     df_out['dss_recommendation_reason'] = reasons
 
+    # Ensure image_path column is the very last column in all CSV files
+    if 'image_path' in df_out.columns:
+        ordered_cols = [c for c in df_out.columns if c != 'image_path'] + ['image_path']
+        df_out = df_out[ordered_cols]
+
     # Ensure output directory exists and save full result5.csv
     os.makedirs(os.path.dirname(os.path.abspath(output_csv_path)), exist_ok=True)
     df_out.to_csv(output_csv_path, index=False)

@@ -168,7 +168,8 @@ export const App: React.FC = () => {
 
   const totalFilesAttached = customDatasetFiles.length + customCountryImagesMan.length + customCountryImagesWoman.length;
   const hasFilesSelected = totalFilesAttached > 0;
-  const isButtonEnabled = !isSubmitting && hasFilesSelected;
+  const isExecutionFinished = hasResults || progress.percent >= 100;
+  const isButtonEnabled = !isSubmitting && !isExecutionFinished && hasFilesSelected;
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafaf9' }}>
@@ -427,7 +428,12 @@ export const App: React.FC = () => {
                       borderRadius: '50%',
                       animation: 'spin 0.8s linear infinite'
                     }} />
-                    Processing ML Pipeline ({progress.percent}%)...
+                    Processing Batches &amp; ML ({progress.percent}%)...
+                  </>
+                ) : isExecutionFinished ? (
+                  <>
+                    <ShieldCheck size={18} color="#16a34a" />
+                    Batches Finished &amp; Pipeline Completed
                   </>
                 ) : isButtonEnabled ? (
                   <>
@@ -442,9 +448,14 @@ export const App: React.FC = () => {
                 )}
               </button>
 
-              {!hasFilesSelected && (
+              {!hasFilesSelected && !isExecutionFinished && (
                 <span style={{ fontSize: '11.5px', color: '#dc2626', fontWeight: 600, textAlign: 'center' }}>
                   * Attach candidate catalog and/or lookbook files to enable ExecuteMLButton.
+                </span>
+              )}
+              {isExecutionFinished && (
+                <span style={{ fontSize: '11.5px', color: '#16a34a', fontWeight: 700, textAlign: 'center' }}>
+                  ✓ All batch processing completed. Results and CSV reports generated.
                 </span>
               )}
             </div>

@@ -148,6 +148,65 @@ def download_session_file(userSessionGUID: str, filename: str):
         headers=cors_headers
     )
 
+@app.post("/api/upload-batch")
+async def upload_batch(
+    userSessionGUID: str = Form(...),
+    targetType: str = Form(...),  # "dataset", "man", "woman"
+    batchIndex: int = Form(...),  # 1-indexed
+    totalBatches: int = Form(...),
+    files: List[UploadFile] = File(...)
+):
+    """
+    Receives a chunk/batch of files (FILES_PER_1_BATCH=10), sanitizes & auto-optimizes,
+    and updates batch ingestion progress.
+    """
+    session_dir = os.path.join(CUSTOM_DATA_ROOT, userSessionGUID)
+    if targetType == "dataset":
+        target_dir = os.path.join(session_dir, "custom_dataset_start")
+    elif targetType == "man":
+        target_dir = os.path.join(session_dir, "custom_country_images", "man")
+    elif targetType == "woman":
+        target_dir = os.path.join(session_dir, "custom_country_images", "woman")
+    else:
+        target_dir = os.path.join(session_dir, "custom_dataset_start")
+
+    os.makedirs(target_dir, exist_ok=True)
+    saved_files = []
+
+    for uf in files:
+        if not uf.filename:
+            continue
+        try:
+            content = await uf.read()
+            out_p = validate_and_save_image(content, uf.filename, target_dir)
+            saved_files.append(out_p)
+        except Exception as e:
+            logger.warning(f"Error saving batch file '{uf.filename}': {e}")
+            log_error(userSessionGUID, str(e), error_type="Warning", details={"filename": uf.filename})
+
+    # Calculate upload progress (0% - 15% reserved for upload stage)
+    upload_pct = max(1, min(15, int((batchIndex / max(1, totalBatches)) * 15)))
+    batch_detail = f"Batch Progress: Uploaded batch {batchIndex}/{totalBatches} ({targetType.upper()} - {len(saved_files)} files)"
+    
+    update_progress(
+        userSessionGUID,
+        percent=upload_pct,
+        step_id=0,
+        step_name="Batch Ingestion Active",
+        details=batch_detail
+    )
+    logger.info(f"Session {userSessionGUID}: {batch_detail}")
+
+    return {
+        "status": "ok",
+        "userSessionGUID": userSessionGUID,
+        "batchIndex": batchIndex,
+        "totalBatches": totalBatches,
+        "targetType": targetType,
+        "savedCount": len(saved_files),
+        "uploadPercent": upload_pct
+    }
+
 @app.post("/api/execute-ml")
 async def execute_ml(
     background_tasks: BackgroundTasks,

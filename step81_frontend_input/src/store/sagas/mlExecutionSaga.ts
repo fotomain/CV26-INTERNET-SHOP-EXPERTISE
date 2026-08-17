@@ -10,9 +10,10 @@ import {
   updateProgressData,
 } from '../slices/progressSlice';
 import { setResultData, clearResults } from '../slices/resultSlice';
-import { executeMLApi, fetchProgressApi, fetchResultsApi } from '../../services/api';
+import { executeMLApi, uploadBatchApi, fetchProgressApi, fetchResultsApi } from '../../services/api';
 import { autoDownloadCsvFiles } from '../../utils/fileDownloader';
 import { getFiles } from '../../utils/fileRegistry';
+import { FILES_PER_1_BATCH } from '../../constants/config';
 
 export const EXECUTE_ML_REQUEST = 'session/EXECUTE_ML_REQUEST';
 
@@ -34,25 +35,104 @@ function* handleExecuteML(): any {
     yield put(startExecution());
     yield put(clearResults());
     yield put(setProgressActive(true));
+
+    const datasetFiles: File[] = getFiles(customDatasetFiles.map((item: any) => item.id));
+    const manFiles: File[] = getFiles(customCountryImagesMan.map((item: any) => item.id));
+    const womanFiles: File[] = getFiles(customCountryImagesWoman.map((item: any) => item.id));
+
+    // Chunk into batches (FILES_PER_1_BATCH = 10)
+    const datasetBatches: File[][] = [];
+    for (let i = 0; i < datasetFiles.length; i += FILES_PER_1_BATCH) {
+      datasetBatches.push(datasetFiles.slice(i, i + FILES_PER_1_BATCH));
+    }
+    const manBatches: File[][] = [];
+    for (let i = 0; i < manFiles.length; i += FILES_PER_1_BATCH) {
+      manBatches.push(manFiles.slice(i, i + FILES_PER_1_BATCH));
+    }
+    const womanBatches: File[][] = [];
+    for (let i = 0; i < womanFiles.length; i += FILES_PER_1_BATCH) {
+      womanBatches.push(womanFiles.slice(i, i + FILES_PER_1_BATCH));
+    }
+
+    const totalBatchCount = Math.max(1, datasetBatches.length + manBatches.length + womanBatches.length);
+    let currentBatchIndex = 0;
+
+    // 1. Upload Dataset Batches
+    for (let b = 0; b < datasetBatches.length; b++) {
+      currentBatchIndex++;
+      const batchPercent = Math.max(1, Math.round((currentBatchIndex / totalBatchCount) * 15));
+      yield put(
+        updateProgressData({
+          percent: batchPercent,
+          stepId: 0,
+          stepName: `Uploading Batch ${currentBatchIndex}/${totalBatchCount}`,
+          details: `Uploading Candidate Catalog Batch ${b + 1}/${datasetBatches.length} (${datasetBatches[b].length} files)...`,
+        })
+      );
+      yield call(uploadBatchApi, {
+        userSessionGUID,
+        targetType: 'dataset',
+        batchIndex: currentBatchIndex,
+        totalBatches: totalBatchCount,
+        files: datasetBatches[b],
+      });
+    }
+
+    // 2. Upload Men Lookbook Batches
+    for (let b = 0; b < manBatches.length; b++) {
+      currentBatchIndex++;
+      const batchPercent = Math.max(1, Math.round((currentBatchIndex / totalBatchCount) * 15));
+      yield put(
+        updateProgressData({
+          percent: batchPercent,
+          stepId: 0,
+          stepName: `Uploading Batch ${currentBatchIndex}/${totalBatchCount}`,
+          details: `Uploading Men Lookbook Batch ${b + 1}/${manBatches.length} (${manBatches[b].length} files)...`,
+        })
+      );
+      yield call(uploadBatchApi, {
+        userSessionGUID,
+        targetType: 'man',
+        batchIndex: currentBatchIndex,
+        totalBatches: totalBatchCount,
+        files: manBatches[b],
+      });
+    }
+
+    // 3. Upload Women Lookbook Batches
+    for (let b = 0; b < womanBatches.length; b++) {
+      currentBatchIndex++;
+      const batchPercent = Math.max(1, Math.round((currentBatchIndex / totalBatchCount) * 15));
+      yield put(
+        updateProgressData({
+          percent: batchPercent,
+          stepId: 0,
+          stepName: `Uploading Batch ${currentBatchIndex}/${totalBatchCount}`,
+          details: `Uploading Women Lookbook Batch ${b + 1}/${womanBatches.length} (${womanBatches[b].length} files)...`,
+        })
+      );
+      yield call(uploadBatchApi, {
+        userSessionGUID,
+        targetType: 'woman',
+        batchIndex: currentBatchIndex,
+        totalBatches: totalBatchCount,
+        files: womanBatches[b],
+      });
+    }
+
+    // 4. All Batches Uploaded -> Trigger Asynchronous ML Pipeline
     yield put(
       updateProgressData({
-        percent: 5,
+        percent: 16,
         stepId: 1,
-        stepName: 'Connecting to Backend',
-        details: `Submitting ${customDatasetFiles.length} catalog items, ${customCountryImagesMan.length} men photos, and ${customCountryImagesWoman.length} women photos...`,
+        stepName: 'Batches Finished - Starting ML Engine',
+        details: `All batches uploaded. Initiating CNN classification and DSS evaluation for ${customCountryName}...`,
       })
     );
-
-    const datasetFiles = getFiles(customDatasetFiles.map((item: any) => item.id));
-    const manFiles = getFiles(customCountryImagesMan.map((item: any) => item.id));
-    const womanFiles = getFiles(customCountryImagesWoman.map((item: any) => item.id));
 
     yield call(executeMLApi, {
       userSessionGUID,
       customCountryName,
-      customDatasetFiles: datasetFiles,
-      customCountryImagesMan: manFiles,
-      customCountryImagesWoman: womanFiles,
     });
 
     // Polling loop with Supabase & Backend fallback
@@ -61,7 +141,7 @@ function* handleExecuteML(): any {
     const maxAttempts = 300; // 5 minutes timeout
 
     while (!isCompleted && attempts < maxAttempts) {
-      yield delay(1000);
+      yield delay(1500);
       attempts++;
 
       try {
@@ -70,39 +150,39 @@ function* handleExecuteML(): any {
           yield put(updateProgressData(progressRes.progress));
           if (progressRes.progress.percent >= 100) {
             isCompleted = true;
-            break;
-          }
-          if (progressRes.progress.stepId === -1) {
-            throw new Error(progressRes.progress.details || 'Execution failed on server');
           }
         }
-      } catch (err: any) {
-        // Continue polling if network glitch
-        if (err.message && err.message.includes('failed on server')) {
-          throw err;
+
+        const resultsRes = yield call(fetchResultsApi, userSessionGUID);
+        if (resultsRes && resultsRes.status === 'completed' && resultsRes.results) {
+          yield put(setResultData(resultsRes.results));
+          yield put(executionSuccess());
+          // Auto download result CSVs
+          yield call(autoDownloadCsvFiles, userSessionGUID);
+          isCompleted = true;
+          break;
         }
+      } catch (pollErr) {
+        console.warn('Polling status warning:', pollErr);
       }
     }
 
-    // Fetch Final Results JSON
-    const resultsRes = yield call(fetchResultsApi, userSessionGUID);
-    if (resultsRes && resultsRes.results) {
-      yield put(setResultData(resultsRes.results));
+    if (!isCompleted) {
+      throw new Error('Execution timed out after 5 minutes.');
     }
-
-    // Auto-download result_good_for_new_marketing.csv and result_not_good_for_new_marketing.csv without prompts
-    yield call(autoDownloadCsvFiles, userSessionGUID);
-
-    yield put(executionSuccess());
   } catch (error: any) {
-    yield put(executionFailure(error.message || 'Execution pipeline encountered an unexpected error.'));
+    yield put(executionFailure(error.message || 'ML Execution pipeline failed.'));
+    yield put(
+      updateProgressData({
+        percent: 0,
+        stepId: -1,
+        stepName: 'Execution Error',
+        details: error.message || 'Error occurred during processing.',
+      })
+    );
   }
 }
 
 export function* watchMLExecution() {
-  yield takeLatest(EXECUTE_ML_REQUEST, handleExecuteML);
-}
-
-export function* rootSaga() {
   yield takeLatest(EXECUTE_ML_REQUEST, handleExecuteML);
 }

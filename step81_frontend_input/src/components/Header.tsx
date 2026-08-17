@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { regenerateGUID } from '../store/slices/sessionSlice';
-import { Sparkles, RefreshCw, Copy, Check, Terminal, Palette, Zap } from 'lucide-react';
+import { Sparkles, Copy, Check, Lock, Zap } from 'lucide-react';
 
 export const Header: React.FC = () => {
-  const dispatch = useDispatch();
   const userSessionGUID = useSelector((state: RootState) => state.session.userSessionGUID);
   const [copied, setCopied] = useState(false);
 
@@ -75,7 +73,7 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Persistent userSessionGUID Badge */}
+      {/* Persistent Immutable userSessionGUID Badge (Read-Only) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
         <div style={{
           background: '#fffbeb',
@@ -87,10 +85,12 @@ export const Header: React.FC = () => {
           gap: '8px',
           boxShadow: '0 2px 8px rgba(245, 158, 11, 0.1)'
         }}>
-          <Terminal size={14} color="#d97706" />
+          <span title="Immutable userSessionGUID (constant)">
+            <Lock size={13} color="#d97706" />
+          </span>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span style={{ fontSize: '9px', color: '#b45309', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              userSessionGUID
+              userSessionGUID (Constant)
             </span>
             <code style={{ fontSize: '12px', color: '#92400e', fontFamily: 'JetBrains Mono, monospace', fontWeight: 700 }}>
               {userSessionGUID}
@@ -98,41 +98,34 @@ export const Header: React.FC = () => {
           </div>
           <button
             onClick={handleCopy}
-            title="Copy userSessionGUID"
+            title="Copy constant userSessionGUID"
             style={{
               background: '#ffffff',
               border: '1px solid #fcd34d',
               color: '#b45309',
-              padding: '6px',
+              padding: '6px 8px',
               borderRadius: '8px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
+              gap: '4px',
               boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-              transition: 'all 0.15s ease'
+              transition: 'all 0.15s ease',
+              fontSize: '11px',
+              fontWeight: 700
             }}
           >
-            {copied ? <Check size={13} color="#16a34a" /> : <Copy size={13} />}
-          </button>
-          <button
-            onClick={() => dispatch(regenerateGUID())}
-            title="Regenerate userSessionGUID"
-            style={{
-              background: '#ffffff',
-              border: '1px solid #fcd34d',
-              color: '#b45309',
-              padding: '6px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-              transition: 'all 0.15s ease'
-            }}
-          >
-            <RefreshCw size={13} />
+            {copied ? (
+              <>
+                <Check size={12} color="#16a34a" />
+                <span style={{ color: '#16a34a' }}>Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy size={12} />
+                <span>Copy</span>
+              </>
+            )}
           </button>
         </div>
       </div>

@@ -1,7 +1,7 @@
 /**
  * Session Identity Utilities (RUN5)
  * Generates userSessionGUID: UUID() on first app run and persists it in localStorage.
- * Always constant and camelCase.
+ * Always constant, immutable, and camelCase. User cannot change this GUID.
  */
 
 const STORAGE_KEY = 'userSessionGUID';
@@ -24,10 +24,4 @@ export function getUserSessionGUID(): string {
     localStorage.setItem(STORAGE_KEY, guid);
   }
   return guid;
-}
-
-export function resetUserSessionGUID(): string {
-  const newGuid = generateUUID();
-  localStorage.setItem(STORAGE_KEY, newGuid);
-  return newGuid;
 }

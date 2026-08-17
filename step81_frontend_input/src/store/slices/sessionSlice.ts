@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getUserSessionGUID, resetUserSessionGUID } from '../../utils/session';
+import { getUserSessionGUID } from '../../utils/session';
 import { DEFAULT_FILE_SIZE_LIMIT_BYTES, DEFAULT_NUMBER_OF_FILES } from '../../constants/config';
 
 export interface FileItem {
@@ -11,7 +11,7 @@ export interface FileItem {
 }
 
 export interface SessionState {
-  userSessionGUID: string;
+  readonly userSessionGUID: string;
   customCountryName: string;
   customDatasetFiles: FileItem[];
   customCountryImages: FileItem[];
@@ -34,12 +34,6 @@ export const sessionSlice = createSlice({
   name: 'session',
   initialState,
   reducers: {
-    setUserSessionGUID: (state, action: PayloadAction<string>) => {
-      state.userSessionGUID = action.payload;
-    },
-    regenerateGUID: (state) => {
-      state.userSessionGUID = resetUserSessionGUID();
-    },
     setCustomCountryName: (state, action: PayloadAction<string>) => {
       state.customCountryName = action.payload;
     },
@@ -113,8 +107,6 @@ export const sessionSlice = createSlice({
 });
 
 export const {
-  setUserSessionGUID,
-  regenerateGUID,
   setCustomCountryName,
   addDatasetFiles,
   clearDatasetFiles,

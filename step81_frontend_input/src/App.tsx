@@ -11,11 +11,12 @@ import {
   clearCountryImagesWoman,
   setFileErrors,
   clearFileErrors,
+  executionSuccess,
   FileItem,
 } from './store/slices/sessionSlice';
 import { DEFAULT_FILE_SIZE_LIMIT_BYTES, DEFAULT_NUMBER_OF_FILES } from './constants/config';
 import { registerFile } from './utils/fileRegistry';
-import { updateProgressData } from './store/slices/progressSlice';
+import { updateProgressData, setProgressActive } from './store/slices/progressSlice';
 import { setResultData } from './store/slices/resultSlice';
 import { executeMLAction } from './store/sagas/mlExecutionSaga';
 import { subscribeToProgress, subscribeToResults } from './services/supabaseClient';
@@ -25,7 +26,7 @@ import { CountrySelector } from './components/CountrySelector';
 import { ProgressTracker } from './components/ProgressTracker';
 import { CapstoneReportComponent } from './components/CapstoneReportComponent';
 import { autoDownloadCsvFiles } from './utils/fileDownloader';
-import { Play, AlertCircle, Sparkles, ShieldCheck, Zap, Rocket } from 'lucide-react';
+import { Play, AlertCircle, Sparkles, ShieldCheck, Zap, Rocket, RotateCcw } from 'lucide-react';
 
 export const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -50,12 +51,16 @@ export const App: React.FC = () => {
     const unsubscribeProgress = subscribeToProgress(userSessionGUID, (p) => {
       dispatch(updateProgressData(p));
       if (p.percent >= 100) {
+        dispatch(executionSuccess());
+        dispatch(setProgressActive(false));
         autoDownloadCsvFiles(userSessionGUID);
       }
     });
 
     const unsubscribeResults = subscribeToResults(userSessionGUID, (r) => {
       dispatch(setResultData(r));
+      dispatch(executionSuccess());
+      dispatch(setProgressActive(false));
       autoDownloadCsvFiles(userSessionGUID);
     });
 
@@ -65,12 +70,18 @@ export const App: React.FC = () => {
     };
   }, [userSessionGUID, isSubmitting, dispatch]);
 
-  // Also monitor progress state changes
+  // Monitor progress state: when 100%, unlock submission state immediately to re-enable button
   useEffect(() => {
-    if (progress.percent >= 100 && userSessionGUID) {
-      autoDownloadCsvFiles(userSessionGUID);
+    if (progress.percent >= 100) {
+      if (isSubmitting) {
+        dispatch(executionSuccess());
+        dispatch(setProgressActive(false));
+      }
+      if (userSessionGUID) {
+        autoDownloadCsvFiles(userSessionGUID);
+      }
     }
-  }, [progress.percent, userSessionGUID]);
+  }, [progress.percent, isSubmitting, userSessionGUID, dispatch]);
 
   const handleAddDatasetFiles = (files: File[]) => {
     const newErrors: string[] = [];
@@ -169,7 +180,8 @@ export const App: React.FC = () => {
   const totalFilesAttached = customDatasetFiles.length + customCountryImagesMan.length + customCountryImagesWoman.length;
   const hasFilesSelected = totalFilesAttached > 0;
   const isExecutionFinished = hasResults || progress.percent >= 100;
-  const isButtonEnabled = !isSubmitting && hasFilesSelected;
+  const isExecuting = isSubmitting && progress.percent < 100;
+  const isButtonEnabled = !isExecuting && hasFilesSelected;
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafaf9' }}>
@@ -418,7 +430,7 @@ export const App: React.FC = () => {
                   width: '100%'
                 }}
               >
-                {isSubmitting ? (
+                {isExecuting ? (
                   <>
                     <div style={{
                       width: '18px',

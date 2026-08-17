@@ -154,7 +154,7 @@ export const CapstoneReportComponent: React.FC = () => {
         gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
         gap: '16px'
       }}>
-        {/* Card 1: Total SKUs (Blue) */}
+        {/* Card 1: Total Catalog Candidates from files (Blue) */}
         <div style={{
           background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
           border: '2px solid #bae6fd',
@@ -163,14 +163,14 @@ export const CapstoneReportComponent: React.FC = () => {
           boxShadow: '0 4px 14px rgba(14, 165, 233, 0.08)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#0284c7', fontSize: '11.5px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            <span>Catalog Items</span>
+            <span>Total Catalog Candidates from files:</span>
             <Layers size={18} color="#0284c7" />
           </div>
           <div style={{ fontSize: '32px', fontWeight: 900, color: '#0369a1', letterSpacing: '-0.03em', marginTop: '4px' }}>
             {kpis.totalItems}
           </div>
           <div style={{ fontSize: '12px', color: '#0284c7', marginTop: '2px', fontWeight: 600 }}>
-            Candidate products evaluated
+            Total Catalog Candidates from files: <strong>{kpis.totalItems}</strong>
           </div>
         </div>
 
@@ -256,7 +256,7 @@ export const CapstoneReportComponent: React.FC = () => {
           }}
         >
           <Layers size={14} />
-          Candidate Products ({filteredProducts.length})
+          Total Catalog Candidates from files ({filteredProducts.length})
         </button>
 
         <button

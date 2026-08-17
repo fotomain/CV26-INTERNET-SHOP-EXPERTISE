@@ -20,27 +20,32 @@ export const ProgressTracker: React.FC = () => {
     return null;
   }
 
-  const isCompleted = progress.percent >= 100 || hasResults;
+  const [maxMissionsStep, setMaxMissionsStep] = React.useState<number>(0);
+
+  // Reset max step when a completely new execution starts
+  React.useEffect(() => {
+    if (!isActive && !isSubmitting && progress.percent === 0 && !hasResults) {
+      setMaxMissionsStep(0);
+    }
+  }, [isActive, isSubmitting, progress.percent, hasResults]);
+
+  // Strictly non-decreasing step tracker (never decreases / no back values)
+  React.useEffect(() => {
+    if (progress.stepId > 0) {
+      setMaxMissionsStep((prev) => Math.max(prev, progress.stepId));
+    }
+    if (progress.percent >= 100 || hasResults) {
+      setMaxMissionsStep(5);
+    }
+  }, [progress.stepId, progress.percent, hasResults]);
+
+  const isCompleted = progress.percent >= 100 || hasResults || maxMissionsStep >= 5;
   const isError = progress.stepId === -1;
 
-  // Calculate Total % of All 5 Missions Completed
-  let completedMissionsCount = 0;
-  let totalMissionsPercent = 0;
-
-  if (isCompleted) {
-    completedMissionsCount = 5;
-    totalMissionsPercent = 100;
-  } else if (isError) {
-    completedMissionsCount = Math.max(0, progress.stepId - 1);
-    totalMissionsPercent = Math.round((completedMissionsCount / 5) * 100);
-  } else {
-    // Current step in progress (stepId 1..5)
-    const currentStep = Math.max(1, Math.min(5, progress.stepId || 1));
-    completedMissionsCount = Math.max(0, currentStep - 1);
-    // Add fraction of current mission progress
-    const subProgress = Math.min(0.95, Math.max(0.1, (progress.percent % 20) / 20));
-    totalMissionsPercent = Math.min(99, Math.round(((completedMissionsCount + subProgress) / 5) * 100));
-  }
+  // Simple, direct function of step number: step * 20% (0%, 20%, 40%, 60%, 80%, 100%)
+  const effectiveStep = isCompleted ? 5 : isError ? Math.max(0, maxMissionsStep) : Math.max(0, Math.min(5, maxMissionsStep));
+  const completedMissionsCount = effectiveStep;
+  const totalMissionsPercent = Math.min(100, Math.max(0, effectiveStep * 20));
 
   return (
     <div style={{
@@ -152,9 +157,9 @@ export const ProgressTracker: React.FC = () => {
           marginTop: '4px'
         }}>
           {MISSIONS.map((m) => {
-            const isMissionDone = isCompleted || (progress.stepId > m.id);
-            const isMissionActive = !isCompleted && (progress.stepId === m.id);
-            const isMissionPending = !isCompleted && (progress.stepId < m.id);
+            const isMissionDone = isCompleted || (effectiveStep >= m.id);
+            const isMissionActive = !isCompleted && (effectiveStep === m.id - 1 && progress.stepId === m.id);
+            const isMissionPending = !isCompleted && !isMissionDone && !isMissionActive;
 
             return (
               <div

@@ -2008,16 +2008,16 @@ def build_html_report():
       new Chart(elScale, {{
         type: 'bar',
         data: {{
-          labels: ['10,000 products\n(minutes)', '1,000,000 products\n(hours)'],
+          labels: ['10,000 Products (minutes)', '1,000,000 Products (hours)'],
           datasets: [
             {{
-              label: '🐢 One CPU core (slow)',
+              label: 'One CPU core (slow)',
               data: [20.5, 34.2],
               backgroundColor: '#f43f5e',
               borderRadius: 6
             }},
             {{
-              label: '🚀 8 CPU cores (fast)',
+              label: '8 CPU cores (fast)',
               data: [3.2, 5.25],
               backgroundColor: '#10b981',
               borderRadius: 6

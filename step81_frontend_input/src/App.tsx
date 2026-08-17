@@ -169,7 +169,7 @@ export const App: React.FC = () => {
   const totalFilesAttached = customDatasetFiles.length + customCountryImagesMan.length + customCountryImagesWoman.length;
   const hasFilesSelected = totalFilesAttached > 0;
   const isExecutionFinished = hasResults || progress.percent >= 100;
-  const isButtonEnabled = !isSubmitting && !isExecutionFinished && hasFilesSelected;
+  const isButtonEnabled = !isSubmitting && hasFilesSelected;
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafaf9' }}>
@@ -430,10 +430,10 @@ export const App: React.FC = () => {
                     }} />
                     Processing Batches &amp; ML ({progress.percent}%)...
                   </>
-                ) : isExecutionFinished ? (
+                ) : isExecutionFinished && isButtonEnabled ? (
                   <>
-                    <ShieldCheck size={18} color="#16a34a" />
-                    Batches Finished &amp; Pipeline Completed
+                    <Play size={18} fill="#ffffff" />
+                    Re-run ML Execution ({totalFilesAttached} {totalFilesAttached === 1 ? 'file' : 'files'} attached)
                   </>
                 ) : isButtonEnabled ? (
                   <>
@@ -448,14 +448,14 @@ export const App: React.FC = () => {
                 )}
               </button>
 
-              {!hasFilesSelected && !isExecutionFinished && (
+              {!hasFilesSelected && (
                 <span style={{ fontSize: '11.5px', color: '#dc2626', fontWeight: 600, textAlign: 'center' }}>
                   * Attach candidate catalog and/or lookbook files to enable ExecuteMLButton.
                 </span>
               )}
               {isExecutionFinished && (
                 <span style={{ fontSize: '11.5px', color: '#16a34a', fontWeight: 700, textAlign: 'center' }}>
-                  ✓ All batch processing completed. Results and CSV reports generated.
+                  ✓ Pipeline completed. Click button above to re-run execution at any time.
                 </span>
               )}
             </div>

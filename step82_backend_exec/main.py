@@ -148,6 +148,22 @@ def download_session_file(userSessionGUID: str, filename: str):
         headers=cors_headers
     )
 
+def clear_subfolder_contents(folder_path: str):
+    """
+    Clears all files and directories inside folder_path.
+    """
+    if os.path.exists(folder_path):
+        import shutil
+        for item in os.listdir(folder_path):
+            item_path = os.path.join(folder_path, item)
+            try:
+                if os.path.isfile(item_path) or os.path.islink(item_path):
+                    os.unlink(item_path)
+                elif os.path.isdir(item_path):
+                    shutil.rmtree(item_path)
+            except Exception as e:
+                logger.warning(f"Failed to delete {item_path}: {e}")
+
 @app.post("/api/upload-batch")
 async def upload_batch(
     userSessionGUID: str = Form(...),
@@ -171,6 +187,12 @@ async def upload_batch(
         target_dir = os.path.join(session_dir, "custom_dataset_start")
 
     os.makedirs(target_dir, exist_ok=True)
+
+    # Clear target subfolder before starting Batch 1 of a new upload
+    if batchIndex == 1:
+        clear_subfolder_contents(target_dir)
+        logger.info(f"Cleared subfolder '{target_dir}' for session '{userSessionGUID}' before Batch 1.")
+
     saved_files = []
 
     for uf in files:
@@ -239,6 +261,14 @@ async def execute_ml(
     os.makedirs(country_images_dir, exist_ok=True)
     os.makedirs(country_man_dir, exist_ok=True)
     os.makedirs(country_woman_dir, exist_ok=True)
+
+    # Clear subfolders before saving direct execute-ml multipart files if provided
+    if custom_dataset_start:
+        clear_subfolder_contents(dataset_start_dir)
+    if custom_country_images_man:
+        clear_subfolder_contents(country_man_dir)
+    if custom_country_images_woman:
+        clear_subfolder_contents(country_woman_dir)
 
     # Save country name metadata
     country_meta_path = os.path.join(session_dir, "custom_country_name.json")

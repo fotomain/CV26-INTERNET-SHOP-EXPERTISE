@@ -146,6 +146,15 @@ def run_custom_ml_pipeline(
     upsert_user_session(user_session_guid, start_time=start_time_str, status="running")
     update_progress(user_session_guid, percent=5, step_id=1, step_name="Initializing Pipeline", details="Validating candidate catalog & gender lookbook assets")
 
+    # Clear prior result files in session_dir before running new ML steps
+    for old_file in ['result_good_for_new_marketing.csv', 'result_not_good_for_new_marketing.csv', 'resultDataJSON.json', 'result5.csv']:
+        old_path = os.path.join(session_dir, old_file)
+        if os.path.exists(old_path):
+            try:
+                os.remove(old_path)
+            except Exception as ce:
+                logger.warning(f"Could not remove prior session file {old_path}: {ce}")
+
     step_timings = {}
 
     try:

@@ -66,10 +66,11 @@ echo "==========================================================================
 echo ">>> [2/5] Creating New Branch: ok_YY-MM-DD-HH-MM..."
 echo "================================================================================"
 
-BRANCH_NAME="ok_$(date +%y-%m-%d-%H-%M)"
+BRANCH_NAME="ok_$(date +'%y-%m-%d-%H-%M')"
 echo "New branch name: $BRANCH_NAME"
 
-git checkout -b "$BRANCH_NAME"
+# Create and checkout new branch
+git checkout -B "$BRANCH_NAME"
 
 echo ""
 echo "================================================================================"

@@ -171,56 +171,56 @@ async def execute_ml(
         for uf in custom_dataset_start:
             if not uf.filename:
                 continue
-            content = await uf.read()
             try:
+                content = await uf.read()
                 out_path = validate_and_save_image(content, uf.filename, dataset_start_dir)
                 saved_dataset_files.append(out_path)
-            except ImageValidationError as ve:
-                log_error(userSessionGUID, str(ve), error_type="ValidationError", details={"filename": uf.filename})
-                raise HTTPException(status_code=422, detail=str(ve))
+            except Exception as ve:
+                logger.warning(f"Warning ingesting catalog file '{uf.filename}': {ve}")
+                log_error(userSessionGUID, str(ve), error_type="Warning", details={"filename": uf.filename})
 
     # Process and sanitize Men lookbook photos
     if custom_country_images_man:
         for uf in custom_country_images_man:
             if not uf.filename:
                 continue
-            content = await uf.read()
             try:
+                content = await uf.read()
                 out_path = validate_and_save_image(content, uf.filename, country_man_dir)
                 saved_man_files.append(out_path)
-            except ImageValidationError as ve:
-                log_error(userSessionGUID, str(ve), error_type="ValidationError", details={"filename": uf.filename})
-                raise HTTPException(status_code=422, detail=str(ve))
+            except Exception as ve:
+                logger.warning(f"Warning ingesting man lookbook file '{uf.filename}': {ve}")
+                log_error(userSessionGUID, str(ve), error_type="Warning", details={"filename": uf.filename})
 
     # Process and sanitize Women lookbook photos
     if custom_country_images_woman:
         for uf in custom_country_images_woman:
             if not uf.filename:
                 continue
-            content = await uf.read()
             try:
+                content = await uf.read()
                 out_path = validate_and_save_image(content, uf.filename, country_woman_dir)
                 saved_woman_files.append(out_path)
-            except ImageValidationError as ve:
-                log_error(userSessionGUID, str(ve), error_type="ValidationError", details={"filename": uf.filename})
-                raise HTTPException(status_code=422, detail=str(ve))
+            except Exception as ve:
+                logger.warning(f"Warning ingesting woman lookbook file '{uf.filename}': {ve}")
+                log_error(userSessionGUID, str(ve), error_type="Warning", details={"filename": uf.filename})
 
     # Backward compatibility for legacy custom_country_images
     if custom_country_images and not (saved_man_files or saved_woman_files):
         for idx, uf in enumerate(custom_country_images):
             if not uf.filename:
                 continue
-            content = await uf.read()
             try:
+                content = await uf.read()
                 target_sub = country_man_dir if idx % 2 == 0 else country_woman_dir
                 out_path = validate_and_save_image(content, uf.filename, target_sub)
                 if idx % 2 == 0:
                     saved_man_files.append(out_path)
                 else:
                     saved_woman_files.append(out_path)
-            except ImageValidationError as ve:
-                log_error(userSessionGUID, str(ve), error_type="ValidationError", details={"filename": uf.filename})
-                raise HTTPException(status_code=422, detail=str(ve))
+            except Exception as ve:
+                logger.warning(f"Warning ingesting lookbook file '{uf.filename}': {ve}")
+                log_error(userSessionGUID, str(ve), error_type="Warning", details={"filename": uf.filename})
 
     total_country_files = len(saved_man_files) + len(saved_woman_files)
     logger.info(f"Saved {len(saved_dataset_files)} candidate items, {len(saved_man_files)} man images, and {len(saved_woman_files)} woman images for session {userSessionGUID}")

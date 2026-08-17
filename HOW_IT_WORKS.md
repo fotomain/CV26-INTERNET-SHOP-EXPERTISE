@@ -203,7 +203,36 @@ To avoid oversimplifying market taste into a single flat color list, the system 
 
 ---
 
+### Step 81 & 82: Full-Stack ML Web Application & Real-time Execution Engine (RUN5)
+
+#### 1. Architecture Overview
+- **`step81_frontend_input/`**: React 18+ TypeScript application built with Vite, Tamagui design system, Redux Toolkit, and Redux-Saga.
+  - Persistent `userSessionGUID: UUID()` generated on first launch and stored in `localStorage`.
+  - Drag-and-drop file upload zones with size (`DEFAULT_FILE_SIZE_LIMIT = 1MB`) and count (`DEFAULT_NUMBER_OF_FILES = 200`) constraints.
+  - Target country market selector.
+  - Real-time step progress visualizer listening to Supabase `cv26ShopProgressTable`.
+  - `CapstoneReportComponent` rendering executive KPIs, 3-palette target styles, and interactive filtered catalog table.
+- **`step82_backend_exec/`**: FastAPI backend service orchestrating multi-mission ML execution.
+  - Receives custom files into `custom_data/<userSessionGUID>/`.
+  - Preprocesses and sanitizes uploaded images.
+  - Asynchronously updates `cv26ShopProgressTable` via progress callbacks.
+  - Upserts session run duration to `cv26ShopUserSessionTable` and full results to `cv26ShopResultsTable`.
+  - Reports errors to `cv26ShopErrorsTable`.
+- **`supabase/create_tables_supabase.sql`**: Database DDL defining all 4 tables with public CRUD permissions for the `anon` key.
+
+---
+
 ## 🚀 Execution Scripts
+
+### Run Full-Stack Web Application (RUN5)
+- **Frontend (React + TypeScript + Tamagui)**:
+  - macOS / Linux: `./run_frontend_mac` (or `./run_frontend_mac.sh`)
+  - Windows: `run_frontend_win.bat` (or `run_frontend_win`)
+  - Opens at: `http://localhost:5173`
+- **Backend (FastAPI + Supabase Sync)**:
+  - macOS / Linux: `./run_backend_mac` (or `./run_backend_mac.sh`)
+  - Windows: `run_backend_win.bat` (or `run_backend_win`)
+  - API endpoint: `http://localhost:8000` (docs at `http://localhost:8000/docs`)
 
 ### Full Pipeline Run (All 5 Missions + Reports)
 - **macOS / Linux**:
@@ -256,4 +285,5 @@ To avoid oversimplifying market taste into a single flat color list, the system 
   ```
 - **Remote**: `https://github.com/fotomain/CV26-INTERNET-SHOP-EXPERTISE.git`
 - **Excludes**: `dataset_start/` (raw dataset files)
-- **Branch Format**: `ok_YY-MM-DD-HH-MM` (e.g. `ok_26-08-16-19-19`)
+- **Branch Format**: `ok_YY-MM-DD-HH-MM` (e.g. `ok_26-08-17-11-20`)
+

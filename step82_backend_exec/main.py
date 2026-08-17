@@ -10,7 +10,7 @@ import logging
 from typing import List, Optional
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 
 # Ensure root directory is on sys.path
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -102,27 +102,51 @@ def download_session_file(userSessionGUID: str, filename: str):
     Downloads generated CSV or JSON results for a userSessionGUID.
     Supports result_good_for_new_marketing.csv, result_not_good_for_new_marketing.csv, etc.
     """
-    # Sanitize filename
     safe_name = os.path.basename(filename)
-    session_file = os.path.join(CUSTOM_DATA_ROOT, userSessionGUID, safe_name)
+    session_dir = os.path.join(CUSTOM_DATA_ROOT, userSessionGUID)
+    os.makedirs(session_dir, exist_ok=True)
+    session_file = os.path.join(session_dir, safe_name)
 
-    if os.path.exists(session_file):
+    cors_headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Expose-Headers": "Content-Disposition, Content-Type",
+    }
+
+    if os.path.exists(session_file) and os.path.getsize(session_file) > 0:
         return FileResponse(
             path=session_file,
             filename=safe_name,
-            media_type="text/csv" if safe_name.endswith(".csv") else "application/json"
+            media_type="text/csv" if safe_name.endswith(".csv") else "application/json",
+            headers=cors_headers
         )
 
     # Fallback to step5_dss default file if applicable
     step5_fallback = os.path.join(BASE_DIR, 'step5_dss', safe_name)
-    if os.path.exists(step5_fallback):
+    if os.path.exists(step5_fallback) and os.path.getsize(step5_fallback) > 0:
         return FileResponse(
             path=step5_fallback,
             filename=safe_name,
-            media_type="text/csv" if safe_name.endswith(".csv") else "application/json"
+            media_type="text/csv" if safe_name.endswith(".csv") else "application/json",
+            headers=cors_headers
         )
 
-    raise HTTPException(status_code=404, detail=f"File '{safe_name}' not found for session '{userSessionGUID}'.")
+    # If CSV was requested but empty/not yet written, generate clean empty CSV response
+    if safe_name.endswith(".csv"):
+        with open(session_file, 'w', encoding='utf-8') as f:
+            f.write("item_id,name,category_name,ready_to_sale,product_is_good_for_new_marketing,market_compatibility_score,market_palette_match_distance\n")
+        return FileResponse(
+            path=session_file,
+            filename=safe_name,
+            media_type="text/csv",
+            headers=cors_headers
+        )
+
+    return JSONResponse(
+        status_code=404,
+        content={"detail": f"File '{safe_name}' not found for session '{userSessionGUID}'."},
+        headers=cors_headers
+    )
 
 @app.post("/api/execute-ml")
 async def execute_ml(

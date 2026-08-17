@@ -53,7 +53,7 @@ flowchart TD
         I1 --> J1["YOLOv8 + OpenCV Multi-Stage Exclusion Engine"]
         J1 --> K1["3-Palette CIELAB Clustering (NUMBER_PALLETS_OF_NEWCOUNTRY_REQUIRED=3)"]
         K1 --> L1["step4_learn/market_model.pkl & market_profile.json"]
-        K1 --> L2["step4_dss/result5.csv"]
+        K1 --> L2["step4_learn/result4_ml_log.json (AI Expert ML Log)"]
     end
 
     subgraph M5 ["Mission 5: Multi-Palette DSS Marketing Matchmaker (step5_dss)"]
@@ -172,7 +172,7 @@ To avoid oversimplifying market taste into a single flat color list, the system 
 #### 3. Output
 - **`step4_learn/market_model.pkl`**: Serialized multi-palette ML model.
 - **`step4_learn/market_profile.json`**: Structured reference color profiles across all 3 palettes.
-- **`step4_dss/result5.csv`**: Candidate products evaluated against the target market.
+- **`step4_learn/result4_ml_log.json`**: Machine learning model training statistics, evaluation distributions, and performance parameters for AI experts.
 
 ---
 

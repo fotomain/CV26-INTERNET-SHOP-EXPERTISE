@@ -3,9 +3,9 @@
 **Target Market**: United States (USA)  
 **Number of Target Palettes Used**: `NUMBER_PALLETS_OF_NEWCOUNTRY_REQUIRED = 3`  
 **Catalog Sample Size**: 200 items  
-**Products Recommended for Marketing (`product_is_good_for_new_marketing = True`)**: **79 / 200 (39.5%)**  
-**Average Market Compatibility Score**: `0.543`  
-**Average Color Distance to Target Palettes**: `13.6 ΔE`  
+**Products Recommended for Marketing (`product_is_good_for_new_marketing = True`)**: **60 / 200 (30.0%)**  
+**Average Market Compatibility Score**: `0.512`  
+**Average Color Distance to Target Palettes**: `14.7 ΔE`  
 
 ---
 
@@ -13,15 +13,15 @@
 
 The Decision Support System evaluated candidate catalog items against United States's image-derived fashion palettes across 3 distinct aesthetic clusters:
 
-- **Palette 1 (Core & Classic Neutrals)**: **121 SKUs (60.5%)** matched as best stylistic fit.
-- **Palette 2 (Contemporary & Earthy Street)**: **57 SKUs (28.5%)** matched as best stylistic fit.
-- **Palette 3 (Vibrant Statement & Accents)**: **22 SKUs (11.0%)** matched as best stylistic fit.
+- **Palette 1 (Core & Classic Neutrals)**: **106 SKUs (53.0%)** matched as best stylistic fit.
+- **Palette 2 (Contemporary & Earthy Street)**: **71 SKUs (35.5%)** matched as best stylistic fit.
+- **Palette 3 (Vibrant Statement & Accents)**: **23 SKUs (11.5%)** matched as best stylistic fit.
 
 | Marketing Priority Tier | Product Count | Share of Catalog (%) | Recommendation |
 | :--- | :---: | :---: | :--- |
-| **Tier 3: Non-Priority / Neutral** | 121 | 60.5% | Organic / Secondary Listing Only |
-| **Tier 2: Standard Marketing Candidate** | 55 | 27.5% | Standard Catalog Inclusion |
-| **Tier 1: Prime Marketing Candidate** | 24 | 12.0% | Immediate Hero Product Ads & Paid Acquisition |
+| **Tier 3: Non-Priority / Neutral** | 140 | 70.0% | Organic / Secondary Listing Only |
+| **Tier 2: Standard Marketing Candidate** | 44 | 22.0% | Standard Catalog Inclusion |
+| **Tier 1: Prime Marketing Candidate** | 16 | 8.0% | Immediate Hero Product Ads & Paid Acquisition |
 
 ---
 
@@ -29,9 +29,9 @@ The Decision Support System evaluated candidate catalog items against United Sta
 
 | Target Segment | Total Items | Recommended for Marketing | Suitability (%) | Mean Compatibility Score |
 | :--- | :---: | :---: | :---: | :---: |
-| **Men** | 21 | 12 | **57.1%** | 0.59 |
-| **Unisex** | 70 | 32 | **45.7%** | 0.551 |
-| **Women** | 109 | 35 | **32.1%** | 0.528 |
+| **Men** | 21 | 11 | **52.4%** | 0.579 |
+| **Unisex** | 70 | 21 | **30.0%** | 0.512 |
+| **Women** | 109 | 28 | **25.7%** | 0.499 |
 
 ---
 
@@ -39,16 +39,16 @@ The Decision Support System evaluated candidate catalog items against United Sta
 
 | Fashion Category (`product_class_name`) | Total Items | Recommended for Marketing | Suitability (%) | Mean Distance (ΔE) | Mean Score |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Dress** | 52 | 17 | **32.7%** | 13.8 ΔE | 0.542 |
-| **Bag** | 43 | 11 | **25.6%** | 14.6 ΔE | 0.51 |
-| **T-shirt/top** | 27 | 9 | **33.3%** | 15.8 ΔE | 0.507 |
-| **Trouser** | 25 | 16 | **64.0%** | 10.5 ΔE | 0.62 |
-| **Shirt** | 24 | 10 | **41.7%** | 12.3 ΔE | 0.554 |
-| **Sandal** | 9 | 3 | **33.3%** | 13.1 ΔE | 0.537 |
-| **Coat** | 8 | 6 | **75.0%** | 14.6 ΔE | 0.556 |
-| **Ankle boot** | 6 | 4 | **66.7%** | 11.3 ΔE | 0.58 |
-| **Sneaker** | 4 | 1 | **25.0%** | 16.5 ΔE | 0.456 |
-| **Pullover** | 2 | 2 | **100.0%** | 7.8 ΔE | 0.675 |
+| **Dress** | 52 | 15 | **28.8%** | 15.1 ΔE | 0.508 |
+| **Bag** | 43 | 11 | **25.6%** | 15.4 ΔE | 0.495 |
+| **T-shirt/top** | 27 | 7 | **25.9%** | 16.5 ΔE | 0.476 |
+| **Trouser** | 25 | 12 | **48.0%** | 11.6 ΔE | 0.59 |
+| **Shirt** | 24 | 5 | **20.8%** | 13.4 ΔE | 0.525 |
+| **Sandal** | 9 | 2 | **22.2%** | 15.4 ΔE | 0.48 |
+| **Coat** | 8 | 5 | **62.5%** | 15.4 ΔE | 0.526 |
+| **Ankle boot** | 6 | 1 | **16.7%** | 14.0 ΔE | 0.506 |
+| **Sneaker** | 4 | 0 | **0.0%** | 17.9 ΔE | 0.415 |
+| **Pullover** | 2 | 2 | **100.0%** | 8.7 ΔE | 0.648 |
 
 ---
 
@@ -56,14 +56,14 @@ The Decision Support System evaluated candidate catalog items against United Sta
 
 | Item ID | Product Name | Category | Matched Palette | Compatibility Score | Readiness |
 | :---: | :--- | :--- | :--- | :---: | :---: |
-| `12` | **Těhotenský top s potiskem Mamalicio** | T-shirt/top | Palette 1 (Core & Classic Neutrals) | `0.851` | Ready |
-| `98` | **Tanga Gabidar 121** | Trouser | Palette 1 (Core & Classic Neutrals) | `0.809` | Unready |
-| `192` | **Andalea MC 9008 Pánské boxerky L XL** | Trouser | Palette 1 (Core & Classic Neutrals) | `0.800` | Ready |
-| `32` | **Béžové šaty Katrus K057** | Dress | Palette 1 (Core & Classic Neutrals) | `0.794` | Ready |
-| `111` | **Andalea MC 9005 Pánské boxerky L XL** | Trouser | Palette 1 (Core & Classic Neutrals) | `0.785` | Ready |
-| `191` | **Andalea MC 9007 Pánské boxerky S M ** | Trouser | Palette 1 (Core & Classic Neutrals) | `0.783` | Ready |
-| `96` | **Lola Krátké šaty RUPTURE TYPHON** | Dress | Palette 1 (Core & Classic Neutrals) | `0.783` | Ready |
-| `121` | **Naf Naf Krátké šaty LYMELL** | Dress | Palette 1 (Core & Classic Neutrals) | `0.774` | Ready |
+| `41` | **Dámské šaty Figl M202 béžové** | Dress | Palette 1 (Core & Classic Neutrals) | `0.830` | Ready |
+| `106` | **Společenské šaty s krajkou Katrus K** | Shirt | Palette 1 (Core & Classic Neutrals) | `0.829` | Unready |
+| `111` | **Andalea MC 9005 Pánské boxerky L XL** | Trouser | Palette 1 (Core & Classic Neutrals) | `0.809` | Ready |
+| `12` | **Těhotenský top s potiskem Mamalicio** | T-shirt/top | Palette 1 (Core & Classic Neutrals) | `0.802` | Ready |
+| `3` | **Casio Collection MTP-1303D-1AVEF** | Bag | Palette 1 (Core & Classic Neutrals) | `0.788` | Unready |
+| `193` | **Andalea MC 9009 Pánské boxerky L XL** | Trouser | Palette 1 (Core & Classic Neutrals) | `0.784` | Ready |
+| `192` | **Andalea MC 9008 Pánské boxerky L XL** | Trouser | Palette 1 (Core & Classic Neutrals) | `0.775` | Ready |
+| `191` | **Andalea MC 9007 Pánské boxerky S M ** | Trouser | Palette 1 (Core & Classic Neutrals) | `0.766` | Ready |
 
 ---
 

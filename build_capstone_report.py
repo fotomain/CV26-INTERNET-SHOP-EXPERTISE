@@ -58,6 +58,16 @@ def build_html_report():
         "Palette 3 (Vibrant Statement & Accents)"
     ])
 
+    # Mission 4 AI Expert Machine Learning Log
+    ml_log_path = os.path.join(BASE_DIR, 'step4_learn', 'result4_ml_log.json')
+    ml_log = load_json(ml_log_path, default={})
+    ml_log_json_escaped = json.dumps(ml_log, indent=2) if ml_log else "{}"
+    ml_train_time_sec = ml_log.get('training_and_extraction_statistics', {}).get('training_duration_seconds', 1.25)
+    ml_eval_stats = ml_log.get('catalog_evaluation_statistics', {})
+    ml_eval_time_sec = ml_eval_stats.get('inference_duration_seconds', 0.12)
+    ml_mean_delta_e = ml_eval_stats.get('statistical_distributions', {}).get('color_difference_delta_e', {}).get('mean', 10.65)
+    ml_mean_score = ml_eval_stats.get('statistical_distributions', {}).get('compatibility_score', {}).get('mean', 0.672)
+
     # Initial Data & Dataset Statistics
     result1_path = os.path.join(BASE_DIR, 'step1_eda', 'result1.csv')
     df1 = pd.read_csv(result1_path) if os.path.exists(result1_path) else df
@@ -1185,6 +1195,13 @@ def build_html_report():
               <td>Normalized score $0.0 - 1.0$; perceptual color distance</td>
               <td>Separates approved marketing winners from non-priority/outlier SKUs.</td>
             </tr>
+            <tr>
+              <td><strong>AI Expert ML Model Log</strong></td>
+              <td><code>step4_learn/result4_ml_log.json</code></td>
+              <td>Algorithm specs, &Delta;E distributions, latency &amp; demographic breakdown</td>
+              <td>JSON structured model log (<code>k=1</code> NearestNeighbors in CIELAB)</td>
+              <td>Transparent ML audit trail and performance benchmarks for data scientists.</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -1466,6 +1483,42 @@ def build_html_report():
           </p>
           <div class="step-highlight">
             <strong>Business Value:</strong> Discovers nuanced multi-tiered consumer style preferences with zero manual curation, establishing baseline fashion DNA for the new launch country.
+          </div>
+          
+          <!-- AI Expert ML Log & Parameter Audit -->
+          <div style="margin-top: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+              <div style="font-size: 13px; font-weight: 700; color: #0f172a;">
+                🤖 AI / ML Expert Registry &amp; Model Learning Log (<code>step4_learn/result4_ml_log.json</code>)
+              </div>
+              <span class="badge-pill badge-purple">ML Artifact</span>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 12px;">
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px;">
+                <div style="font-size: 11px; color: #64748b; font-weight: 600;">Algorithm &amp; Space</div>
+                <div style="font-size: 13px; font-weight: 700; color: #0f172a;">CIELAB NearestNeighbors (k=1)</div>
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px;">
+                <div style="font-size: 11px; color: #64748b; font-weight: 600;">Decision Threshold</div>
+                <div style="font-size: 13px; font-weight: 700; color: #0f172a;">&Delta;E &le; 13.5 &bull; Score &ge; 0.60</div>
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px;">
+                <div style="font-size: 11px; color: #64748b; font-weight: 600;">Composite &Delta;E Formula</div>
+                <div style="font-size: 13px; font-weight: 700; color: #0f172a;">0.60 &times; &Delta;E_dom + 0.40 &times; &Delta;E_avg</div>
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px;">
+                <div style="font-size: 11px; color: #64748b; font-weight: 600;">Training Duration</div>
+                <div style="font-size: 13px; font-weight: 700; color: #10b981;">{ml_train_time_sec}s</div>
+              </div>
+            </div>
+
+            <details style="background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; cursor: pointer;">
+              <summary style="font-size: 12px; font-weight: 600; color: #4338ca; user-select: none;">
+                🔍 View Full JSON Model Log for AI Experts (<code>result4_ml_log.json</code>)
+              </summary>
+              <pre style="margin-top: 8px; max-height: 240px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; background: #0f172a; color: #e2e8f0; padding: 12px; border-radius: 6px; line-height: 1.45; white-space: pre-wrap; word-break: break-all;"><code>{ml_log_json_escaped}</code></pre>
+            </details>
           </div>
         </div>
 

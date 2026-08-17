@@ -118,14 +118,10 @@ def execute_dss_engine(input_csv_path: str = None, output_csv_path: str = None) 
     print(f"✓ Saved Good Marketing subset to: {good_csv_path} ({len(df_good)} items)")
     print(f"✓ Saved Not Good Marketing subset to: {not_good_csv_path} ({len(df_not_good)} items)")
 
-    # Mirror outputs to step4_dss/result5.csv and step1_eda/result5.csv
-    step4_csv = os.path.join(BASE_DIR, 'step4_dss', 'result5.csv')
-    os.makedirs(os.path.dirname(step4_csv), exist_ok=True)
-    df_out.to_csv(step4_csv, index=False)
-
+    # Mirror output to step1_eda/result5.csv
     step1_csv = os.path.join(BASE_DIR, 'step1_eda', 'result5.csv')
     df_out.to_csv(step1_csv, index=False)
-    print(f"✓ Mirrored DSS results to: {step4_csv} and {step1_csv}")
+    print(f"✓ Mirrored DSS results to: {step1_csv}")
 
     elapsed = time.time() - start_time
     good_count = len(df_good)

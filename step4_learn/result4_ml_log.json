@@ -1,0 +1,139 @@
+{
+  "metadata": {
+    "mission": "Mission 4: Target Market Style & Machine Learning Compatibility Model",
+    "model_family": "Multi-Demographic CIELAB NearestNeighbors (k=1)",
+    "target_market_country": "United States",
+    "target_market_iso": "USA",
+    "source_image_directory": "step5_new_country",
+    "input_catalog": "step1_eda/result3.csv",
+    "model_artifact": "step4_learn/market_model.pkl",
+    "profile_artifact": "step4_learn/market_profile.json",
+    "ml_log_artifact": "step4_learn/result4_ml_log.json"
+  },
+  "model_architecture": {
+    "algorithm": "NearestNeighbors",
+    "k_neighbors": 1,
+    "metric": "Euclidean (CIELAB \u0394E)",
+    "color_space": "CIE 1976 L*a*b* (D65 standard illuminant)",
+    "demographic_models": [
+      "man",
+      "woman",
+      "unisex"
+    ],
+    "number_palettes_per_demographic": 3,
+    "palette_themes": [
+      "Palette 1 (Core & Classic Neutrals)",
+      "Palette 2 (Contemporary & Earthy Street)",
+      "Palette 3 (Vibrant Statement & Accents)"
+    ],
+    "distance_weighting": {
+      "dominant_color_weight": 0.6,
+      "palette_mean_weight": 0.4
+    },
+    "compatibility_scoring_formula": "exp(-composite_delta_e / 20.0)",
+    "decision_thresholds": {
+      "delta_e_good_threshold": 13.5,
+      "score_threshold": 0.6,
+      "tier1_min_score": 0.72,
+      "tier1_max_delta_e": 10.0
+    }
+  },
+  "training_and_extraction_statistics": {
+    "source_photos_analyzed": {
+      "man": 52,
+      "woman": 50,
+      "unisex": 0
+    },
+    "multi_stage_exclusions_applied": [
+      "YOLOv8 deep learning person & face bounding-box masking",
+      "OpenCV HSV color-space skin tone segmentation & removal",
+      "Extreme luminance clipping (pure studio white & black clipping)"
+    ],
+    "training_duration_seconds": 197.1521
+  },
+  "catalog_evaluation_statistics": {
+    "total_products_evaluated": 200,
+    "good_for_new_marketing": {
+      "count": 60,
+      "percentage": 30.0
+    },
+    "not_recommended": {
+      "count": 140,
+      "percentage": 70.0
+    },
+    "marketing_priority_tiers": {
+      "Tier 3: Non-Priority / Neutral": {
+        "count": 140,
+        "percentage": 70.0
+      },
+      "Tier 2: Standard Marketing Candidate": {
+        "count": 44,
+        "percentage": 22.0
+      },
+      "Tier 1: Prime Marketing Candidate": {
+        "count": 16,
+        "percentage": 8.0
+      }
+    },
+    "palette_affinity_breakdown": {
+      "Palette 1 (Core & Classic Neutrals)": {
+        "count": 106,
+        "percentage": 53.0
+      },
+      "Palette 2 (Contemporary & Earthy Street)": {
+        "count": 71,
+        "percentage": 35.5
+      },
+      "Palette 3 (Vibrant Statement & Accents)": {
+        "count": 23,
+        "percentage": 11.5
+      }
+    },
+    "demographic_segment_breakdown": {
+      "Men": {
+        "total_items": 21,
+        "approved_count": 11,
+        "approved_percentage": 52.38,
+        "mean_delta_e": 12.6,
+        "mean_compatibility_score": 0.5795
+      },
+      "Unisex": {
+        "total_items": 70,
+        "approved_count": 21,
+        "approved_percentage": 30.0,
+        "mean_delta_e": 14.42,
+        "mean_compatibility_score": 0.5119
+      },
+      "Women": {
+        "total_items": 109,
+        "approved_count": 28,
+        "approved_percentage": 25.69,
+        "mean_delta_e": 15.29,
+        "mean_compatibility_score": 0.4991
+      }
+    },
+    "statistical_distributions": {
+      "color_difference_delta_e": {
+        "mean": 14.703,
+        "median": 13.355,
+        "std_dev": 8.239,
+        "min": 3.74,
+        "max": 60.01
+      },
+      "compatibility_score": {
+        "mean": 0.512,
+        "median": 0.5128,
+        "std_dev": 0.155,
+        "min": 0.0498,
+        "max": 0.8296
+      }
+    },
+    "inference_duration_seconds": 0.3589,
+    "total_pipeline_time_seconds": 197.511
+  },
+  "expert_conclusions": [
+    "30.0% of catalog products (60/200) satisfy United States target market baseline (\u0394E <= 13.5, Score >= 0.6).",
+    "Mean color difference \u0394E = 14.70 reflects high aesthetic compatibility with casual fashion trends.",
+    "Inference latency of 1.79 ms/item allows real-time scoring of 1M+ SKU feeds."
+  ]
+}

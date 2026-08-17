@@ -6,9 +6,9 @@ Based on rigorous timing benchmarks across **200 product items**, this document 
 
 | Scale | Item Count | Sequential Baseline (Single Core) | Optimized Production (8-Core CPU + GPU) |
 | :--- | :--- | :--- | :--- |
-| **Benchmark Baseline** | 200 items | **24.51s** | **6.13s** |
-| **Mid-Scale Catalog** | 10,000 items | **20m 25s (1225.3s)** | **3m 08s (188.5s)** |
-| **Full GLAMI-1M Dataset** | 1,000,000 items | **1d 10h 2m (34:02:08)** | **5h 14m (05:14:10)** |
+| **Benchmark Baseline** | 200 items | **23.77s** | **5.94s** |
+| **Mid-Scale Catalog** | 10,000 items | **19m 48s (1188.5s)** | **3m 02s (182.9s)** |
+| **Full GLAMI-1M Dataset** | 1,000,000 items | **1d 9h 0m (33:00:54)** | **5h 04m (05:04:45)** |
 
 ---
 
@@ -16,16 +16,16 @@ Based on rigorous timing benchmarks across **200 product items**, this document 
 
 | Step # | Algorithm Step | 200 Items (Measured) | 10,000 Items (Single Core) | 10,000 Items (8-Core Opt) | 1,000,000 Items (Single Core) | 1,000,000 Items (8-Core Opt) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 1 | **Dataset I/O & CSV Ingestion** | 0.01s | 0.42s | 0.06s | 41.64s | 6.12s |
-| 2 | **CNN Fashion-MNIST Classification** | 9.54s | 7m 57s (477.2s) | 56.14s | 13h 15m (13:15:18) | 1h 33m (01:33:33) |
-| 3 | **Haar Face & Head Exclusion Detection** | 4.72s | 3m 56s (236.3s) | 34.74s | 6h 33m (06:33:45) | 57m 54s (3474.3s) |
-| 4 | **Skin Mask Extraction (HSV + YCrCb)** | 0.12s | 6.20s | 0.91s | 10m 20s (620.3s) | 1m 31s (91.2s) |
-| 5 | **Studio Background Segmentation & Morphology** | 0.77s | 38.40s | 5.65s | 1h 03m (01:03:59) | 9m 24s (564.7s) |
-| 6 | **K-Means Color Palette Clustering (palette_of_image)** | 9.04s | 7m 31s (451.9s) | 1m 06s (66.5s) | 12h 33m (12:33:13) | 1h 50m (01:50:46) |
-| 7 | **Gender Attribute Classification** | 0.01s | 0.47s | 0.07s | 46.89s | 6.89s |
-| 8 | **Mission 2: ready_to_sale Matching** | 0.01s | 0.44s | 0.06s | 43.76s | 6.44s |
+| 1 | **Dataset I/O & CSV Ingestion** | 0.01s | 0.37s | 0.05s | 37.37s | 5.50s |
+| 2 | **CNN Fashion-MNIST Classification** | 9.11s | 7m 35s (455.5s) | 53.59s | 12h 39m (12:39:09) | 1h 29m (01:29:18) |
+| 3 | **Haar Face & Head Exclusion Detection** | 4.66s | 3m 52s (232.9s) | 34.25s | 6h 28m (06:28:06) | 57m 04s (3424.5s) |
+| 4 | **Skin Mask Extraction (HSV + YCrCb)** | 0.12s | 6.12s | 0.90s | 10m 11s (611.9s) | 1m 29s (90.0s) |
+| 5 | **Studio Background Segmentation & Morphology** | 0.75s | 37.32s | 5.49s | 1h 02m (01:02:11) | 9m 08s (548.8s) |
+| 6 | **K-Means Color Palette Clustering (palette_of_image)** | 8.83s | 7m 21s (441.4s) | 1m 04s (64.9s) | 12h 15m (12:15:36) | 1h 48m (01:48:10) |
+| 7 | **Gender Attribute Classification** | 0.01s | 0.46s | 0.07s | 45.61s | 6.71s |
+| 8 | **Mission 2: ready_to_sale Matching** | 0.01s | 0.43s | 0.06s | 42.57s | 6.26s |
 | 9 | **Mission 3: Palette Formatting & HTML Previews** | 0.05s | 2.50s | 0.37s | 4m 10s (250.0s) | 36.76s |
-| -- | **TOTAL PIPELINE DURATION** | **24.51s** | **20m 25s (1225.3s)** | **3m 08s (188.5s)** | **1d 10h 2m (34:02:08)** | **5h 14m (05:14:10)** |
+| -- | **TOTAL PIPELINE DURATION** | **23.77s** | **19m 48s (1188.5s)** | **3m 02s (182.9s)** | **1d 9h 0m (33:00:54)** | **5h 04m (05:04:45)** |
 
 ---
 

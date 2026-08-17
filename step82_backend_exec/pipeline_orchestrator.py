@@ -146,14 +146,23 @@ def run_custom_ml_pipeline(
     upsert_user_session(user_session_guid, start_time=start_time_str, status="running")
     update_progress(user_session_guid, percent=5, step_id=1, step_name="Initializing Pipeline", details="Validating candidate catalog & gender lookbook assets")
 
-    # Clear prior result files in session_dir before running new ML steps
-    for old_file in ['result_good_for_new_marketing.csv', 'result_not_good_for_new_marketing.csv', 'resultDataJSON.json', 'result5.csv']:
-        old_path = os.path.join(session_dir, old_file)
-        if os.path.exists(old_path):
+    # Clear all previous intermediate subfolders and output files in session_dir before running new ML steps
+    if os.path.exists(session_dir):
+        import shutil
+        for item in os.listdir(session_dir):
+            item_path = os.path.join(session_dir, item)
+            # Retain raw input upload directories and country metadata
+            if item in ["custom_dataset_start", "custom_country_images", "custom_country_name.json"]:
+                continue
             try:
-                os.remove(old_path)
+                if os.path.isdir(item_path):
+                    shutil.rmtree(item_path)
+                    logger.info(f"Cleared intermediate subfolder '{item}' for session '{user_session_guid}'")
+                elif os.path.isfile(item_path) or os.path.islink(item_path):
+                    os.unlink(item_path)
+                    logger.info(f"Cleared prior calculation file '{item}' for session '{user_session_guid}'")
             except Exception as ce:
-                logger.warning(f"Could not remove prior session file {old_path}: {ce}")
+                logger.warning(f"Could not remove {item_path}: {ce}")
 
     step_timings = {}
 

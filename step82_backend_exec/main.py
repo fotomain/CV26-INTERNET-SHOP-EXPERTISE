@@ -164,6 +164,23 @@ def clear_subfolder_contents(folder_path: str):
             except Exception as e:
                 logger.warning(f"Failed to delete {item_path}: {e}")
 
+@app.post("/api/clear-session/{userSessionGUID}")
+@app.delete("/api/clear-session/{userSessionGUID}")
+def clear_session_endpoint(userSessionGUID: str):
+    """
+    Explicitly clears all subfolders and generated artifacts for userSessionGUID.
+    """
+    session_dir = os.path.join(CUSTOM_DATA_ROOT, userSessionGUID)
+    cors_headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": "true",
+    }
+    if os.path.exists(session_dir):
+        clear_subfolder_contents(session_dir)
+        logger.info(f"Cleared all contents of session directory: {session_dir}")
+        return JSONResponse(content={"status": "ok", "message": f"Cleared all subfolders for {userSessionGUID}"}, headers=cors_headers)
+    return JSONResponse(content={"status": "ok", "message": f"Session directory {userSessionGUID} was empty"}, headers=cors_headers)
+
 @app.post("/api/upload-batch")
 async def upload_batch(
     userSessionGUID: str = Form(...),

@@ -58,7 +58,8 @@ export const App: React.FC = () => {
   };
 
   const totalFilesAttached = customDatasetFiles.length + customCountryImages.length;
-  const isButtonEnabled = !isSubmitting;
+  const hasFilesSelected = totalFilesAttached > 0;
+  const isButtonEnabled = !isSubmitting && hasFilesSelected;
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafaf9' }}>
@@ -264,51 +265,65 @@ export const App: React.FC = () => {
               </p>
             </div>
 
-            <button
-              id="ExecuteMLButton"
-              onClick={handleExecuteML}
-              disabled={!isButtonEnabled}
-              style={{
-                background: isButtonEnabled
-                  ? 'linear-gradient(135deg, #f59e0b 0%, #ea580c 50%, #e11d48 100%)'
-                  : '#cbd5e1',
-                color: '#ffffff',
-                border: 'none',
-                padding: '14px 22px',
-                borderRadius: '14px',
-                fontSize: '15px',
-                fontWeight: 900,
-                letterSpacing: '-0.01em',
-                cursor: isButtonEnabled ? 'pointer' : 'not-allowed',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '10px',
-                boxShadow: isButtonEnabled ? '0 6px 20px rgba(245, 158, 11, 0.4)' : 'none',
-                transform: isButtonEnabled ? 'scale(1)' : 'none',
-                transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                width: '100%'
-              }}
-            >
-              {isSubmitting ? (
-                <>
-                  <div style={{
-                    width: '18px',
-                    height: '18px',
-                    border: '2.5px solid #ffffff',
-                    borderTopColor: 'transparent',
-                    borderRadius: '50%',
-                    animation: 'spin 0.8s linear infinite'
-                  }} />
-                  Processing ML Pipeline ({progress.percent}%)...
-                </>
-              ) : (
-                <>
-                  <Play size={18} fill="#ffffff" />
-                  ExecuteMLButton ({totalFilesAttached > 0 ? `${totalFilesAttached} custom files attached` : 'Default Dataset Mode'})
-                </>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <button
+                id="ExecuteMLButton"
+                onClick={handleExecuteML}
+                disabled={!isButtonEnabled}
+                style={{
+                  background: isButtonEnabled
+                    ? 'linear-gradient(135deg, #f59e0b 0%, #ea580c 50%, #e11d48 100%)'
+                    : '#e2e8f0',
+                  color: isButtonEnabled ? '#ffffff' : '#94a3b8',
+                  border: isButtonEnabled ? 'none' : '1px solid #cbd5e1',
+                  padding: '14px 22px',
+                  borderRadius: '14px',
+                  fontSize: '15px',
+                  fontWeight: 900,
+                  letterSpacing: '-0.01em',
+                  cursor: isButtonEnabled ? 'pointer' : 'not-allowed',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  boxShadow: isButtonEnabled ? '0 6px 20px rgba(245, 158, 11, 0.4)' : 'none',
+                  opacity: isButtonEnabled ? 1 : 0.65,
+                  transform: isButtonEnabled ? 'scale(1)' : 'none',
+                  transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  width: '100%'
+                }}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div style={{
+                      width: '18px',
+                      height: '18px',
+                      border: '2.5px solid #ffffff',
+                      borderTopColor: 'transparent',
+                      borderRadius: '50%',
+                      animation: 'spin 0.8s linear infinite'
+                    }} />
+                    Processing ML Pipeline ({progress.percent}%)...
+                  </>
+                ) : isButtonEnabled ? (
+                  <>
+                    <Play size={18} fill="#ffffff" />
+                    ExecuteMLButton ({totalFilesAttached} {totalFilesAttached === 1 ? 'file' : 'files'} attached)
+                  </>
+                ) : (
+                  <>
+                    <Play size={18} fill="#94a3b8" />
+                    ExecuteMLButton (Disabled - Select files first)
+                  </>
+                )}
+              </button>
+
+              {!hasFilesSelected && (
+                <span style={{ fontSize: '11.5px', color: '#dc2626', fontWeight: 600, textAlign: 'center' }}>
+                  * Attach candidate catalog and/or lookbook files to enable ExecuteMLButton.
+                </span>
               )}
-            </button>
+            </div>
           </div>
         </div>
 

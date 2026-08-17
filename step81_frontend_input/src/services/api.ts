@@ -8,6 +8,18 @@ export interface ExecuteMLParams {
   customCountryImagesWoman?: File[];
 }
 
+export async function clearSessionApi(userSessionGUID: string): Promise<any> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/clear-session/${userSessionGUID}`, {
+      method: 'POST',
+    });
+    return response.json();
+  } catch (e) {
+    console.warn(`Could not clear session subfolder for ${userSessionGUID}:`, e);
+    return null;
+  }
+}
+
 export interface UploadBatchParams {
   userSessionGUID: string;
   targetType: 'dataset' | 'man' | 'woman';

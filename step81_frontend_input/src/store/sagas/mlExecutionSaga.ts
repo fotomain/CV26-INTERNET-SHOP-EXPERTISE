@@ -10,7 +10,7 @@ import {
   updateProgressData,
 } from '../slices/progressSlice';
 import { setResultData, clearResults } from '../slices/resultSlice';
-import { executeMLApi, uploadBatchApi, fetchProgressApi, fetchResultsApi } from '../../services/api';
+import { executeMLApi, uploadBatchApi, clearSessionApi, fetchProgressApi, fetchResultsApi } from '../../services/api';
 import { autoDownloadCsvFiles } from '../../utils/fileDownloader';
 import { getFiles } from '../../utils/fileRegistry';
 import { FILES_PER_1_BATCH } from '../../constants/config';
@@ -35,6 +35,9 @@ function* handleExecuteML(): any {
     yield put(startExecution());
     yield put(clearResults());
     yield put(setProgressActive(true));
+
+    // Clear subfolder custom_data/+userSessionGUID before new ML steps
+    yield call(clearSessionApi, userSessionGUID);
 
     const datasetFiles: File[] = getFiles(customDatasetFiles.map((item: any) => item.id));
     const manFiles: File[] = getFiles(customCountryImagesMan.map((item: any) => item.id));

@@ -168,7 +168,7 @@ def clear_subfolder_contents(folder_path: str):
 @app.delete("/api/clear-session/{userSessionGUID}")
 def clear_session_endpoint(userSessionGUID: str):
     """
-    Explicitly clears all subfolders and generated artifacts for userSessionGUID.
+    Explicitly deletes subfolder custom_data/<userSessionGUID> before running new ML steps.
     """
     session_dir = os.path.join(CUSTOM_DATA_ROOT, userSessionGUID)
     cors_headers = {
@@ -176,10 +176,11 @@ def clear_session_endpoint(userSessionGUID: str):
         "Access-Control-Allow-Credentials": "true",
     }
     if os.path.exists(session_dir):
-        clear_subfolder_contents(session_dir)
-        logger.info(f"Cleared all contents of session directory: {session_dir}")
-        return JSONResponse(content={"status": "ok", "message": f"Cleared all subfolders for {userSessionGUID}"}, headers=cors_headers)
-    return JSONResponse(content={"status": "ok", "message": f"Session directory {userSessionGUID} was empty"}, headers=cors_headers)
+        import shutil
+        shutil.rmtree(session_dir, ignore_errors=True)
+        logger.info(f"Deleted subfolder: custom_data/{userSessionGUID}")
+        return JSONResponse(content={"status": "ok", "message": f"Deleted subfolder custom_data/{userSessionGUID}"}, headers=cors_headers)
+    return JSONResponse(content={"status": "ok", "message": f"Subfolder custom_data/{userSessionGUID} was not present"}, headers=cors_headers)
 
 @app.post("/api/upload-batch")
 async def upload_batch(
@@ -194,6 +195,15 @@ async def upload_batch(
     and updates batch ingestion progress.
     """
     session_dir = os.path.join(CUSTOM_DATA_ROOT, userSessionGUID)
+
+    # Delete subfolder custom_data/+userSessionGUID before starting Batch 1 of a new run
+    if batchIndex == 1 and targetType == "dataset":
+        if os.path.exists(session_dir):
+            import shutil
+            shutil.rmtree(session_dir, ignore_errors=True)
+            logger.info(f"Deleted subfolder custom_data/{userSessionGUID} before new ML run (Batch 1)")
+        os.makedirs(session_dir, exist_ok=True)
+
     if targetType == "dataset":
         target_dir = os.path.join(session_dir, "custom_dataset_start")
     elif targetType == "man":
@@ -204,11 +214,6 @@ async def upload_batch(
         target_dir = os.path.join(session_dir, "custom_dataset_start")
 
     os.makedirs(target_dir, exist_ok=True)
-
-    # Clear target subfolder before starting Batch 1 of a new upload
-    if batchIndex == 1:
-        clear_subfolder_contents(target_dir)
-        logger.info(f"Cleared subfolder '{target_dir}' for session '{userSessionGUID}' before Batch 1.")
 
     saved_files = []
 
@@ -273,19 +278,18 @@ async def execute_ml(
     country_man_dir = os.path.join(country_images_dir, "man")
     country_woman_dir = os.path.join(country_images_dir, "woman")
 
+    # Delete subfolder custom_data/<userSessionGUID> before saving direct execute-ml multipart files if provided
+    if custom_dataset_start or custom_country_images_man or custom_country_images_woman:
+        if os.path.exists(session_dir):
+            import shutil
+            shutil.rmtree(session_dir, ignore_errors=True)
+            logger.info(f"Deleted subfolder custom_data/{userSessionGUID} before direct execution.")
+
     os.makedirs(session_dir, exist_ok=True)
     os.makedirs(dataset_start_dir, exist_ok=True)
     os.makedirs(country_images_dir, exist_ok=True)
     os.makedirs(country_man_dir, exist_ok=True)
     os.makedirs(country_woman_dir, exist_ok=True)
-
-    # Clear subfolders before saving direct execute-ml multipart files if provided
-    if custom_dataset_start:
-        clear_subfolder_contents(dataset_start_dir)
-    if custom_country_images_man:
-        clear_subfolder_contents(country_man_dir)
-    if custom_country_images_woman:
-        clear_subfolder_contents(country_woman_dir)
 
     # Save country name metadata
     country_meta_path = os.path.join(session_dir, "custom_country_name.json")

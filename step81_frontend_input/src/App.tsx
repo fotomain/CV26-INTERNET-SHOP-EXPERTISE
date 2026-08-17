@@ -18,7 +18,7 @@ import { FileUploadZone } from './components/FileUploadZone';
 import { CountrySelector } from './components/CountrySelector';
 import { ProgressTracker } from './components/ProgressTracker';
 import { CapstoneReportComponent } from './components/CapstoneReportComponent';
-import { Play, AlertCircle, Sparkles, ShieldCheck, Zap } from 'lucide-react';
+import { Play, AlertCircle, Sparkles, ShieldCheck, Zap, Rocket } from 'lucide-react';
 
 export const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -61,7 +61,7 @@ export const App: React.FC = () => {
   const isButtonEnabled = !isSubmitting;
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafaf9' }}>
       <Header />
 
       <main style={{
@@ -72,55 +72,58 @@ export const App: React.FC = () => {
         padding: '24px 16px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '20px',
+        gap: '22px',
         minWidth: '350px'
       }}>
-        {/* Tamagui.dev Style Hero Card */}
+        {/* Colorful Hero Card (CAPSTONE_REPORT Style) */}
         <div style={{
-          background: '#ffffff',
-          border: '1px solid rgba(0, 0, 0, 0.08)',
-          borderRadius: '20px',
+          background: 'linear-gradient(135deg, #ffffff 0%, #fffbeb 50%, #f0fdf4 100%)',
+          border: '2px solid #fed7aa',
+          borderRadius: '24px',
           padding: '28px 32px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.02), 0 10px 30px -4px rgba(0, 0, 0, 0.05)',
+          boxShadow: '0 8px 30px -4px rgba(245, 158, 11, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '20px'
+          gap: '20px',
+          position: 'relative',
+          overflow: 'hidden'
         }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
               <span style={{
-                background: '#f4f4f5',
-                color: '#18181b',
-                border: '1px solid #e4e4e7',
-                fontSize: '11px',
-                fontWeight: 700,
-                padding: '2px 8px',
+                background: 'linear-gradient(135deg, #fef08a 0%, #fde047 100%)',
+                color: '#854d0e',
+                border: '1px solid #facc15',
+                fontSize: '11.5px',
+                fontWeight: 800,
+                padding: '3px 10px',
                 borderRadius: '999px',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '4px'
+                gap: '5px',
+                boxShadow: '0 2px 6px rgba(250, 204, 21, 0.25)'
               }}>
-                <Zap size={12} color="#f59e0b" fill="#f59e0b" />
-                Next-Gen E-Commerce Style DSS
+                <Zap size={13} color="#854d0e" fill="#854d0e" />
+                Next-Gen E-Commerce AI Matchmaker
               </span>
               <span style={{
-                background: '#f4f4f5',
-                color: '#71717a',
-                border: '1px solid #e4e4e7',
+                background: '#e0f2fe',
+                color: '#0369a1',
+                border: '1px solid #7dd3fc',
                 fontSize: '11px',
-                fontWeight: 600,
-                padding: '2px 8px',
+                fontWeight: 700,
+                padding: '3px 9px',
                 borderRadius: '999px'
               }}>
-                FastAPI + Tamagui
+                FastAPI + React 18 + Tamagui
               </span>
             </div>
-            <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#09090b', letterSpacing: '-0.03em', margin: 0 }}>
+            <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em', margin: 0 }}>
               Purchase Manager Catalog &amp; Style AI Engine
             </h2>
-            <p style={{ fontSize: '13px', color: '#71717a', margin: '6px 0 0 0', maxWidth: '720px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: '13.5px', color: '#475569', margin: '6px 0 0 0', maxWidth: '720px', lineHeight: 1.55 }}>
               Upload candidate catalog items and target country lookbook photos to run automated Fashion-MNIST classification, YOLOv8 + OpenCV demographic segmentation, 3-palette density extraction, and CIELAB &Delta;E matching.
             </p>
           </div>
@@ -128,18 +131,18 @@ export const App: React.FC = () => {
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <span style={{
               background: '#ffffff',
-              border: '1px solid #e4e4e7',
-              padding: '6px 12px',
-              borderRadius: '8px',
-              fontSize: '11px',
-              fontWeight: 600,
-              color: '#3f3f46',
+              border: '2px solid #bbf7d0',
+              padding: '8px 14px',
+              borderRadius: '12px',
+              fontSize: '12px',
+              fontWeight: 800,
+              color: '#15803d',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
+              boxShadow: '0 2px 8px rgba(22, 163, 74, 0.12)'
             }}>
-              <ShieldCheck size={14} color="#16a34a" />
+              <ShieldCheck size={16} color="#16a34a" />
               Supabase Realtime Sync
             </span>
           </div>
@@ -149,18 +152,18 @@ export const App: React.FC = () => {
         {fileErrors.length > 0 && (
           <div style={{
             background: '#fef2f2',
-            border: '1px solid #fecaca',
-            borderRadius: '12px',
-            padding: '12px 16px',
+            border: '2px solid #fca5a5',
+            borderRadius: '14px',
+            padding: '14px 18px',
             color: '#991b1b',
-            fontSize: '12px',
+            fontSize: '13px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center'
           }}>
             <div>
               <strong>Upload Warnings:</strong>
-              <ul style={{ marginLeft: '16px', marginTop: '3px' }}>
+              <ul style={{ marginLeft: '18px', marginTop: '4px' }}>
                 {fileErrors.map((err, i) => (
                   <li key={i}>{err}</li>
                 ))}
@@ -168,7 +171,7 @@ export const App: React.FC = () => {
             </div>
             <button
               onClick={() => dispatch(clearFileErrors())}
-              style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontWeight: 700, fontSize: '11px' }}
+              style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontWeight: 800, fontSize: '12px' }}
             >
               Dismiss
             </button>
@@ -179,16 +182,16 @@ export const App: React.FC = () => {
         {error && (
           <div style={{
             background: '#fef2f2',
-            border: '1px solid #f87171',
-            borderRadius: '12px',
-            padding: '12px 16px',
+            border: '2px solid #f87171',
+            borderRadius: '14px',
+            padding: '14px 18px',
             color: '#b91c1c',
-            fontSize: '12px',
+            fontSize: '13px',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px'
+            gap: '10px'
           }}>
-            <AlertCircle size={16} />
+            <AlertCircle size={18} />
             <div>
               <strong>Execution Error:</strong> {error}
             </div>
@@ -199,24 +202,26 @@ export const App: React.FC = () => {
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '16px'
+          gap: '20px'
         }}>
-          {/* Custom Candidate Catalog */}
+          {/* Custom Candidate Catalog (Vibrant Blue Accent) */}
           <FileUploadZone
             title="1. Candidate Product Catalog"
             subtitle="Upload apparel photos or CSV catalog (custom_dataset_start)"
             badgeText="Input Catalog"
+            badgeColor="blue"
             files={customDatasetFiles}
             onAddFiles={(files) => dispatch(addDatasetFiles(files))}
             onClearFiles={() => dispatch(clearDatasetFiles())}
             buttonLabel="Select custom_dataset_start"
           />
 
-          {/* Custom Target Country Images */}
+          {/* Custom Target Country Images (Vibrant Purple Accent) */}
           <FileUploadZone
             title="2. Target Market Lookbook"
             subtitle="Upload authentic reference lookbook photos (custom_country_images)"
             badgeText="Style DNA"
+            badgeColor="purple"
             files={customCountryImages}
             onAddFiles={(files) => dispatch(addCountryImages(files))}
             onClearFiles={() => dispatch(clearCountryImages())}
@@ -228,7 +233,7 @@ export const App: React.FC = () => {
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '16px',
+          gap: '20px',
           alignItems: 'stretch'
         }}>
           <CountrySelector
@@ -237,21 +242,24 @@ export const App: React.FC = () => {
           />
 
           <div style={{
-            background: '#ffffff',
-            borderRadius: '16px',
-            border: '1px solid rgba(0, 0, 0, 0.08)',
+            background: 'linear-gradient(135deg, #ffffff 0%, #fff7ed 100%)',
+            borderRadius: '20px',
+            border: '2px solid #fed7aa',
             padding: '24px',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.02), 0 6px 24px -4px rgba(0, 0, 0, 0.04)',
+            boxShadow: '0 8px 24px -4px rgba(245, 158, 11, 0.08)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
             gap: '16px'
           }}>
             <div>
-              <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#09090b', letterSpacing: '-0.02em', margin: 0 }}>
-                3. Execute ML &amp; Generate DSS Report
-              </h2>
-              <p style={{ fontSize: '12px', color: '#71717a', margin: '4px 0 0 0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Rocket size={18} color="#ea580c" />
+                <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
+                  3. Execute ML &amp; Generate DSS Report
+                </h2>
+              </div>
+              <p style={{ fontSize: '13px', color: '#64748b', margin: '4px 0 0 0' }}>
                 Runs end-to-end 5-step ML pipeline with live progress streamed via Supabase.
               </p>
             </div>
@@ -261,30 +269,33 @@ export const App: React.FC = () => {
               onClick={handleExecuteML}
               disabled={!isButtonEnabled}
               style={{
-                background: isButtonEnabled ? '#09090b' : '#a1a1aa',
+                background: isButtonEnabled
+                  ? 'linear-gradient(135deg, #f59e0b 0%, #ea580c 50%, #e11d48 100%)'
+                  : '#cbd5e1',
                 color: '#ffffff',
                 border: 'none',
-                padding: '13px 20px',
-                borderRadius: '10px',
-                fontSize: '14px',
-                fontWeight: 700,
+                padding: '14px 22px',
+                borderRadius: '14px',
+                fontSize: '15px',
+                fontWeight: 900,
                 letterSpacing: '-0.01em',
                 cursor: isButtonEnabled ? 'pointer' : 'not-allowed',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px',
-                boxShadow: isButtonEnabled ? '0 4px 14px rgba(0, 0, 0, 0.15)' : 'none',
-                transition: 'all 0.15s ease',
+                gap: '10px',
+                boxShadow: isButtonEnabled ? '0 6px 20px rgba(245, 158, 11, 0.4)' : 'none',
+                transform: isButtonEnabled ? 'scale(1)' : 'none',
+                transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
                 width: '100%'
               }}
             >
               {isSubmitting ? (
                 <>
                   <div style={{
-                    width: '16px',
-                    height: '16px',
-                    border: '2px solid #ffffff',
+                    width: '18px',
+                    height: '18px',
+                    border: '2.5px solid #ffffff',
                     borderTopColor: 'transparent',
                     borderRadius: '50%',
                     animation: 'spin 0.8s linear infinite'
@@ -293,7 +304,7 @@ export const App: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <Play size={16} fill="#ffffff" />
+                  <Play size={18} fill="#ffffff" />
                   ExecuteMLButton ({totalFilesAttached > 0 ? `${totalFilesAttached} custom files attached` : 'Default Dataset Mode'})
                 </>
               )}
@@ -310,13 +321,14 @@ export const App: React.FC = () => {
 
       <footer style={{
         background: '#ffffff',
-        borderTop: '1px solid rgba(0, 0, 0, 0.07)',
-        padding: '14px 24px',
+        borderTop: '2px solid #fef3c7',
+        padding: '16px 24px',
         textAlign: 'center',
-        fontSize: '12px',
-        color: '#71717a'
+        fontSize: '12.5px',
+        color: '#64748b',
+        fontWeight: 500
       }}>
-        CV26 E-Commerce Product Catalog Expertise &bull; Step 81 Frontend (React + TypeScript + Tamagui Light + Redux-Saga) &bull; Step 82 Backend (FastAPI + Supabase)
+        ✨ CV26 E-Commerce Product Catalog Expertise &bull; Step 81 Frontend (React + TypeScript + Redux-Saga) &bull; Step 82 Backend (FastAPI + Supabase)
       </footer>
     </div>
   );

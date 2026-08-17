@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe2 } from 'lucide-react';
+import { Globe, MapPin, Compass } from 'lucide-react';
 import { SUPPORTED_COUNTRIES } from '../constants/config';
 
 interface CountrySelectorProps {
@@ -16,45 +16,58 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
   return (
     <div style={{
       background: '#ffffff',
-      borderRadius: '16px',
-      border: '1px solid rgba(0, 0, 0, 0.08)',
+      borderRadius: '20px',
+      border: '2px solid #fed7aa',
       padding: '24px',
-      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.02), 0 6px 24px -4px rgba(0, 0, 0, 0.04)',
+      boxShadow: '0 8px 24px -4px rgba(245, 158, 11, 0.06)',
       display: 'flex',
       flexDirection: 'column',
-      gap: '12px'
+      gap: '14px',
+      position: 'relative',
+      overflow: 'hidden'
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* Decorative top amber bar */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '5px',
+        background: 'linear-gradient(135deg, #f59e0b 0%, #ea580c 100%)'
+      }} />
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Globe2 size={16} color="#09090b" />
-          <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#09090b', letterSpacing: '-0.02em', margin: 0 }}>
+          <Compass size={18} color="#ea580c" />
+          <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
             Target Country Market Lookbook
           </h2>
         </div>
         <span style={{
-          background: '#f4f4f5',
-          color: '#18181b',
-          border: '1px solid #e4e4e7',
+          background: '#fef3c7',
+          color: '#b45309',
+          border: '1.5px solid #fde68a',
           fontSize: '11px',
-          fontWeight: 700,
-          padding: '2px 7px',
-          borderRadius: '6px'
+          fontWeight: 800,
+          padding: '2px 9px',
+          borderRadius: '999px'
         }}>
           ISO: {current.code}
         </span>
       </div>
 
-      <p style={{ fontSize: '12px', color: '#71717a', margin: 0 }}>
+      <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
         Select target country to evaluate consumer color preferences against 3 reference fashion palettes.
       </p>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '4px' }}>
         <div style={{
-          fontSize: '24px',
-          background: '#fafafa',
-          padding: '6px 10px',
-          borderRadius: '8px',
-          border: '1px solid #e4e4e7',
+          fontSize: '28px',
+          background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+          padding: '8px 14px',
+          borderRadius: '12px',
+          border: '1.5px solid #fde68a',
+          boxShadow: '0 2px 8px rgba(245, 158, 11, 0.15)',
           lineHeight: 1
         }}>
           {current.flag}
@@ -64,16 +77,16 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
           onChange={(e) => onChangeCountry(e.target.value)}
           style={{
             flex: 1,
-            padding: '10px 14px',
-            borderRadius: '10px',
-            border: '1px solid #d4d4d8',
+            padding: '12px 16px',
+            borderRadius: '12px',
+            border: '2px solid #fed7aa',
             background: '#ffffff',
-            fontSize: '13px',
-            fontWeight: 600,
-            color: '#09090b',
+            fontSize: '14px',
+            fontWeight: 700,
+            color: '#0f172a',
             cursor: 'pointer',
             outline: 'none',
-            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.02)'
+            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)'
           }}
         >
           {SUPPORTED_COUNTRIES.map((c) => (

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Upload, Trash2, FileCheck2, AlertCircle } from 'lucide-react';
+import { Upload, Trash2, FileCheck, Sparkles, FolderPlus } from 'lucide-react';
 import { FileItem } from '../store/slices/sessionSlice';
 import { DEFAULT_FILE_SIZE_LIMIT_MB, DEFAULT_NUMBER_OF_FILES } from '../constants/config';
 
@@ -7,6 +7,7 @@ interface FileUploadZoneProps {
   title: string;
   subtitle: string;
   badgeText: string;
+  badgeColor?: 'blue' | 'purple' | 'amber' | 'emerald';
   files: FileItem[];
   onAddFiles: (files: File[]) => void;
   onClearFiles: () => void;
@@ -18,6 +19,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
   title,
   subtitle,
   badgeText,
+  badgeColor = 'blue',
   files,
   onAddFiles,
   onClearFiles,
@@ -58,40 +60,63 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
     files.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)
   ).toFixed(2);
 
+  const isPurple = badgeColor === 'purple';
+  const accentGradient = isPurple
+    ? 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)'
+    : 'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)';
+  const cardBg = isPurple ? '#faf5ff' : '#f0f9ff';
+  const cardBorder = isPurple ? '#e9d5ff' : '#bae6fd';
+  const badgeBg = isPurple ? '#f3e8ff' : '#e0f2fe';
+  const badgeTextColor = isPurple ? '#6b21a8' : '#0369a1';
+  const badgeBorder = isPurple ? '#d8b4fe' : '#7dd3fc';
+
   return (
     <div style={{
       background: '#ffffff',
-      borderRadius: '16px',
-      border: '1px solid rgba(0, 0, 0, 0.08)',
+      borderRadius: '20px',
+      border: `2px solid ${cardBorder}`,
       padding: '24px',
-      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.02), 0 6px 24px -4px rgba(0, 0, 0, 0.04)',
+      boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.04)',
       display: 'flex',
       flexDirection: 'column',
       gap: '16px',
       flex: 1,
       minWidth: '320px',
-      transition: 'border-color 0.2s ease, box-shadow 0.2s ease'
+      position: 'relative',
+      overflow: 'hidden'
     }}>
+      {/* Decorative top colorful bar */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '5px',
+        background: accentGradient
+      }} />
+
       {/* Header Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#09090b', letterSpacing: '-0.02em', margin: 0 }}>
+            <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
               {title}
             </h2>
             <span style={{
-              background: '#f4f4f5',
-              color: '#18181b',
-              border: '1px solid #e4e4e7',
+              background: badgeBg,
+              color: badgeTextColor,
+              border: `1px solid ${badgeBorder}`,
               fontSize: '11px',
-              fontWeight: 700,
-              padding: '2px 8px',
-              borderRadius: '6px'
+              fontWeight: 800,
+              padding: '2px 9px',
+              borderRadius: '999px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em'
             }}>
               {badgeText}
             </span>
           </div>
-          <p style={{ fontSize: '12px', color: '#71717a', margin: '4px 0 0 0' }}>
+          <p style={{ fontSize: '13px', color: '#64748b', margin: '4px 0 0 0' }}>
             {subtitle}
           </p>
         </div>
@@ -100,21 +125,21 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
           <button
             onClick={onClearFiles}
             style={{
-              background: '#ffffff',
-              color: '#ef4444',
-              border: '1px solid #fecaca',
-              padding: '5px 10px',
-              borderRadius: '8px',
+              background: '#fef2f2',
+              color: '#dc2626',
+              border: '1.5px solid #fca5a5',
+              padding: '6px 12px',
+              borderRadius: '10px',
               fontSize: '12px',
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              transition: 'background 0.15s ease'
+              transition: 'all 0.15s ease'
             }}
           >
-            <Trash2 size={13} />
+            <Trash2 size={14} />
             Clear files ({files.length})
           </button>
         )}
@@ -127,18 +152,18 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
         style={{
-          border: isDragging ? '1.5px dashed #09090b' : '1.5px dashed #e4e4e7',
-          background: isDragging ? '#f4f4f5' : '#fafafa',
-          borderRadius: '12px',
-          padding: '28px 20px',
+          border: isDragging ? '2px dashed #f59e0b' : `2px dashed ${badgeBorder}`,
+          background: isDragging ? '#fffbeb' : cardBg,
+          borderRadius: '14px',
+          padding: '30px 20px',
           textAlign: 'center',
           cursor: 'pointer',
-          transition: 'all 0.15s ease',
+          transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '10px'
+          gap: '12px'
         }}
       >
         <input
@@ -150,24 +175,25 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
           style={{ display: 'none' }}
         />
         <div style={{
-          width: '42px',
-          height: '42px',
-          borderRadius: '10px',
+          width: '48px',
+          height: '48px',
+          borderRadius: '14px',
           background: '#ffffff',
-          border: '1px solid #e4e4e7',
+          border: `1.5px solid ${badgeBorder}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+          transform: isDragging ? 'scale(1.15)' : 'scale(1)'
         }}>
-          <Upload size={18} color="#18181b" />
+          <FolderPlus size={22} color={isPurple ? '#7c3aed' : '#0284c7'} />
         </div>
         <div>
-          <p style={{ fontSize: '13px', fontWeight: 600, color: '#09090b', margin: 0 }}>
-            Drag &amp; drop files here, or <span style={{ textDecoration: 'underline' }}>browse</span>
+          <p style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+            Drag &amp; drop files here, or <span style={{ color: isPurple ? '#7c3aed' : '#0284c7', textDecoration: 'underline' }}>browse</span>
           </p>
-          <p style={{ fontSize: '11px', color: '#a1a1aa', margin: '3px 0 0 0' }}>
-            Max {DEFAULT_FILE_SIZE_LIMIT_MB}MB per file &bull; Up to {DEFAULT_NUMBER_OF_FILES} files (.png, .jpg, .webp, .csv)
+          <p style={{ fontSize: '12px', color: '#64748b', margin: '4px 0 0 0' }}>
+            Max <strong>{DEFAULT_FILE_SIZE_LIMIT_MB}MB</strong> &bull; Up to <strong>{DEFAULT_NUMBER_OF_FILES} files</strong> (.png, .jpg, .webp, .csv)
           </p>
         </div>
         <button
@@ -177,18 +203,21 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
             fileInputRef.current?.click();
           }}
           style={{
-            background: '#ffffff',
-            border: '1px solid #d4d4d8',
-            color: '#18181b',
-            padding: '6px 14px',
-            borderRadius: '8px',
-            fontSize: '12px',
-            fontWeight: 600,
+            background: accentGradient,
+            border: 'none',
+            color: '#ffffff',
+            padding: '8px 18px',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: 700,
             cursor: 'pointer',
-            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)',
-            transition: 'background 0.15s ease'
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px'
           }}
         >
+          <Upload size={14} />
           {buttonLabel}
         </button>
       </div>
@@ -196,10 +225,10 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
       {/* Files Attached Summary / Preview */}
       {files.length > 0 ? (
         <div style={{
-          background: '#fafafa',
-          border: '1px solid #e4e4e7',
-          borderRadius: '10px',
-          padding: '10px 14px',
+          background: '#f8fafc',
+          border: '1.5px solid #e2e8f0',
+          borderRadius: '12px',
+          padding: '12px 16px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -207,37 +236,38 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
           gap: '8px'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FileCheck2 size={16} color="#16a34a" />
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#09090b' }}>
+            <FileCheck size={18} color="#16a34a" />
+            <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
               {files.length} {files.length === 1 ? 'file' : 'files'} attached
             </span>
-            <span style={{ fontSize: '11px', color: '#71717a' }}>
+            <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>
               ({totalSizeMB} MB)
             </span>
           </div>
-          <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', maxWidth: '200px' }}>
+          <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', maxWidth: '220px' }}>
             {files.slice(0, 4).map((f) => (
               <span
                 key={f.id}
                 title={f.name}
                 style={{
-                  fontSize: '10px',
+                  fontSize: '10.5px',
                   background: '#ffffff',
-                  border: '1px solid #e4e4e7',
-                  color: '#52525b',
-                  padding: '2px 6px',
-                  borderRadius: '4px',
+                  border: '1px solid #cbd5e1',
+                  color: '#334155',
+                  fontWeight: 600,
+                  padding: '3px 7px',
+                  borderRadius: '6px',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  maxWidth: '70px'
+                  maxWidth: '75px'
                 }}
               >
                 {f.name}
               </span>
             ))}
             {files.length > 4 && (
-              <span style={{ fontSize: '10px', color: '#71717a', alignSelf: 'center', fontWeight: 600 }}>
+              <span style={{ fontSize: '11px', color: '#64748b', alignSelf: 'center', fontWeight: 700 }}>
                 +{files.length - 4}
               </span>
             )}
@@ -249,9 +279,10 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
           alignItems: 'center',
           gap: '6px',
           fontSize: '12px',
-          color: '#a1a1aa'
+          color: '#64748b',
+          fontWeight: 500
         }}>
-          <AlertCircle size={13} />
+          <Sparkles size={14} color="#f59e0b" />
           <span>No custom files attached yet. (Default dataset will be loaded automatically).</span>
         </div>
       )}

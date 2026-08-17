@@ -24,6 +24,7 @@ import { Header } from './components/Header';
 import { FileUploadZone } from './components/FileUploadZone';
 import { CountrySelector } from './components/CountrySelector';
 import { ProgressTracker } from './components/ProgressTracker';
+import { BatchUploadTracker } from './components/BatchUploadTracker';
 import { CapstoneReportComponent } from './components/CapstoneReportComponent';
 import { autoDownloadCsvFiles } from './utils/fileDownloader';
 import { Play, AlertCircle, Sparkles, ShieldCheck, Zap, Rocket, RotateCcw } from 'lucide-react';
@@ -477,7 +478,10 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Real-time Progress Visualizer */}
+        {/* Dedicated Phase 1: Separate Batch File Upload Progressor */}
+        <BatchUploadTracker />
+
+        {/* Dedicated Phase 2: AI ML Pipeline & Total Missions Completed Progressor */}
         <ProgressTracker />
 
         {/* Capstone Report Results Component */}

@@ -7,6 +7,7 @@ import {
 } from '../slices/sessionSlice';
 import {
   setProgressActive,
+  setUploadProgress,
   updateProgressData,
 } from '../slices/progressSlice';
 import { setResultData, clearResults } from '../slices/resultSlice';
@@ -59,17 +60,37 @@ function* handleExecuteML(): any {
 
     const totalBatchCount = Math.max(1, datasetBatches.length + manBatches.length + womanBatches.length);
     let currentBatchIndex = 0;
+    const totalFilesCount = datasetFiles.length + manFiles.length + womanFiles.length;
+    let uploadedFilesCount = 0;
+
+    yield put(
+      setUploadProgress({
+        isUploading: true,
+        currentBatch: 0,
+        totalBatches: totalBatchCount,
+        uploadedFilesCount: 0,
+        totalFilesCount,
+        percent: 0,
+        statusText: `Preparing ${totalFilesCount} files across ${totalBatchCount} batches (10 files/batch)...`,
+        isComplete: false,
+      })
+    );
 
     // 1. Upload Dataset Batches
     for (let b = 0; b < datasetBatches.length; b++) {
       currentBatchIndex++;
-      const batchPercent = Math.max(1, Math.round((currentBatchIndex / totalBatchCount) * 15));
+      uploadedFilesCount += datasetBatches[b].length;
+      const uploadPct = Math.round((currentBatchIndex / totalBatchCount) * 100);
       yield put(
-        updateProgressData({
-          percent: batchPercent,
-          stepId: 0,
-          stepName: `Uploading Batch ${currentBatchIndex}/${totalBatchCount}`,
-          details: `Uploading Candidate Catalog Batch ${b + 1}/${datasetBatches.length} (${datasetBatches[b].length} files)...`,
+        setUploadProgress({
+          isUploading: true,
+          currentBatch: currentBatchIndex,
+          totalBatches: totalBatchCount,
+          uploadedFilesCount,
+          totalFilesCount,
+          percent: uploadPct,
+          statusText: `Uploading Catalog Batch ${b + 1}/${datasetBatches.length} (${datasetBatches[b].length} files)...`,
+          isComplete: false,
         })
       );
       yield call(uploadBatchApi, {
@@ -84,13 +105,18 @@ function* handleExecuteML(): any {
     // 2. Upload Men Lookbook Batches
     for (let b = 0; b < manBatches.length; b++) {
       currentBatchIndex++;
-      const batchPercent = Math.max(1, Math.round((currentBatchIndex / totalBatchCount) * 15));
+      uploadedFilesCount += manBatches[b].length;
+      const uploadPct = Math.round((currentBatchIndex / totalBatchCount) * 100);
       yield put(
-        updateProgressData({
-          percent: batchPercent,
-          stepId: 0,
-          stepName: `Uploading Batch ${currentBatchIndex}/${totalBatchCount}`,
-          details: `Uploading Men Lookbook Batch ${b + 1}/${manBatches.length} (${manBatches[b].length} files)...`,
+        setUploadProgress({
+          isUploading: true,
+          currentBatch: currentBatchIndex,
+          totalBatches: totalBatchCount,
+          uploadedFilesCount,
+          totalFilesCount,
+          percent: uploadPct,
+          statusText: `Uploading Men Lookbook Batch ${b + 1}/${manBatches.length} (${manBatches[b].length} files)...`,
+          isComplete: false,
         })
       );
       yield call(uploadBatchApi, {
@@ -105,13 +131,18 @@ function* handleExecuteML(): any {
     // 3. Upload Women Lookbook Batches
     for (let b = 0; b < womanBatches.length; b++) {
       currentBatchIndex++;
-      const batchPercent = Math.max(1, Math.round((currentBatchIndex / totalBatchCount) * 15));
+      uploadedFilesCount += womanBatches[b].length;
+      const uploadPct = Math.round((currentBatchIndex / totalBatchCount) * 100);
       yield put(
-        updateProgressData({
-          percent: batchPercent,
-          stepId: 0,
-          stepName: `Uploading Batch ${currentBatchIndex}/${totalBatchCount}`,
-          details: `Uploading Women Lookbook Batch ${b + 1}/${womanBatches.length} (${womanBatches[b].length} files)...`,
+        setUploadProgress({
+          isUploading: true,
+          currentBatch: currentBatchIndex,
+          totalBatches: totalBatchCount,
+          uploadedFilesCount,
+          totalFilesCount,
+          percent: uploadPct,
+          statusText: `Uploading Women Lookbook Batch ${b + 1}/${womanBatches.length} (${womanBatches[b].length} files)...`,
+          isComplete: false,
         })
       );
       yield call(uploadBatchApi, {
@@ -123,13 +154,27 @@ function* handleExecuteML(): any {
       });
     }
 
-    // 4. All Batches Uploaded -> Trigger Asynchronous ML Pipeline
+    // 4. Mark Batch Upload 100% Complete
+    yield put(
+      setUploadProgress({
+        isUploading: false,
+        currentBatch: totalBatchCount,
+        totalBatches: totalBatchCount,
+        uploadedFilesCount: totalFilesCount,
+        totalFilesCount,
+        percent: 100,
+        statusText: `✓ All ${totalFilesCount} files are at the server. Starting AI ML Pipeline...`,
+        isComplete: true,
+      })
+    );
+
+    // 5. Only when all files are at the server -> Start AI ML Pipeline
     yield put(
       updateProgressData({
-        percent: 16,
+        percent: 0,
         stepId: 1,
-        stepName: 'Batches Finished - Starting ML Engine',
-        details: `All batches uploaded. Initiating CNN classification and DSS evaluation for ${customCountryName}...`,
+        stepName: 'Mission 1: Product Ingestion & Classification',
+        details: `All files on server. Launching Fashion-MNIST CNN and Style Intelligence for ${customCountryName}...`,
       })
     );
 

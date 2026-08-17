@@ -12,7 +12,7 @@ const MISSIONS = [
 ];
 
 export const ProgressTracker: React.FC = () => {
-  const { isActive, progress, history } = useSelector((state: RootState) => state.progress);
+  const { isActive, uploadProgress, progress, history } = useSelector((state: RootState) => state.progress);
   const isSubmitting = useSelector((state: RootState) => state.session.isSubmitting);
   const { hasResults } = useSelector((state: RootState) => state.result);
 
@@ -36,6 +36,11 @@ export const ProgressTracker: React.FC = () => {
   }, [progress.stepId, progress.percent, hasResults, isSubmitting]);
 
   if (!isActive && !isSubmitting && progress.percent === 0 && !hasResults) {
+    return null;
+  }
+
+  // Do not mix ML progress with file batch uploading: only show ML progress once uploads finish or ML step starts
+  if (uploadProgress?.isUploading && progress.stepId === 0) {
     return null;
   }
 

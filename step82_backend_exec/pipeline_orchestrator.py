@@ -174,7 +174,7 @@ def run_custom_ml_pipeline(
         # STEP 1: Mission 1 - Candidate Product Ingestion & Classification
         # ----------------------------------------------------------------------
         t1_start = time.time()
-        update_progress(user_session_guid, percent=15, step_id=1, step_name="Mission 1: Product Ingestion & Classification", details="Classifying candidate catalog images with Fashion-MNIST neural network")
+        update_progress(user_session_guid, percent=20, step_id=1, step_name="Mission 1: Product Ingestion & Classification", details="Classifying candidate catalog images with Fashion-MNIST neural network")
 
         # Discover candidate images
         candidate_images = []
@@ -247,7 +247,7 @@ def run_custom_ml_pipeline(
         # STEP 2: Mission 2 - Quality Control & Sales Readiness Check
         # ----------------------------------------------------------------------
         t2_start = time.time()
-        update_progress(user_session_guid, percent=30, step_id=2, step_name="Mission 2: Sales Readiness Quality Control", details=f"Evaluating resolution, blurriness, title & asset completeness for {total_items} items")
+        update_progress(user_session_guid, percent=40, step_id=2, step_name="Mission 2: Sales Readiness Quality Control", details=f"Evaluating resolution, blurriness, title & asset completeness for {total_items} items")
 
         ready_flags = []
         for _, row in df_catalog.iterrows():
@@ -273,7 +273,7 @@ def run_custom_ml_pipeline(
         # STEP 3: Mission 3 - Fabric Color Intelligence & Palette Extraction
         # ----------------------------------------------------------------------
         t3_start = time.time()
-        update_progress(user_session_guid, percent=50, step_id=3, step_name="Mission 3: Fabric Palette Extraction", details=f"Extracting dominant 4-color fabric swatches from {total_items} items with K-Means")
+        update_progress(user_session_guid, percent=60, step_id=3, step_name="Mission 3: Fabric Palette Extraction", details=f"Extracting dominant 4-color fabric swatches from {total_items} items with K-Means")
 
         palettes_list = []
         for idx, row in df_catalog.iterrows():
@@ -293,7 +293,7 @@ def run_custom_ml_pipeline(
         t4_start = time.time()
         update_progress(
             user_session_guid=user_session_guid,
-            percent=75,
+            percent=80,
             step_id=4,
             step_name="Mission 4: Target Country Style AI Learning",
             details=f"Learning 3 distinct palettes from '{custom_country_name}' men & women lookbooks with YOLOv8"
@@ -325,7 +325,7 @@ def run_custom_ml_pipeline(
         # STEP 5: Mission 5 - DSS Multi-Palette Marketing Recommendation Engine
         # ----------------------------------------------------------------------
         t5_start = time.time()
-        update_progress(user_session_guid, percent=90, step_id=5, step_name="Mission 5: DSS Marketing Matchmaker", details="Scoring CIELAB compatibility against reference styles and ranking priority tiers")
+        update_progress(user_session_guid, percent=100, step_id=5, step_name="Mission 5: DSS Marketing Matchmaker", details="Scoring CIELAB compatibility against reference styles and ranking priority tiers")
 
         comp_scores = []
         distances = []

@@ -228,18 +228,8 @@ async def upload_batch(
             logger.warning(f"Error saving batch file '{uf.filename}': {e}")
             log_error(userSessionGUID, str(e), error_type="Warning", details={"filename": uf.filename})
 
-    # Calculate upload progress (0% - 15% reserved for upload stage)
-    upload_pct = max(1, min(15, int((batchIndex / max(1, totalBatches)) * 15)))
-    batch_detail = f"Batch Progress: Uploaded batch {batchIndex}/{totalBatches} ({targetType.upper()} - {len(saved_files)} files)"
-    
-    update_progress(
-        userSessionGUID,
-        percent=upload_pct,
-        step_id=0,
-        step_name="Batch Ingestion Active",
-        details=batch_detail
-    )
-    logger.info(f"Session {userSessionGUID}: {batch_detail}")
+    upload_pct = max(1, min(100, int((batchIndex / max(1, totalBatches)) * 100)))
+    logger.info(f"Session {userSessionGUID}: Uploaded batch {batchIndex}/{totalBatches} ({targetType.upper()} - {len(saved_files)} files)")
 
     return {
         "status": "ok",

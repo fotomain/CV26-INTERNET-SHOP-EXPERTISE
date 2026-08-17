@@ -4,7 +4,7 @@
 Using Python: .venv/bin/python
 
 >>> [1/7] Running Mission 1: Product Ingestion & Fashion-MNIST Classification...
-2026-08-17 09:36:07.189568: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+2026-08-17 10:43:32.406096: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
 ================================================================================
       MISSION 1: INTERNET SHOP PRODUCT CATALOG EXPERTISE (200 ITEMS)
@@ -16,26 +16,26 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 Loaded 200 products. Original Columns: ['item_id', 'image_id', 'geo', 'name', 'description', 'category', 'category_name', 'label_source']
 ✓ Renamed column: 'geo' -> 'produced_for_country'
 ✓ Saved full categories list (39 unique categories) to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step1_eda/result_categories.csv
-✓ Completed: 1. Load Input Dataset & Export Categories [0.01s]
+✓ Completed: 1. Load Input Dataset & Export Categories [0.02s]
 
 >>> Starting Step: 2. Train / Load Fashion-MNIST Sequential Classifier
 Loading existing Fashion MNIST model from /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step1_eda/fashion_mnist_model.keras...
-✓ Completed: 2. Train / Load Fashion-MNIST Classifier [0.28s]
+✓ Completed: 2. Train / Load Fashion-MNIST Classifier [0.24s]
 
 >>> Starting Step: 3. Product Image Classification (Fashion-MNIST inference)
-✓ Completed: 3. Product Image Classification [7.64s]
+✓ Completed: 3. Product Image Classification [7.13s]
 
 >>> Starting Step: 4. Gender Tagging (for_man, for_woman, for_unisex)
 ✓ Completed: 4. Gender Tagging [0.01s]
 
 >>> Starting Step: 5. True Garment Color Extraction & Visual Analysis
-✓ Completed: 5. True Garment Color Extraction [8.80s]
+✓ Completed: 5. True Garment Color Extraction [9.46s]
 
 >>> Starting Step: 6. Save Output result1.csv
 ✓ Saved 200 processed items to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step1_eda/result1.csv
 ✓ Completed: 6. Save Output result1.csv [0.01s]
 ================================================================================
-Mission 1 Completed Successfully in 16.76s!
+Mission 1 Completed Successfully in 16.87s!
   - Output Dataset: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step1_eda/result1.csv (200 rows)
   - Categories List: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step1_eda/result_categories.csv (39 categories)
   - Gender Distribution: Men: 91, Women: 179, Unisex: 70
@@ -82,22 +82,22 @@ Mirrored result3 to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step3_eda
 --------------------------------------------------------------------------------
 Mission 3 Processing Complete:
   - Total Products with palette_of_image: 200
-  - Total Execution Time: 8.8643s
+  - Total Execution Time: 9.8177s
   - Sample palette_of_image values:
-    Item 0 (Casio Collection MTP-1259D-7BEF): ["#eef2f2", "#a4afb0", "#656e70", "#131618"]
-    Item 3 (Casio Collection MTP-1303D-1AVEF): ["#08080b", "#a0a2a5", "#e3e3e5", "#56585c"]
-    Item 5 (Hot Diamonds Náušnice Eternity Interlocking Stud DE309): ["#ebe6e3", "#c0b0aa", "#87706c", "#30242b"]
+    Item 0 (Casio Collection MTP-1259D-7BEF): ["#ecf0f0", "#a0acad", "#626b6d", "#141618"]
+    Item 3 (Casio Collection MTP-1303D-1AVEF): ["#08080b", "#e1e1e3", "#9d9fa3", "#56585c"]
+    Item 5 (Hot Diamonds Náušnice Eternity Interlocking Stud DE309): ["#ebe7e4", "#c1b1ab", "#89726e", "#32252b"]
 ================================================================================
 
 >>> [4/7] Running Mission 3: Timing Benchmarks & 10k/1M Scaling Prognosis...
-2026-08-17 09:36:43.310068: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+2026-08-17 10:44:10.212955: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
 ================================================================================
       STARTING TIME-EXPENSIVE ALGORITHM BENCHMARK (200 ITEMS)   
 ================================================================================
-✓ Step 1: Load Dataset (200 rows): 0.0075s
+✓ Step 1: Load Dataset (200 rows): 0.0068s
 Loading existing Fashion MNIST model from /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step1_eda/fashion_mnist_model.keras...
-✓ Step 2: Model Loading: 0.2324s
+✓ Step 2: Model Loading: 0.1884s
 Profiling 200 items across all algorithms...
 Saved duration log to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/duration/duraion_log.md
 Saved duration log to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/duration/duration_log.md
@@ -121,14 +121,14 @@ Saved prognosis Markdown to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/p
 ================================================================================
 Discovered 50 graphic images (.png/.jpg) for gender: 'man' in step5_new_country (0 JSONs used).
   ✓ Man: Extracted 3 distinct 4-color palettes from 50 images:
-      - [1/3] Palette 1 (Core & Classic Neutrals): ['#ede8eb', '#b7c1be', '#8b919e', '#0f0d0f']
-      - [2/3] Palette 2 (Contemporary & Earthy Street): ['#262126', '#595c68', '#373b4a', '#e09d93']
-      - [3/3] Palette 3 (Vibrant Statement & Accents): ['#b9745f', '#7f4534', '#1476bc', '#e7d311']
+      - [1/3] Palette 1 (Core & Classic Neutrals): ['#ede8eb', '#b6c1be', '#8a8f9c', '#151215']
+      - [2/3] Palette 2 (Contemporary & Earthy Street): ['#4f5562', '#2e3240', '#e3a39b', '#c9836a']
+      - [3/3] Palette 3 (Vibrant Statement & Accents): ['#955b4e', '#602f20', '#1478be', '#e6d212']
 Discovered 50 graphic images (.png/.jpg) for gender: 'woman' in step5_new_country (0 JSONs used).
   ✓ Woman: Extracted 3 distinct 4-color palettes from 50 images:
-      - [1/3] Palette 1 (Core & Classic Neutrals): ['#efebe9', '#d6cccf', '#bca6a9', '#9e8284']
-      - [2/3] Palette 2 (Contemporary & Earthy Street): ['#424654', '#606681', '#97aad6', '#181011']
-      - [3/3] Palette 3 (Vibrant Statement & Accents): ['#202531', '#cec05e', '#8f543e', '#51261a']
+      - [1/3] Palette 1 (Core & Classic Neutrals): ['#ece8e7', '#d8c7c7', '#b59ea1', '#474a59']
+      - [2/3] Palette 2 (Contemporary & Earthy Street): ['#110e12', '#a5b3d6', '#90726e', '#202733']
+      - [3/3] Palette 3 (Vibrant Statement & Accents): ['#5970b1', '#cebe5d', '#341a15', '#76402b']
 ================================================================================
 Fitting CIELAB Nearest Neighbor & 3-Palette Density Model...
 ✓ Saved trained model to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step4_learn/market_model.pkl
@@ -140,10 +140,10 @@ Loaded 200 items.
 --------------------------------------------------------------------------------
 Model Training & Evaluation Summary:
   - Products Evaluated       : 200
-  - Good for New Marketing   : 60 (30.0%)
-  - Not Recommended          : 140 (70.0%)
+  - Good for New Marketing   : 62 (31.0%)
+  - Not Recommended          : 138 (69.0%)
   - Model Log JSON           : /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step4_learn/result4_ml_log.json
-  - Training & Inference Time: 197.511s
+  - Training & Inference Time: 205.983s
 ================================================================================
 
 >>> [6/7] Running Mission 5: DSS Marketing Decision Engine...
@@ -156,22 +156,22 @@ Target Market: United States (USA)
 Loading candidate product catalog from: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step1_eda/result3.csv
 Total candidate products: 200
 ✓ Saved full DSS result to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step5_dss/result5.csv
-✓ Saved Good Marketing subset to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step5_dss/result_good_for_new_marketing.csv (60 items)
-✓ Saved Not Good Marketing subset to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step5_dss/result_not_good_for_new_marketing.csv (140 items)
+✓ Saved Good Marketing subset to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step5_dss/result_good_for_new_marketing.csv (62 items)
+✓ Saved Not Good Marketing subset to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step5_dss/result_not_good_for_new_marketing.csv (138 items)
 ✓ Mirrored DSS results to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step1_eda/result5.csv
 --------------------------------------------------------------------------------
 DSS Evaluation Final Summary:
   - Total Products Evaluated       : 200
-  - Good for New Marketing (True)  : 60 (30.0%)
-  - Not Recommended (False)        : 140 (70.0%)
-  - Average Compatibility Score    : 0.5120
-  - Average Palette Match Distance : 14.70 ΔE
-  - DSS Decision Execution Time    : 0.5136s
+  - Good for New Marketing (True)  : 62 (31.0%)
+  - Not Recommended (False)        : 138 (69.0%)
+  - Average Compatibility Score    : 0.5268
+  - Average Palette Match Distance : 14.09 ΔE
+  - DSS Decision Execution Time    : 0.5629s
 ================================================================================
 ✓ Saved DSS Summary Report to: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/step5_dss/dss_summary_report.md
 
 >>> [7/7] Generating Executive Web Report (CAPSTONE_REPORT.html & HOW_IT_WORKS.html)...
-✓ Generated CAPSTONE_REPORT.html (422589 bytes) at: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/CAPSTONE_REPORT.html
+✓ Generated CAPSTONE_REPORT.html (422543 bytes) at: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/CAPSTONE_REPORT.html
 ✓ Generated HOW_IT_WORKS.html (42516 bytes) at: /Users/mgtimber/CV26/CV26-INTERNET-SHOP-EXPERTISE/HOW_IT_WORKS.html
 
 ================================================================================

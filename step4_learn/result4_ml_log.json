@@ -49,91 +49,91 @@
       "OpenCV HSV color-space skin tone segmentation & removal",
       "Extreme luminance clipping (pure studio white & black clipping)"
     ],
-    "training_duration_seconds": 197.1521
+    "training_duration_seconds": 205.6093
   },
   "catalog_evaluation_statistics": {
     "total_products_evaluated": 200,
     "good_for_new_marketing": {
-      "count": 60,
-      "percentage": 30.0
+      "count": 62,
+      "percentage": 31.0
     },
     "not_recommended": {
-      "count": 140,
-      "percentage": 70.0
+      "count": 138,
+      "percentage": 69.0
     },
     "marketing_priority_tiers": {
       "Tier 3: Non-Priority / Neutral": {
-        "count": 140,
-        "percentage": 70.0
+        "count": 138,
+        "percentage": 69.0
       },
       "Tier 2: Standard Marketing Candidate": {
-        "count": 44,
-        "percentage": 22.0
+        "count": 37,
+        "percentage": 18.5
       },
       "Tier 1: Prime Marketing Candidate": {
-        "count": 16,
-        "percentage": 8.0
+        "count": 25,
+        "percentage": 12.5
       }
     },
     "palette_affinity_breakdown": {
       "Palette 1 (Core & Classic Neutrals)": {
-        "count": 106,
-        "percentage": 53.0
+        "count": 124,
+        "percentage": 62.0
       },
       "Palette 2 (Contemporary & Earthy Street)": {
-        "count": 71,
-        "percentage": 35.5
+        "count": 57,
+        "percentage": 28.5
       },
       "Palette 3 (Vibrant Statement & Accents)": {
-        "count": 23,
-        "percentage": 11.5
+        "count": 19,
+        "percentage": 9.5
       }
     },
     "demographic_segment_breakdown": {
       "Men": {
         "total_items": 21,
-        "approved_count": 11,
-        "approved_percentage": 52.38,
-        "mean_delta_e": 12.6,
-        "mean_compatibility_score": 0.5795
+        "approved_count": 12,
+        "approved_percentage": 57.14,
+        "mean_delta_e": 12.28,
+        "mean_compatibility_score": 0.5828
       },
       "Unisex": {
         "total_items": 70,
-        "approved_count": 21,
-        "approved_percentage": 30.0,
-        "mean_delta_e": 14.42,
-        "mean_compatibility_score": 0.5119
+        "approved_count": 14,
+        "approved_percentage": 20.0,
+        "mean_delta_e": 14.84,
+        "mean_compatibility_score": 0.5016
       },
       "Women": {
         "total_items": 109,
-        "approved_count": 28,
-        "approved_percentage": 25.69,
-        "mean_delta_e": 15.29,
-        "mean_compatibility_score": 0.4991
+        "approved_count": 36,
+        "approved_percentage": 33.03,
+        "mean_delta_e": 13.95,
+        "mean_compatibility_score": 0.5322
       }
     },
     "statistical_distributions": {
       "color_difference_delta_e": {
-        "mean": 14.703,
-        "median": 13.355,
-        "std_dev": 8.239,
-        "min": 3.74,
-        "max": 60.01
+        "mean": 14.085,
+        "median": 12.61,
+        "std_dev": 8.102,
+        "min": 3.62,
+        "max": 55.43
       },
       "compatibility_score": {
-        "mean": 0.512,
-        "median": 0.5128,
-        "std_dev": 0.155,
-        "min": 0.0498,
-        "max": 0.8296
+        "mean": 0.5268,
+        "median": 0.5324,
+        "std_dev": 0.1558,
+        "min": 0.0626,
+        "max": 0.8343
       }
     },
-    "inference_duration_seconds": 0.3589,
-    "total_pipeline_time_seconds": 197.511
+    "inference_duration_seconds": 0.374,
+    "total_pipeline_time_seconds": 205.9832
   },
   "expert_conclusions": [
-    "30.0% of catalog products (60/200) satisfy United States target market baseline (\u0394E <= 13.5, Score >= 0.6).",
-    "Mean color difference \u0394E = 14.70 reflects high aesthetic compatibility with casual fashion trends.",
-    "Inference latency of 1.79 ms/item allows real-time scoring of 1M+ SKU feeds."
+    "31.0% of catalog products (62/200) satisfy United States target market baseline (\u0394E <= 13.5, Score >= 0.6).",
+    "Mean color difference \u0394E = 14.09 reflects high aesthetic compatibility with casual fashion trends.",
+    "Inference latency of 1.87 ms/item allows real-time scoring of 1M+ SKU feeds."
   ]
 }

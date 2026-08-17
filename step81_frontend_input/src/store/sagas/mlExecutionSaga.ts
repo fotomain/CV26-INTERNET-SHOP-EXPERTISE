@@ -11,6 +11,7 @@ import {
 } from '../slices/progressSlice';
 import { setResultData, clearResults } from '../slices/resultSlice';
 import { executeMLApi, fetchProgressApi, fetchResultsApi } from '../../services/api';
+import { autoDownloadCsvFiles } from '../../utils/fileDownloader';
 
 export const EXECUTE_ML_REQUEST = 'session/EXECUTE_ML_REQUEST';
 
@@ -87,6 +88,9 @@ function* handleExecuteML(): any {
     if (resultsRes && resultsRes.results) {
       yield put(setResultData(resultsRes.results));
     }
+
+    // Auto-download result_good_for_new_marketing.csv and result_not_good_for_new_marketing.csv without prompts
+    yield call(autoDownloadCsvFiles, userSessionGUID);
 
     yield put(executionSuccess());
   } catch (error: any) {

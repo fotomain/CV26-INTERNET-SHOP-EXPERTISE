@@ -343,6 +343,23 @@ def run_custom_ml_pipeline(
         df_catalog['marketing_priority_tier'] = tiers
         df_catalog['dss_recommendation_reason'] = reasons
 
+        # Export dedicated Good and Not Good marketing CSV subsets
+        df_good = df_catalog[df_catalog['product_is_good_for_new_marketing'] == True].copy()
+        df_not_good = df_catalog[df_catalog['product_is_good_for_new_marketing'] == False].copy()
+
+        # Save to custom_data/<userSessionGUID>/
+        session_good_csv = os.path.join(session_dir, 'result_good_for_new_marketing.csv')
+        session_not_good_csv = os.path.join(session_dir, 'result_not_good_for_new_marketing.csv')
+        df_good.to_csv(session_good_csv, index=False)
+        df_not_good.to_csv(session_not_good_csv, index=False)
+
+        # Mirror copy to step5_dss/
+        step5_dir = os.path.join(BASE_DIR, 'step5_dss')
+        os.makedirs(step5_dir, exist_ok=True)
+        df_good.to_csv(os.path.join(step5_dir, 'result_good_for_new_marketing.csv'), index=False)
+        df_not_good.to_csv(os.path.join(step5_dir, 'result_not_good_for_new_marketing.csv'), index=False)
+        logger.info(f"Saved DSS CSVs for session {user_session_guid}: good={len(df_good)}, not_good={len(df_not_good)}")
+
         step_timings['step5_dss'] = round(time.time() - t5_start, 3)
 
         # ----------------------------------------------------------------------

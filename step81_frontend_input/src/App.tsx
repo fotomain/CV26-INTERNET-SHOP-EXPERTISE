@@ -20,6 +20,7 @@ import { FileUploadZone } from './components/FileUploadZone';
 import { CountrySelector } from './components/CountrySelector';
 import { ProgressTracker } from './components/ProgressTracker';
 import { CapstoneReportComponent } from './components/CapstoneReportComponent';
+import { autoDownloadCsvFiles } from './utils/fileDownloader';
 import { Play, AlertCircle, Sparkles, ShieldCheck, Zap, Rocket } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -44,10 +45,14 @@ export const App: React.FC = () => {
 
     const unsubscribeProgress = subscribeToProgress(userSessionGUID, (p) => {
       dispatch(updateProgressData(p));
+      if (p.percent >= 100) {
+        autoDownloadCsvFiles(userSessionGUID);
+      }
     });
 
     const unsubscribeResults = subscribeToResults(userSessionGUID, (r) => {
       dispatch(setResultData(r));
+      autoDownloadCsvFiles(userSessionGUID);
     });
 
     return () => {
@@ -55,6 +60,13 @@ export const App: React.FC = () => {
       unsubscribeResults();
     };
   }, [userSessionGUID, isSubmitting, dispatch]);
+
+  // Also monitor progress state changes
+  useEffect(() => {
+    if (progress.percent >= 100 && userSessionGUID) {
+      autoDownloadCsvFiles(userSessionGUID);
+    }
+  }, [progress.percent, userSessionGUID]);
 
   const handleExecuteML = () => {
     dispatch(executeMLAction());

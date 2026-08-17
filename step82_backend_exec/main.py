@@ -93,6 +93,34 @@ def get_results_endpoint(userSessionGUID: str):
         "results": results
     }
 
+@app.get("/api/download/{userSessionGUID}/{filename}")
+def download_session_file(userSessionGUID: str, filename: str):
+    """
+    Downloads generated CSV or JSON results for a userSessionGUID.
+    Supports result_good_for_new_marketing.csv, result_not_good_for_new_marketing.csv, etc.
+    """
+    # Sanitize filename
+    safe_name = os.path.basename(filename)
+    session_file = os.path.join(CUSTOM_DATA_ROOT, userSessionGUID, safe_name)
+
+    if os.path.exists(session_file):
+        return FileResponse(
+            path=session_file,
+            filename=safe_name,
+            media_type="text/csv" if safe_name.endswith(".csv") else "application/json"
+        )
+
+    # Fallback to step5_dss default file if applicable
+    step5_fallback = os.path.join(BASE_DIR, 'step5_dss', safe_name)
+    if os.path.exists(step5_fallback):
+        return FileResponse(
+            path=step5_fallback,
+            filename=safe_name,
+            media_type="text/csv" if safe_name.endswith(".csv") else "application/json"
+        )
+
+    raise HTTPException(status_code=404, detail=f"File '{safe_name}' not found for session '{userSessionGUID}'.")
+
 @app.post("/api/execute-ml")
 async def execute_ml(
     background_tasks: BackgroundTasks,

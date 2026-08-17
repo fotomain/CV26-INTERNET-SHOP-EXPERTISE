@@ -49,7 +49,7 @@
       "OpenCV HSV color-space skin tone segmentation & removal",
       "Extreme luminance clipping (pure studio white & black clipping)"
     ],
-    "training_duration_seconds": 205.6093
+    "training_duration_seconds": 189.488
   },
   "catalog_evaluation_statistics": {
     "total_products_evaluated": 200,
@@ -67,73 +67,73 @@
         "percentage": 69.0
       },
       "Tier 2: Standard Marketing Candidate": {
-        "count": 37,
-        "percentage": 18.5
+        "count": 52,
+        "percentage": 26.0
       },
       "Tier 1: Prime Marketing Candidate": {
-        "count": 25,
-        "percentage": 12.5
+        "count": 10,
+        "percentage": 5.0
       }
     },
     "palette_affinity_breakdown": {
       "Palette 1 (Core & Classic Neutrals)": {
-        "count": 124,
-        "percentage": 62.0
+        "count": 110,
+        "percentage": 55.0
       },
       "Palette 2 (Contemporary & Earthy Street)": {
-        "count": 57,
-        "percentage": 28.5
+        "count": 64,
+        "percentage": 32.0
       },
       "Palette 3 (Vibrant Statement & Accents)": {
-        "count": 19,
-        "percentage": 9.5
+        "count": 26,
+        "percentage": 13.0
       }
     },
     "demographic_segment_breakdown": {
       "Men": {
         "total_items": 21,
-        "approved_count": 12,
-        "approved_percentage": 57.14,
-        "mean_delta_e": 12.28,
-        "mean_compatibility_score": 0.5828
+        "approved_count": 11,
+        "approved_percentage": 52.38,
+        "mean_delta_e": 13.71,
+        "mean_compatibility_score": 0.5387
       },
       "Unisex": {
         "total_items": 70,
-        "approved_count": 14,
-        "approved_percentage": 20.0,
-        "mean_delta_e": 14.84,
-        "mean_compatibility_score": 0.5016
+        "approved_count": 19,
+        "approved_percentage": 27.14,
+        "mean_delta_e": 14.48,
+        "mean_compatibility_score": 0.5074
       },
       "Women": {
         "total_items": 109,
-        "approved_count": 36,
-        "approved_percentage": 33.03,
-        "mean_delta_e": 13.95,
-        "mean_compatibility_score": 0.5322
+        "approved_count": 32,
+        "approved_percentage": 29.36,
+        "mean_delta_e": 15.26,
+        "mean_compatibility_score": 0.5016
       }
     },
     "statistical_distributions": {
       "color_difference_delta_e": {
-        "mean": 14.085,
-        "median": 12.61,
-        "std_dev": 8.102,
-        "min": 3.62,
-        "max": 55.43
+        "mean": 14.824,
+        "median": 13.17,
+        "std_dev": 8.177,
+        "min": 3.53,
+        "max": 60.2
       },
       "compatibility_score": {
-        "mean": 0.5268,
-        "median": 0.5324,
-        "std_dev": 0.1558,
-        "min": 0.0626,
-        "max": 0.8343
+        "mean": 0.5075,
+        "median": 0.5176,
+        "std_dev": 0.1455,
+        "min": 0.0493,
+        "max": 0.838
       }
     },
-    "inference_duration_seconds": 0.374,
-    "total_pipeline_time_seconds": 205.9832
+    "inference_duration_seconds": 0.3349,
+    "total_pipeline_time_seconds": 189.823
   },
   "expert_conclusions": [
     "31.0% of catalog products (62/200) satisfy United States target market baseline (\u0394E <= 13.5, Score >= 0.6).",
-    "Mean color difference \u0394E = 14.09 reflects high aesthetic compatibility with casual fashion trends.",
-    "Inference latency of 1.87 ms/item allows real-time scoring of 1M+ SKU feeds."
+    "Mean color difference \u0394E = 14.82 reflects high aesthetic compatibility with casual fashion trends.",
+    "Inference latency of 1.67 ms/item allows real-time scoring of 1M+ SKU feeds."
   ]
 }

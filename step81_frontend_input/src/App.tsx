@@ -9,8 +9,12 @@ import {
   clearCountryImagesMan,
   addCountryImagesWoman,
   clearCountryImagesWoman,
+  setFileErrors,
   clearFileErrors,
+  FileItem,
 } from './store/slices/sessionSlice';
+import { DEFAULT_FILE_SIZE_LIMIT_BYTES, DEFAULT_NUMBER_OF_FILES } from './constants/config';
+import { registerFile } from './utils/fileRegistry';
 import { updateProgressData } from './store/slices/progressSlice';
 import { setResultData } from './store/slices/resultSlice';
 import { executeMLAction } from './store/sagas/mlExecutionSaga';
@@ -67,6 +71,96 @@ export const App: React.FC = () => {
       autoDownloadCsvFiles(userSessionGUID);
     }
   }, [progress.percent, userSessionGUID]);
+
+  const handleAddDatasetFiles = (files: File[]) => {
+    const newErrors: string[] = [];
+    const validItems: FileItem[] = [];
+
+    files.forEach((file) => {
+      if (file.size > DEFAULT_FILE_SIZE_LIMIT_BYTES) {
+        newErrors.push(`"${file.name}" exceeds 1MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB).`);
+      } else if (customDatasetFiles.length + validItems.length >= DEFAULT_NUMBER_OF_FILES) {
+        newErrors.push(`Exceeded maximum limit of ${DEFAULT_NUMBER_OF_FILES} files.`);
+      } else {
+        const id = `catalog-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+        registerFile(id, file);
+        validItems.push({
+          id,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          lastModified: file.lastModified,
+        });
+      }
+    });
+
+    if (validItems.length > 0) {
+      dispatch(addDatasetFiles(validItems));
+    }
+    if (newErrors.length > 0) {
+      dispatch(setFileErrors(newErrors));
+    }
+  };
+
+  const handleAddCountryImagesMan = (files: File[]) => {
+    const newErrors: string[] = [];
+    const validItems: FileItem[] = [];
+
+    files.forEach((file) => {
+      if (file.size > DEFAULT_FILE_SIZE_LIMIT_BYTES) {
+        newErrors.push(`"${file.name}" exceeds 1MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB).`);
+      } else if (customCountryImagesMan.length + validItems.length >= DEFAULT_NUMBER_OF_FILES) {
+        newErrors.push(`Exceeded maximum limit of ${DEFAULT_NUMBER_OF_FILES} files.`);
+      } else {
+        const id = `man-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+        registerFile(id, file);
+        validItems.push({
+          id,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          lastModified: file.lastModified,
+        });
+      }
+    });
+
+    if (validItems.length > 0) {
+      dispatch(addCountryImagesMan(validItems));
+    }
+    if (newErrors.length > 0) {
+      dispatch(setFileErrors(newErrors));
+    }
+  };
+
+  const handleAddCountryImagesWoman = (files: File[]) => {
+    const newErrors: string[] = [];
+    const validItems: FileItem[] = [];
+
+    files.forEach((file) => {
+      if (file.size > DEFAULT_FILE_SIZE_LIMIT_BYTES) {
+        newErrors.push(`"${file.name}" exceeds 1MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB).`);
+      } else if (customCountryImagesWoman.length + validItems.length >= DEFAULT_NUMBER_OF_FILES) {
+        newErrors.push(`Exceeded maximum limit of ${DEFAULT_NUMBER_OF_FILES} files.`);
+      } else {
+        const id = `woman-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+        registerFile(id, file);
+        validItems.push({
+          id,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          lastModified: file.lastModified,
+        });
+      }
+    });
+
+    if (validItems.length > 0) {
+      dispatch(addCountryImagesWoman(validItems));
+    }
+    if (newErrors.length > 0) {
+      dispatch(setFileErrors(newErrors));
+    }
+  };
 
   const handleExecuteML = () => {
     dispatch(executeMLAction());
@@ -227,7 +321,7 @@ export const App: React.FC = () => {
             badgeText="Catalog Items"
             badgeColor="blue"
             files={customDatasetFiles}
-            onAddFiles={(files) => dispatch(addDatasetFiles(files))}
+            onAddFiles={handleAddDatasetFiles}
             onClearFiles={() => dispatch(clearDatasetFiles())}
             buttonLabel="Select custom_dataset_start"
           />
@@ -239,7 +333,7 @@ export const App: React.FC = () => {
             badgeText="Men Style DNA"
             badgeColor="purple"
             files={customCountryImagesMan}
-            onAddFiles={(files) => dispatch(addCountryImagesMan(files))}
+            onAddFiles={handleAddCountryImagesMan}
             onClearFiles={() => dispatch(clearCountryImagesMan())}
             buttonLabel="Select custom_country_images_man"
           />
@@ -251,7 +345,7 @@ export const App: React.FC = () => {
             badgeText="Women Style DNA"
             badgeColor="rose"
             files={customCountryImagesWoman}
-            onAddFiles={(files) => dispatch(addCountryImagesWoman(files))}
+            onAddFiles={handleAddCountryImagesWoman}
             onClearFiles={() => dispatch(clearCountryImagesWoman())}
             buttonLabel="Select custom_country_images_woman"
           />

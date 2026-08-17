@@ -1,13 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getUserSessionGUID } from '../../utils/session';
 import { DEFAULT_FILE_SIZE_LIMIT_BYTES, DEFAULT_NUMBER_OF_FILES } from '../../constants/config';
+import { registerFile, removeFiles, clearAllFiles } from '../../utils/fileRegistry';
 
 export interface FileItem {
   id: string;
   name: string;
   size: number;
   type: string;
-  file: File;
+  lastModified: number;
 }
 
 export interface SessionState {
@@ -39,83 +40,32 @@ export const sessionSlice = createSlice({
     setCustomCountryName: (state, action: PayloadAction<string>) => {
       state.customCountryName = action.payload;
     },
-    addDatasetFiles: (state, action: PayloadAction<File[]>) => {
-      const newErrors: string[] = [];
-      const validFiles: FileItem[] = [];
-
-      action.payload.forEach((file) => {
-        if (file.size > DEFAULT_FILE_SIZE_LIMIT_BYTES) {
-          newErrors.push(`"${file.name}" exceeds 1MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB).`);
-        } else if (state.customDatasetFiles.length + validFiles.length >= DEFAULT_NUMBER_OF_FILES) {
-          newErrors.push(`Exceeded maximum limit of ${DEFAULT_NUMBER_OF_FILES} files.`);
-        } else {
-          validFiles.push({
-            id: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            file: file,
-          });
-        }
-      });
-
-      state.customDatasetFiles.push(...validFiles);
-      state.fileErrors = newErrors;
+    addDatasetFiles: (state, action: PayloadAction<FileItem[]>) => {
+      state.customDatasetFiles.push(...action.payload);
     },
     clearDatasetFiles: (state) => {
+      const ids = state.customDatasetFiles.map((f) => f.id);
+      removeFiles(ids);
       state.customDatasetFiles = [];
     },
-    addCountryImagesMan: (state, action: PayloadAction<File[]>) => {
-      const newErrors: string[] = [];
-      const validFiles: FileItem[] = [];
-
-      action.payload.forEach((file) => {
-        if (file.size > DEFAULT_FILE_SIZE_LIMIT_BYTES) {
-          newErrors.push(`"${file.name}" exceeds 1MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB).`);
-        } else if (state.customCountryImagesMan.length + validFiles.length >= DEFAULT_NUMBER_OF_FILES) {
-          newErrors.push(`Exceeded maximum limit of ${DEFAULT_NUMBER_OF_FILES} files.`);
-        } else {
-          validFiles.push({
-            id: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            file: file,
-          });
-        }
-      });
-
-      state.customCountryImagesMan.push(...validFiles);
-      state.fileErrors = newErrors;
+    addCountryImagesMan: (state, action: PayloadAction<FileItem[]>) => {
+      state.customCountryImagesMan.push(...action.payload);
     },
     clearCountryImagesMan: (state) => {
+      const ids = state.customCountryImagesMan.map((f) => f.id);
+      removeFiles(ids);
       state.customCountryImagesMan = [];
     },
-    addCountryImagesWoman: (state, action: PayloadAction<File[]>) => {
-      const newErrors: string[] = [];
-      const validFiles: FileItem[] = [];
-
-      action.payload.forEach((file) => {
-        if (file.size > DEFAULT_FILE_SIZE_LIMIT_BYTES) {
-          newErrors.push(`"${file.name}" exceeds 1MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB).`);
-        } else if (state.customCountryImagesWoman.length + validFiles.length >= DEFAULT_NUMBER_OF_FILES) {
-          newErrors.push(`Exceeded maximum limit of ${DEFAULT_NUMBER_OF_FILES} files.`);
-        } else {
-          validFiles.push({
-            id: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            file: file,
-          });
-        }
-      });
-
-      state.customCountryImagesWoman.push(...validFiles);
-      state.fileErrors = newErrors;
+    addCountryImagesWoman: (state, action: PayloadAction<FileItem[]>) => {
+      state.customCountryImagesWoman.push(...action.payload);
     },
     clearCountryImagesWoman: (state) => {
+      const ids = state.customCountryImagesWoman.map((f) => f.id);
+      removeFiles(ids);
       state.customCountryImagesWoman = [];
+    },
+    setFileErrors: (state, action: PayloadAction<string[]>) => {
+      state.fileErrors = action.payload;
     },
     clearFileErrors: (state) => {
       state.fileErrors = [];
@@ -142,6 +92,7 @@ export const {
   clearCountryImagesMan,
   addCountryImagesWoman,
   clearCountryImagesWoman,
+  setFileErrors,
   clearFileErrors,
   startExecution,
   executionSuccess,

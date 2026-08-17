@@ -12,6 +12,7 @@ import {
 import { setResultData, clearResults } from '../slices/resultSlice';
 import { executeMLApi, fetchProgressApi, fetchResultsApi } from '../../services/api';
 import { autoDownloadCsvFiles } from '../../utils/fileDownloader';
+import { getFiles } from '../../utils/fileRegistry';
 
 export const EXECUTE_ML_REQUEST = 'session/EXECUTE_ML_REQUEST';
 
@@ -42,9 +43,9 @@ function* handleExecuteML(): any {
       })
     );
 
-    const datasetFiles = customDatasetFiles.map((item: any) => item.file);
-    const manFiles = customCountryImagesMan.map((item: any) => item.file);
-    const womanFiles = customCountryImagesWoman.map((item: any) => item.file);
+    const datasetFiles = getFiles(customDatasetFiles.map((item: any) => item.id));
+    const manFiles = getFiles(customCountryImagesMan.map((item: any) => item.id));
+    const womanFiles = getFiles(customCountryImagesWoman.map((item: any) => item.id));
 
     yield call(executeMLApi, {
       userSessionGUID,

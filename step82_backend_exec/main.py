@@ -346,8 +346,17 @@ async def execute_ml(
                 logger.warning(f"Warning ingesting lookbook file '{uf.filename}': {ve}")
                 log_error(userSessionGUID, str(ve), error_type="Warning", details={"filename": uf.filename})
 
-    total_country_files = len(saved_man_files) + len(saved_woman_files)
-    logger.info(f"Saved {len(saved_dataset_files)} candidate items, {len(saved_man_files)} man images, and {len(saved_woman_files)} woman images for session {userSessionGUID}")
+    # Detect all files in session directory (from batch uploads or direct multipart)
+    has_dataset_files = (len(saved_dataset_files) > 0) or (os.path.exists(dataset_start_dir) and len([f for f in os.listdir(dataset_start_dir) if not f.startswith('.')]) > 0)
+    has_man_files = (len(saved_man_files) > 0) or (os.path.exists(country_man_dir) and len([f for f in os.listdir(country_man_dir) if not f.startswith('.')]) > 0)
+    has_woman_files = (len(saved_woman_files) > 0) or (os.path.exists(country_woman_dir) and len([f for f in os.listdir(country_woman_dir) if not f.startswith('.')]) > 0)
+    has_country_files = has_man_files or has_woman_files
+
+    dataset_count = len(saved_dataset_files) if saved_dataset_files else (len([f for f in os.listdir(dataset_start_dir) if not f.startswith('.')]) if os.path.exists(dataset_start_dir) else 0)
+    man_count = len(saved_man_files) if saved_man_files else (len([f for f in os.listdir(country_man_dir) if not f.startswith('.')]) if os.path.exists(country_man_dir) else 0)
+    woman_count = len(saved_woman_files) if saved_woman_files else (len([f for f in os.listdir(country_woman_dir) if not f.startswith('.')]) if os.path.exists(country_woman_dir) else 0)
+
+    logger.info(f"Ingested for session {userSessionGUID}: {dataset_count} candidate items, {man_count} man images, and {woman_count} woman images")
 
     # Launch background ML pipeline task
     background_tasks.add_task(
@@ -355,8 +364,8 @@ async def execute_ml(
         user_session_guid=userSessionGUID,
         session_dir=session_dir,
         custom_country_name=custom_country_name,
-        custom_dataset_dir=dataset_start_dir if saved_dataset_files else None,
-        custom_country_dir=country_images_dir if total_country_files > 0 else None
+        custom_dataset_dir=dataset_start_dir if has_dataset_files else None,
+        custom_country_dir=country_images_dir if has_country_files else None
     )
 
     update_progress(
@@ -364,7 +373,7 @@ async def execute_ml(
         percent=1,
         step_id=0,
         step_name="Request Enqueued",
-        details=f"Received {len(saved_dataset_files)} candidate catalog files, {len(saved_man_files)} men lookbook photos, {len(saved_woman_files)} women lookbook photos."
+        details=f"Received {dataset_count} candidate catalog files, {man_count} men lookbook photos, {woman_count} women lookbook photos."
     )
 
     return {
@@ -372,9 +381,9 @@ async def execute_ml(
         "message": "ML Pipeline execution initiated in background.",
         "userSessionGUID": userSessionGUID,
         "customCountryName": custom_country_name,
-        "candidateFilesCount": len(saved_dataset_files),
-        "countryImagesManCount": len(saved_man_files),
-        "countryImagesWomanCount": len(saved_woman_files),
+        "candidateFilesCount": dataset_count,
+        "countryImagesManCount": man_count,
+        "countryImagesWomanCount": woman_count,
         "progressUrl": f"/api/progress/{userSessionGUID}",
         "resultsUrl": f"/api/results/{userSessionGUID}"
     }

@@ -225,7 +225,7 @@ def run_custom_ml_pipeline(
             # Fallback to default start dataset
             default_csv = os.path.join(BASE_DIR, 'step1_eda', 'result3.csv')
             if os.path.exists(default_csv):
-                df_def = pd.read_csv(default_csv).head(50)
+                df_def = pd.read_csv(default_csv)
                 for idx, row in df_def.iterrows():
                     items_data.append({
                         "item_id": int(row.get('item_id', idx + 1)),

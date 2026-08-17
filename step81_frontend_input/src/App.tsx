@@ -35,9 +35,9 @@ export const App: React.FC = () => {
   const { progress } = useSelector((state: RootState) => state.progress);
   const { hasResults } = useSelector((state: RootState) => state.result);
 
-  // Subscribe to Supabase Realtime Channels for userSessionGUID
+  // Subscribe to Supabase Realtime Channels only when execution is active
   useEffect(() => {
-    if (!userSessionGUID) return;
+    if (!userSessionGUID || !isSubmitting) return;
 
     const unsubscribeProgress = subscribeToProgress(userSessionGUID, (p) => {
       dispatch(updateProgressData(p));
@@ -51,7 +51,7 @@ export const App: React.FC = () => {
       unsubscribeProgress();
       unsubscribeResults();
     };
-  }, [userSessionGUID, dispatch]);
+  }, [userSessionGUID, isSubmitting, dispatch]);
 
   const handleExecuteML = () => {
     dispatch(executeMLAction());

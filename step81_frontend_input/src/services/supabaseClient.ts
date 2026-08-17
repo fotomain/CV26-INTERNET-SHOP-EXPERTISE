@@ -35,12 +35,50 @@ export interface SupabaseResultPayload {
 }
 
 /**
+ * Fetch progress directly from Supabase REST API without opening a persistent WebSocket.
+ */
+export async function fetchSupabaseProgressDirect(userSessionGUID: string): Promise<SupabaseProgressPayload | null> {
+  try {
+    const { data, error } = await supabase
+      .from('cv26ShopProgressTable')
+      .select('progressDataJSON')
+      .eq('userSessionGUID', userSessionGUID)
+      .single();
+
+    if (error || !data) return null;
+    return (data as any).progressDataJSON || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetch results directly from Supabase REST API.
+ */
+export async function fetchSupabaseResultsDirect(userSessionGUID: string): Promise<SupabaseResultPayload | null> {
+  try {
+    const { data, error } = await supabase
+      .from('cv26ShopResultsTable')
+      .select('resultDataJSON')
+      .eq('userSessionGUID', userSessionGUID)
+      .single();
+
+    if (error || !data) return null;
+    return (data as any).resultDataJSON || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Subscribes to real-time progress updates on cv26ShopProgressTable for a specific userSessionGUID.
  */
 export function subscribeToProgress(
   userSessionGUID: string,
   onProgress: (progress: SupabaseProgressPayload) => void
 ) {
+  if (!userSessionGUID) return () => {};
+
   const channel = supabase
     .channel(`progress-${userSessionGUID}`)
     .on(
@@ -60,7 +98,11 @@ export function subscribeToProgress(
     .subscribe();
 
   return () => {
-    supabase.removeChannel(channel);
+    try {
+      supabase.removeChannel(channel);
+    } catch {
+      // Clean teardown
+    }
   };
 }
 
@@ -71,6 +113,8 @@ export function subscribeToResults(
   userSessionGUID: string,
   onResult: (results: SupabaseResultPayload) => void
 ) {
+  if (!userSessionGUID) return () => {};
+
   const channel = supabase
     .channel(`results-${userSessionGUID}`)
     .on(
@@ -90,6 +134,10 @@ export function subscribeToResults(
     .subscribe();
 
   return () => {
-    supabase.removeChannel(channel);
+    try {
+      supabase.removeChannel(channel);
+    } catch {
+      // Clean teardown
+    }
   };
 }

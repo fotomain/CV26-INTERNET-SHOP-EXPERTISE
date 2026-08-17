@@ -323,7 +323,8 @@ export const App: React.FC = () => {
             files={customDatasetFiles}
             onAddFiles={handleAddDatasetFiles}
             onClearFiles={() => dispatch(clearDatasetFiles())}
-            buttonLabel="Select custom_dataset_start"
+            buttonLabel="Select Files"
+            folderButtonLabel="Select Folder"
           />
 
           {/* 2. Target Market Men Lookbook (Purple Accent) */}
@@ -335,7 +336,8 @@ export const App: React.FC = () => {
             files={customCountryImagesMan}
             onAddFiles={handleAddCountryImagesMan}
             onClearFiles={() => dispatch(clearCountryImagesMan())}
-            buttonLabel="Select custom_country_images_man"
+            buttonLabel="Select Files"
+            folderButtonLabel="Select Folder"
           />
 
           {/* 3. Target Market Women Lookbook (Rose Accent) */}
@@ -347,7 +349,8 @@ export const App: React.FC = () => {
             files={customCountryImagesWoman}
             onAddFiles={handleAddCountryImagesWoman}
             onClearFiles={() => dispatch(clearCountryImagesWoman())}
-            buttonLabel="Select custom_country_images_woman"
+            buttonLabel="Select Files"
+            folderButtonLabel="Select Folder"
           />
         </div>
 

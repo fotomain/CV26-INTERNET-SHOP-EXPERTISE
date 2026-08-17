@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Upload, Trash2, FileCheck, Sparkles, FolderPlus } from 'lucide-react';
+import { Upload, Trash2, FileCheck, Sparkles, FolderPlus, FolderOpen, Files } from 'lucide-react';
 import { FileItem } from '../store/slices/sessionSlice';
 import { DEFAULT_FILE_SIZE_LIMIT_MB, DEFAULT_NUMBER_OF_FILES } from '../constants/config';
 
@@ -13,6 +13,7 @@ interface FileUploadZoneProps {
   onClearFiles: () => void;
   acceptTypes?: string;
   buttonLabel?: string;
+  folderButtonLabel?: string;
 }
 
 export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
@@ -25,8 +26,10 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
   onClearFiles,
   acceptTypes = 'image/jpeg,image/png,image/webp,.csv',
   buttonLabel = 'Select Files',
+  folderButtonLabel = 'Select Folder',
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const folderInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -43,16 +46,37 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      onAddFiles(Array.from(e.dataTransfer.files));
+      const validFiles = Array.from(e.dataTransfer.files).filter(
+        (f) => !f.name.startsWith('.') && !f.name.toLowerCase().includes('thumbs.db')
+      );
+      onAddFiles(validFiles);
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      onAddFiles(Array.from(e.target.files));
+      const validFiles = Array.from(e.target.files).filter(
+        (f) => !f.name.startsWith('.') && !f.name.toLowerCase().includes('thumbs.db')
+      );
+      onAddFiles(validFiles);
     }
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  const handleFolderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      // Automatically include all valid files from selected folder
+      const allFolderFiles = Array.from(e.target.files).filter((f) => {
+        const isHidden = f.name.startsWith('.') || f.name.toLowerCase().includes('thumbs.db');
+        return !isHidden;
+      });
+      console.log(`[FolderUpload] Automatically extracted ${allFolderFiles.length} files from selected folder`);
+      onAddFiles(allFolderFiles);
+    }
+    if (folderInputRef.current) {
+      folderInputRef.current.value = '';
     }
   };
 
@@ -166,22 +190,21 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
         style={{
           border: isDragging ? '2px dashed #f59e0b' : `2px dashed ${badgeBorder}`,
           background: isDragging ? '#fffbeb' : cardBg,
           borderRadius: '14px',
           padding: '24px 16px',
           textAlign: 'center',
-          cursor: 'pointer',
           transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '10px'
+          gap: '12px'
         }}
       >
+        {/* Hidden File Input */}
         <input
           ref={fileInputRef}
           type="file"
@@ -190,6 +213,17 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
           onChange={handleFileChange}
           style={{ display: 'none' }}
         />
+
+        {/* Hidden Folder / Directory Input */}
+        <input
+          ref={folderInputRef}
+          type="file"
+          multiple
+          {...({ webkitdirectory: '', directory: '', mozdirectory: '' } as any)}
+          onChange={handleFolderChange}
+          style={{ display: 'none' }}
+        />
+
         <div style={{
           width: '44px',
           height: '44px',
@@ -204,38 +238,70 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
         }}>
           <FolderPlus size={20} color={iconColor} />
         </div>
+
         <div>
           <p style={{ fontSize: '13.5px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-            Drag &amp; drop files, or <span style={{ color: iconColor, textDecoration: 'underline' }}>browse</span>
+            Drag &amp; drop files or folders here
           </p>
           <p style={{ fontSize: '11.5px', color: '#64748b', margin: '3px 0 0 0' }}>
-            Max <strong>{DEFAULT_FILE_SIZE_LIMIT_MB}MB</strong> &bull; Up to <strong>{DEFAULT_NUMBER_OF_FILES} files</strong>
+            Max <strong>{DEFAULT_FILE_SIZE_LIMIT_MB}MB</strong> per file &bull; Up to <strong>{DEFAULT_NUMBER_OF_FILES} files</strong>
           </p>
         </div>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            fileInputRef.current?.click();
-          }}
-          style={{
-            background: accentGradient,
-            border: 'none',
-            color: '#ffffff',
-            padding: '7px 16px',
-            borderRadius: '9px',
-            fontSize: '12.5px',
-            fontWeight: 700,
-            cursor: 'pointer',
-            boxShadow: '0 3px 10px rgba(0, 0, 0, 0.12)',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}
-        >
-          <Upload size={13} />
-          {buttonLabel}
-        </button>
+
+        {/* Two Buttons: Select Files & Select Folder */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              fileInputRef.current?.click();
+            }}
+            style={{
+              background: accentGradient,
+              border: 'none',
+              color: '#ffffff',
+              padding: '7px 15px',
+              borderRadius: '9px',
+              fontSize: '12.5px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 3px 10px rgba(0, 0, 0, 0.12)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <Files size={14} />
+            {buttonLabel}
+          </button>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              folderInputRef.current?.click();
+            }}
+            style={{
+              background: '#ffffff',
+              border: `1.5px solid ${badgeBorder}`,
+              color: badgeTextColor,
+              padding: '7px 15px',
+              borderRadius: '9px',
+              fontSize: '12.5px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <FolderOpen size={14} color={iconColor} />
+            {folderButtonLabel}
+          </button>
+        </div>
       </div>
 
       {/* Files Attached Summary */}
@@ -254,7 +320,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <FileCheck size={16} color="#16a34a" />
             <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#0f172a' }}>
-              {files.length} {files.length === 1 ? 'file' : 'files'}
+              {files.length} {files.length === 1 ? 'file' : 'files'} attached
             </span>
             <span style={{ fontSize: '11.5px', color: '#64748b', fontWeight: 600 }}>
               ({totalSizeMB} MB)
@@ -299,7 +365,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
           fontWeight: 500
         }}>
           <Sparkles size={13} color="#f59e0b" />
-          <span>No files attached (uses default lookbook images).</span>
+          <span>No files attached (uses default dataset/lookbook).</span>
         </div>
       )}
     </div>

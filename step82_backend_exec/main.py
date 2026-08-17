@@ -20,7 +20,7 @@ if BASE_DIR not in sys.path:
 from step82_backend_exec.image_preprocessor import (
     validate_and_save_image,
     ImageValidationError,
-    DEFAULT_MAX_FILE_SIZE_BYTES
+    MAX_FILE_SIZE_BYTES
 )
 from step82_backend_exec.supabase_service import (
     update_progress,
@@ -44,13 +44,16 @@ app = FastAPI(
     description="Asynchronous ML Execution Server for Catalog Classification & Demographic Matching"
 )
 
-# Configure CORS
+# Configure fully permissive CORS for all origins, headers, and methods
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_origin_regex=r"^https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=86400,
 )
 
 CUSTOM_DATA_ROOT = os.path.join(BASE_DIR, "custom_data")

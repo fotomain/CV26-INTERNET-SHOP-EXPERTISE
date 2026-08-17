@@ -123,6 +123,11 @@ def process_palette_data(input_csv_path: str, output_csv_path: str, images_dir: 
     df['palette_of_image_html'] = palette_of_image_html_list
     df['palette_primary_color'] = palette_primary_color_list
 
+    # Ensure image_path column is the very last column
+    if 'image_path' in df.columns:
+        ordered_cols = [c for c in df.columns if c != 'image_path'] + ['image_path']
+        df = df[ordered_cols]
+
     # Ensure output directory exists and save
     os.makedirs(os.path.dirname(os.path.abspath(output_csv_path)), exist_ok=True)
     df.to_csv(output_csv_path, index=False)

@@ -138,6 +138,11 @@ def process_ready_to_sale(input_csv_path: str, output_csv_path: str):
     df['ready_to_sale'] = ready_to_sale_list
     df['ready_to_sale_reason'] = reasons_list
 
+    # Ensure image_path column is the very last column
+    if 'image_path' in df.columns:
+        ordered_cols = [c for c in df.columns if c != 'image_path'] + ['image_path']
+        df = df[ordered_cols]
+
     # Ensure output directory exists
     os.makedirs(os.path.dirname(os.path.abspath(output_csv_path)), exist_ok=True)
     df.to_csv(output_csv_path, index=False)

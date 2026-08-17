@@ -1,10 +1,10 @@
 step_id,step_name,category,time_200_items_sec,per_item_ms,time_10k_seq_sec,time_10k_seq_formatted,time_10k_opt_formatted,time_1m_seq_sec,time_1m_seq_formatted,time_1m_opt_formatted
-1,Dataset I/O & CSV Ingestion,I/O,0.008,0.042,0.42,0.42s,0.06s,41.64,41.64s,6.12s
-2,CNN Fashion-MNIST Classification,Deep Learning Inference,9.544,47.718,477.18,7m 57s (477.2s),56.14s,47718.05,13h 15m (13:15:18),1h 33m (01:33:33)
-3,Haar Face & Head Exclusion Detection,Computer Vision,4.725,23.626,236.26,3m 56s (236.3s),34.74s,23625.5,6h 33m (06:33:45),57m 54s (3474.3s)
-4,Skin Mask Extraction (HSV + YCrCb),Computer Vision,0.124,0.62,6.2,6.20s,0.91s,620.34,10m 20s (620.3s),1m 31s (91.2s)
-5,Studio Background Segmentation & Morphology,Computer Vision,0.768,3.84,38.4,38.40s,5.65s,3839.98,1h 03m (01:03:59),9m 24s (564.7s)
-6,K-Means Color Palette Clustering (palette_of_image),Machine Learning / Clustering,9.039,45.193,451.93,7m 31s (451.9s),1m 06s (66.5s),45193.18,12h 33m (12:33:13),1h 50m (01:50:46)
-7,Gender Attribute Classification,Text & Rule NLP,0.009,0.047,0.47,0.47s,0.07s,46.89,46.89s,6.89s
-8,Mission 2: ready_to_sale Matching,Semantic Text Processing,0.009,0.044,0.44,0.44s,0.06s,43.76,43.76s,6.44s
+1,Dataset I/O & CSV Ingestion,I/O,0.005,0.027,0.27,0.27s,0.04s,27.31,27.31s,4.02s
+2,CNN Fashion-MNIST Classification,Deep Learning Inference,9.849,49.246,492.46,8m 12s (492.5s),57.94s,49246.37,13h 40m (13:40:46),1h 36m (01:36:33)
+3,Haar Face & Head Exclusion Detection,Computer Vision,5.058,25.289,252.89,4m 12s (252.9s),37.19s,25289.13,7h 01m (07:01:29),1h 01m (01:01:58)
+4,Skin Mask Extraction (HSV + YCrCb),Computer Vision,0.131,0.657,6.57,6.57s,0.97s,656.58,10m 56s (656.6s),1m 36s (96.6s)
+5,Studio Background Segmentation & Morphology,Computer Vision,0.81,4.049,40.49,40.49s,5.95s,4048.94,1h 07m (01:07:28),9m 55s (595.4s)
+6,K-Means Color Palette Clustering (palette_of_image),Machine Learning / Clustering,9.428,47.142,471.42,7m 51s (471.4s),1m 09s (69.3s),47141.64,13h 05m (13:05:41),1h 55m (01:55:32)
+7,Gender Attribute Classification,Text & Rule NLP,0.009,0.045,0.45,0.45s,0.07s,44.67,44.67s,6.57s
+8,Mission 2: ready_to_sale Matching,Semantic Text Processing,0.009,0.045,0.45,0.45s,0.07s,45.42,45.42s,6.68s
 9,Mission 3: Palette Formatting & HTML Previews,Data Structuring & Export,0.05,0.25,2.5,2.50s,0.37s,250.0,4m 10s (250.0s),36.76s

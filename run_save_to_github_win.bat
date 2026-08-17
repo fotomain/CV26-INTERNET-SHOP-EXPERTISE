@@ -53,7 +53,7 @@ for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format 'yy-MM-dd-HH-mm
 set BRANCH_NAME=ok_%TIMESTAMP%
 echo New branch name: %BRANCH_NAME%
 
-git checkout -b %BRANCH_NAME%
+git checkout -B %BRANCH_NAME%
 if errorlevel 1 goto :error
 
 echo.

@@ -1,13 +1,29 @@
 #!/usr/bin/env bash
 set -e
+set -o pipefail
 
 # ==============================================================================
 # Full Pipeline Execution Runner for macOS / Linux
 # Runs all calculation steps from Mission 1 to Mission 5 sequentially
+# Displays real-time output to the screen and saves it to run_log.txt
 # ==============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
+
+LOG_FILE="run_log.txt"
+
+# If not running as the inner pipeline, tee all output to the screen and run_log.txt
+if [ "$1" != "--inner-run" ]; then
+    echo "================================================================================"
+    echo "    E-COMMERCE PRODUCT CATALOG EXPERTISE & DSS PIPELINE (macOS / Linux)        "
+    echo "================================================================================"
+    echo "Starting full pipeline execution..."
+    echo "Output will be displayed on screen and saved to: $LOG_FILE"
+    echo ""
+    "$0" --inner-run 2>&1 | tee "$LOG_FILE"
+    exit "${PIPESTATUS[0]}"
+fi
 
 echo "================================================================================"
 echo "    E-COMMERCE PRODUCT CATALOG EXPERTISE & DSS PIPELINE (macOS / Linux)        "
@@ -79,7 +95,8 @@ echo "  - Mission 1 Outputs: step1_eda/result1.csv, step1_eda/result_categories.
 echo "  - Mission 2 Output : step1_eda/result2.csv (ready_to_sale)"
 echo "  - Mission 3 Outputs: step1_eda/result3.csv, step3_eda/result3_nb.ipynb"
 echo "  - Mission 3 Logs   : duration/duration_log.md, prognose/prognose_time.md"
-echo "  - Mission 4 Outputs: step4_learn/market_model.pkl, step4_dss/result5.csv"
+echo "  - Mission 4 Outputs: step4_learn/market_model.pkl, step4_learn/market_profile.json"
+echo "                       step4_learn/result4_ml_log.json"
 echo "  - Mission 5 Outputs: step5_dss/result5.csv"
 echo "                       step5_dss/result_good_for_new_marketing.csv"
 echo "                       step5_dss/result_not_good_for_new_marketing.csv"
@@ -87,4 +104,5 @@ echo "                       step5_dss/dss_summary_report.md"
 echo "  - Web Report       : CAPSTONE_REPORT.html"
 echo "  - Web Logic Guide  : HOW_IT_WORKS.html"
 echo "  - Architecture Doc : HOW_IT_WORKS.md"
+echo "  - Pipeline Log     : run_log.txt"
 echo "================================================================================"

@@ -2,15 +2,28 @@
 REM ==============================================================================
 REM Full Pipeline Execution Runner for Windows
 REM Runs all calculation steps from Mission 1 to Mission 5 sequentially
+REM Displays output to screen and saves it into run_log.txt
 REM ==============================================================================
 
 setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
+set "LOG_FILE=run_log.txt"
+
+if "%~1"=="--inner-run" goto :run_pipeline
+
 echo ================================================================================
 echo    E-COMMERCE PRODUCT CATALOG EXPERTISE ^& DSS PIPELINE (Windows)
 echo ================================================================================
+echo Starting full pipeline execution...
+echo Output will be displayed on screen and saved to: %LOG_FILE%
+echo.
 
+REM Run via PowerShell Tee-Object to display on console and record in run_log.txt
+powershell -NoProfile -ExecutionPolicy Bypass -Command "& { & cmd.exe /c '\"\"%~f0\"\" --inner-run' } 2>&1 | Tee-Object -FilePath '%LOG_FILE%'"
+exit /b %ERRORLEVEL%
+
+:run_pipeline
 REM Identify Python executable
 if exist ".venv\Scripts\python.exe" (
     set "PYTHON_EXEC=.venv\Scripts\python.exe"
@@ -20,6 +33,9 @@ if exist ".venv\Scripts\python.exe" (
     set "PYTHON_EXEC=python.exe"
 )
 
+echo ================================================================================
+echo    E-COMMERCE PRODUCT CATALOG EXPERTISE ^& DSS PIPELINE (Windows)
+echo ================================================================================
 echo Using Python: !PYTHON_EXEC!
 echo.
 
@@ -86,7 +102,8 @@ echo   - Mission 1 Outputs: step1_eda\result1.csv, step1_eda\result_categories.c
 echo   - Mission 2 Output : step1_eda\result2.csv (ready_to_sale)
 echo   - Mission 3 Outputs: step1_eda\result3.csv, step3_eda\result3_nb.ipynb
 echo   - Mission 3 Logs   : duration\duration_log.md, prognose\prognose_time.md
-echo   - Mission 4 Outputs: step4_learn\market_model.pkl, step4_dss\result5.csv
+echo   - Mission 4 Outputs: step4_learn\market_model.pkl, step4_learn\market_profile.json
+echo                        step4_learn\result4_ml_log.json
 echo   - Mission 5 Outputs: step5_dss\result5.csv
 echo                        step5_dss\result_good_for_new_marketing.csv
 echo                        step5_dss\result_not_good_for_new_marketing.csv
@@ -94,6 +111,7 @@ echo                        step5_dss\dss_summary_report.md
 echo   - Web Report       : CAPSTONE_REPORT.html
 echo   - Web Logic Guide  : HOW_IT_WORKS.html
 echo   - Architecture Doc : HOW_IT_WORKS.md
+echo   - Pipeline Log     : run_log.txt
 echo ================================================================================
 goto :eof
 

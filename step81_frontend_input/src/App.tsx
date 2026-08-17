@@ -16,8 +16,8 @@ import {
 } from './store/slices/sessionSlice';
 import { DEFAULT_FILE_SIZE_LIMIT_BYTES, DEFAULT_NUMBER_OF_FILES } from './constants/config';
 import { registerFile } from './utils/fileRegistry';
-import { updateProgressData, setProgressActive } from './store/slices/progressSlice';
-import { setResultData } from './store/slices/resultSlice';
+import { updateProgressData, setProgressActive, resetProgress } from './store/slices/progressSlice';
+import { setResultData, clearResults } from './store/slices/resultSlice';
 import { executeMLAction } from './store/sagas/mlExecutionSaga';
 import { subscribeToProgress, subscribeToResults } from './services/supabaseClient';
 import { Header } from './components/Header';
@@ -174,6 +174,9 @@ export const App: React.FC = () => {
   };
 
   const handleExecuteML = () => {
+    dispatch(clearResults());
+    dispatch(resetProgress());
+    dispatch(setProgressActive(true));
     dispatch(executeMLAction());
   };
 

@@ -18,28 +18,28 @@ export const ProgressTracker: React.FC = () => {
 
   const [maxMissionsStep, setMaxMissionsStep] = React.useState<number>(0);
 
-  // Reset max step when a completely new execution starts
+  // When a new execution starts, immediately reset step to 0 (Total Missions Completed = 0%)
   React.useEffect(() => {
-    if (!isActive && !isSubmitting && progress.percent === 0 && !hasResults) {
+    if (!hasResults && (isSubmitting || progress.percent === 0 || progress.stepId === 0)) {
       setMaxMissionsStep(0);
     }
-  }, [isActive, isSubmitting, progress.percent, hasResults]);
+  }, [hasResults, isSubmitting, progress.percent, progress.stepId]);
 
-  // Strictly non-decreasing step tracker (never decreases / no back values)
+  // Strictly non-decreasing step tracker as new steps arrive
   React.useEffect(() => {
-    if (progress.stepId > 0) {
+    if (progress.stepId > 0 && progress.stepId <= 5) {
       setMaxMissionsStep((prev) => Math.max(prev, progress.stepId));
     }
-    if (progress.percent >= 100 || hasResults) {
+    if ((progress.percent >= 100 || hasResults) && !isSubmitting) {
       setMaxMissionsStep(5);
     }
-  }, [progress.stepId, progress.percent, hasResults]);
+  }, [progress.stepId, progress.percent, hasResults, isSubmitting]);
 
   if (!isActive && !isSubmitting && progress.percent === 0 && !hasResults) {
     return null;
   }
 
-  const isCompleted = progress.percent >= 100 || hasResults || maxMissionsStep >= 5;
+  const isCompleted = (progress.percent >= 100 || hasResults) && !isSubmitting;
   const isError = progress.stepId === -1;
 
   // Simple, direct function of step number: step * 20% (0%, 20%, 40%, 60%, 80%, 100%)

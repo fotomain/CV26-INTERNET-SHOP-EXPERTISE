@@ -5,8 +5,10 @@ import {
   setCustomCountryName,
   addDatasetFiles,
   clearDatasetFiles,
-  addCountryImages,
-  clearCountryImages,
+  addCountryImagesMan,
+  clearCountryImagesMan,
+  addCountryImagesWoman,
+  clearCountryImagesWoman,
   clearFileErrors,
 } from './store/slices/sessionSlice';
 import { updateProgressData } from './store/slices/progressSlice';
@@ -26,7 +28,8 @@ export const App: React.FC = () => {
     userSessionGUID,
     customCountryName,
     customDatasetFiles,
-    customCountryImages,
+    customCountryImagesMan,
+    customCountryImagesWoman,
     fileErrors,
     isSubmitting,
     error,
@@ -57,7 +60,7 @@ export const App: React.FC = () => {
     dispatch(executeMLAction());
   };
 
-  const totalFilesAttached = customDatasetFiles.length + customCountryImages.length;
+  const totalFilesAttached = customDatasetFiles.length + customCountryImagesMan.length + customCountryImagesWoman.length;
   const hasFilesSelected = totalFilesAttached > 0;
   const isButtonEnabled = !isSubmitting && hasFilesSelected;
 
@@ -67,7 +70,7 @@ export const App: React.FC = () => {
 
       <main style={{
         flex: 1,
-        maxWidth: '1240px',
+        maxWidth: '1280px',
         width: '100%',
         margin: '0 auto',
         padding: '24px 16px',
@@ -76,7 +79,7 @@ export const App: React.FC = () => {
         gap: '22px',
         minWidth: '350px'
       }}>
-        {/* Colorful Hero Card (CAPSTONE_REPORT Style) */}
+        {/* Colorful Hero Card */}
         <div style={{
           background: 'linear-gradient(135deg, #ffffff 0%, #fffbeb 50%, #f0fdf4 100%)',
           border: '2px solid #fed7aa',
@@ -118,14 +121,14 @@ export const App: React.FC = () => {
                 padding: '3px 9px',
                 borderRadius: '999px'
               }}>
-                FastAPI + React 18 + Tamagui
+                FastAPI + React 18 + Redux-Saga
               </span>
             </div>
-            <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em', margin: 0 }}>
+            <h2 style={{ fontSize: '23px', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em', margin: 0 }}>
               Purchase Manager Catalog &amp; Style AI Engine
             </h2>
-            <p style={{ fontSize: '13.5px', color: '#475569', margin: '6px 0 0 0', maxWidth: '720px', lineHeight: 1.55 }}>
-              Upload candidate catalog items and target country lookbook photos to run automated Fashion-MNIST classification, YOLOv8 + OpenCV demographic segmentation, 3-palette density extraction, and CIELAB &Delta;E matching.
+            <p style={{ fontSize: '13.5px', color: '#475569', margin: '6px 0 0 0', maxWidth: '750px', lineHeight: 1.55 }}>
+              Upload candidate catalog items and target country men &amp; women lookbook photos to run automated Fashion-MNIST classification, YOLOv8 demographic segmentation, 3-palette density extraction, and CIELAB &Delta;E matching.
             </p>
           </div>
 
@@ -199,17 +202,17 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* Upload Zones Grid */}
+        {/* Upload Zones Grid: 3 Zones */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '20px'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '18px'
         }}>
-          {/* Custom Candidate Catalog (Vibrant Blue Accent) */}
+          {/* 1. Candidate Catalog (Blue Accent) */}
           <FileUploadZone
             title="1. Candidate Product Catalog"
-            subtitle="Upload apparel photos or CSV catalog (custom_dataset_start)"
-            badgeText="Input Catalog"
+            subtitle="Upload apparel photos or CSV (custom_dataset_start)"
+            badgeText="Catalog Items"
             badgeColor="blue"
             files={customDatasetFiles}
             onAddFiles={(files) => dispatch(addDatasetFiles(files))}
@@ -217,16 +220,28 @@ export const App: React.FC = () => {
             buttonLabel="Select custom_dataset_start"
           />
 
-          {/* Custom Target Country Images (Vibrant Purple Accent) */}
+          {/* 2. Target Market Men Lookbook (Purple Accent) */}
           <FileUploadZone
-            title="2. Target Market Lookbook"
-            subtitle="Upload authentic reference lookbook photos (custom_country_images)"
-            badgeText="Style DNA"
+            title="2. Target Market Men Lookbook"
+            subtitle="Upload men reference photos (custom_country_images_man)"
+            badgeText="Men Style DNA"
             badgeColor="purple"
-            files={customCountryImages}
-            onAddFiles={(files) => dispatch(addCountryImages(files))}
-            onClearFiles={() => dispatch(clearCountryImages())}
-            buttonLabel="Select custom_country_images"
+            files={customCountryImagesMan}
+            onAddFiles={(files) => dispatch(addCountryImagesMan(files))}
+            onClearFiles={() => dispatch(clearCountryImagesMan())}
+            buttonLabel="Select custom_country_images_man"
+          />
+
+          {/* 3. Target Market Women Lookbook (Rose Accent) */}
+          <FileUploadZone
+            title="3. Target Market Women Lookbook"
+            subtitle="Upload women reference photos (custom_country_images_woman)"
+            badgeText="Women Style DNA"
+            badgeColor="rose"
+            files={customCountryImagesWoman}
+            onAddFiles={(files) => dispatch(addCountryImagesWoman(files))}
+            onClearFiles={() => dispatch(clearCountryImagesWoman())}
+            buttonLabel="Select custom_country_images_woman"
           />
         </div>
 
@@ -234,7 +249,7 @@ export const App: React.FC = () => {
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '20px',
+          gap: '18px',
           alignItems: 'stretch'
         }}>
           <CountrySelector
@@ -257,7 +272,7 @@ export const App: React.FC = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Rocket size={18} color="#ea580c" />
                 <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
-                  3. Execute ML &amp; Generate DSS Report
+                  4. Execute ML &amp; Generate DSS Report
                 </h2>
               </div>
               <p style={{ fontSize: '13px', color: '#64748b', margin: '4px 0 0 0' }}>

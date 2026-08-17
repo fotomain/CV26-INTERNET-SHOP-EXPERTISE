@@ -4,7 +4,8 @@ export interface ExecuteMLParams {
   userSessionGUID: string;
   customCountryName: string;
   customDatasetFiles: File[];
-  customCountryImages: File[];
+  customCountryImagesMan: File[];
+  customCountryImagesWoman: File[];
 }
 
 export async function executeMLApi(params: ExecuteMLParams): Promise<any> {
@@ -16,8 +17,12 @@ export async function executeMLApi(params: ExecuteMLParams): Promise<any> {
     formData.append('custom_dataset_start', file);
   });
 
-  params.customCountryImages.forEach((file) => {
-    formData.append('custom_country_images', file);
+  params.customCountryImagesMan.forEach((file) => {
+    formData.append('custom_country_images_man', file);
+  });
+
+  params.customCountryImagesWoman.forEach((file) => {
+    formData.append('custom_country_images_woman', file);
   });
 
   const response = await fetch(`${BACKEND_URL}/api/execute-ml`, {

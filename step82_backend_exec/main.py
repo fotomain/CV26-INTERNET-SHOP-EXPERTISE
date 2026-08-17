@@ -1,23 +1,27 @@
 """
-step82_backend_exec: FastAPI Backend Service for E-Commerce DSS Pipeline.
-Handles custom file uploads, image validation, asynchronous ML pipeline execution,
-and Supabase real-time progress/results synchronization.
+FastAPI Server for Asynchronous ML Pipeline Execution (Mission 1-5).
+Supports custom_dataset_start, custom_country_images_man, and custom_country_images_woman.
 """
 
 import os
+import sys
 import json
 import logging
 from typing import List, Optional
-from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
-from dotenv import load_dotenv
+from fastapi.responses import JSONResponse
 
-# Load environment
-ENV_PATH = os.path.join(os.path.dirname(__file__), '.env')
-load_dotenv(ENV_PATH)
+# Ensure root directory is on sys.path
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
+from step82_backend_exec.image_preprocessor import (
+    validate_and_save_image,
+    ImageValidationError,
+    DEFAULT_MAX_FILE_SIZE_BYTES
+)
 from step82_backend_exec.supabase_service import (
     update_progress,
     get_progress,
@@ -25,49 +29,53 @@ from step82_backend_exec.supabase_service import (
     upsert_user_session,
     log_error
 )
-from step82_backend_exec.image_preprocessor import validate_and_save_image, ImageValidationError
 from step82_backend_exec.pipeline_orchestrator import run_custom_ml_pipeline
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
-logger = logging.getLogger("step82_backend_exec")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
+logger = logging.getLogger("cv26_fastapi")
 
 app = FastAPI(
-    title="CV26 DSS Marketing Intelligence API",
-    description="FastAPI backend for Purchase Manager custom ML catalog scoring and target market style matching.",
-    version="5.0.0"
+    title="CV26 DSS Marketing Intelligence & Catalog ML Engine",
+    version="5.0.0",
+    description="Asynchronous ML Execution Server for Catalog Classification & Demographic Matching"
 )
 
-# Enable CORS for React frontend
-origins_str = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000")
-origins = [o.strip() for o in origins_str.split(",") if o.strip()]
-
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if "*" in origins else origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Custom storage directory
-CUSTOM_DATA_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), 'custom_data'))
+CUSTOM_DATA_ROOT = os.path.join(BASE_DIR, "custom_data")
 os.makedirs(CUSTOM_DATA_ROOT, exist_ok=True)
 
-# Mount custom_data directory for static image serving if needed
-app.mount("/static/custom_data", StaticFiles(directory=CUSTOM_DATA_ROOT), name="custom_data")
+@app.get("/")
+def read_root():
+    return {
+        "status": "online",
+        "service": "CV26 DSS Backend Execution Server",
+        "version": "5.0.0",
+        "supportedEndpoints": [
+            "GET /api/health",
+            "GET /api/progress/{userSessionGUID}",
+            "GET /api/results/{userSessionGUID}",
+            "POST /api/execute-ml"
+        ]
+    }
 
 @app.get("/api/health")
 def health_check():
-    return {
-        "status": "healthy",
-        "service": "step82_backend_exec",
-        "version": "5.0.0",
-        "supabaseConfigured": bool(os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_ANON_KEY"))
-    }
+    return {"status": "healthy", "timestamp": os.getenv("APP_TIME", "2026-08-17")}
 
 @app.get("/api/progress/{userSessionGUID}")
-def fetch_progress(userSessionGUID: str):
+def get_progress_endpoint(userSessionGUID: str):
     progress = get_progress(userSessionGUID)
     return {
         "userSessionGUID": userSessionGUID,
@@ -75,7 +83,7 @@ def fetch_progress(userSessionGUID: str):
     }
 
 @app.get("/api/results/{userSessionGUID}")
-def fetch_results(userSessionGUID: str):
+def get_results_endpoint(userSessionGUID: str):
     results = get_results(userSessionGUID)
     if not results:
         return {"userSessionGUID": userSessionGUID, "status": "pending", "results": None}
@@ -91,11 +99,14 @@ async def execute_ml(
     userSessionGUID: str = Form(...),
     custom_country_name: str = Form("United States"),
     custom_dataset_start: Optional[List[UploadFile]] = File(None),
-    custom_country_images: Optional[List[UploadFile]] = File(None)
+    custom_country_images_man: Optional[List[UploadFile]] = File(None),
+    custom_country_images_woman: Optional[List[UploadFile]] = File(None),
+    custom_country_images: Optional[List[UploadFile]] = File(None)  # backward compatibility
 ):
     """
-    Receives custom dataset files, validates format and size limits,
-    stores in custom_data/<userSessionGUID>/, and triggers background ML execution.
+    Receives custom candidate catalog and target country lookbook photos (men & women),
+    validates format and size limits, stores in custom_data/<userSessionGUID>/,
+    and triggers asynchronous ML pipeline.
     """
     logger.info(f"Received ML execution request for userSessionGUID='{userSessionGUID}', country='{custom_country_name}'")
 
@@ -106,10 +117,14 @@ async def execute_ml(
     session_dir = os.path.join(CUSTOM_DATA_ROOT, userSessionGUID)
     dataset_start_dir = os.path.join(session_dir, "custom_dataset_start")
     country_images_dir = os.path.join(session_dir, "custom_country_images")
+    country_man_dir = os.path.join(country_images_dir, "man")
+    country_woman_dir = os.path.join(country_images_dir, "woman")
 
     os.makedirs(session_dir, exist_ok=True)
     os.makedirs(dataset_start_dir, exist_ok=True)
     os.makedirs(country_images_dir, exist_ok=True)
+    os.makedirs(country_man_dir, exist_ok=True)
+    os.makedirs(country_woman_dir, exist_ok=True)
 
     # Save country name metadata
     country_meta_path = os.path.join(session_dir, "custom_country_name.json")
@@ -117,7 +132,8 @@ async def execute_ml(
         json.dump({"custom_country_name": custom_country_name, "userSessionGUID": userSessionGUID}, f, indent=2)
 
     saved_dataset_files = []
-    saved_country_files = []
+    saved_man_files = []
+    saved_woman_files = []
 
     # Process and sanitize candidate catalog files
     if custom_dataset_start:
@@ -132,20 +148,51 @@ async def execute_ml(
                 log_error(userSessionGUID, str(ve), error_type="ValidationError", details={"filename": uf.filename})
                 raise HTTPException(status_code=422, detail=str(ve))
 
-    # Process and sanitize target country lookbook files
-    if custom_country_images:
-        for uf in custom_country_images:
+    # Process and sanitize Men lookbook photos
+    if custom_country_images_man:
+        for uf in custom_country_images_man:
             if not uf.filename:
                 continue
             content = await uf.read()
             try:
-                out_path = validate_and_save_image(content, uf.filename, country_images_dir)
-                saved_country_files.append(out_path)
+                out_path = validate_and_save_image(content, uf.filename, country_man_dir)
+                saved_man_files.append(out_path)
             except ImageValidationError as ve:
                 log_error(userSessionGUID, str(ve), error_type="ValidationError", details={"filename": uf.filename})
                 raise HTTPException(status_code=422, detail=str(ve))
 
-    logger.info(f"Saved {len(saved_dataset_files)} candidate items and {len(saved_country_files)} country images for session {userSessionGUID}")
+    # Process and sanitize Women lookbook photos
+    if custom_country_images_woman:
+        for uf in custom_country_images_woman:
+            if not uf.filename:
+                continue
+            content = await uf.read()
+            try:
+                out_path = validate_and_save_image(content, uf.filename, country_woman_dir)
+                saved_woman_files.append(out_path)
+            except ImageValidationError as ve:
+                log_error(userSessionGUID, str(ve), error_type="ValidationError", details={"filename": uf.filename})
+                raise HTTPException(status_code=422, detail=str(ve))
+
+    # Backward compatibility for legacy custom_country_images
+    if custom_country_images and not (saved_man_files or saved_woman_files):
+        for idx, uf in enumerate(custom_country_images):
+            if not uf.filename:
+                continue
+            content = await uf.read()
+            try:
+                target_sub = country_man_dir if idx % 2 == 0 else country_woman_dir
+                out_path = validate_and_save_image(content, uf.filename, target_sub)
+                if idx % 2 == 0:
+                    saved_man_files.append(out_path)
+                else:
+                    saved_woman_files.append(out_path)
+            except ImageValidationError as ve:
+                log_error(userSessionGUID, str(ve), error_type="ValidationError", details={"filename": uf.filename})
+                raise HTTPException(status_code=422, detail=str(ve))
+
+    total_country_files = len(saved_man_files) + len(saved_woman_files)
+    logger.info(f"Saved {len(saved_dataset_files)} candidate items, {len(saved_man_files)} man images, and {len(saved_woman_files)} woman images for session {userSessionGUID}")
 
     # Launch background ML pipeline task
     background_tasks.add_task(
@@ -154,28 +201,29 @@ async def execute_ml(
         session_dir=session_dir,
         custom_country_name=custom_country_name,
         custom_dataset_dir=dataset_start_dir if saved_dataset_files else None,
-        custom_country_dir=country_images_dir if saved_country_files else None
+        custom_country_dir=country_images_dir if total_country_files > 0 else None
     )
 
     update_progress(
-        userSessionGUID,
-        percent=5,
-        step_id=1,
-        step_name="Queueing Execution",
-        details=f"Received {len(saved_dataset_files)} catalog items and {len(saved_country_files)} country images."
+        user_session_guid=userSessionGUID,
+        percent=1,
+        step_id=0,
+        step_name="Request Enqueued",
+        details=f"Received {len(saved_dataset_files)} candidate catalog files, {len(saved_man_files)} men lookbook photos, {len(saved_woman_files)} women lookbook photos."
     )
 
     return {
-        "status": "processing",
+        "status": "accepted",
+        "message": "ML Pipeline execution initiated in background.",
         "userSessionGUID": userSessionGUID,
-        "message": "ML pipeline execution scheduled.",
+        "customCountryName": custom_country_name,
         "candidateFilesCount": len(saved_dataset_files),
-        "countryImagesCount": len(saved_country_files),
-        "targetCountry": custom_country_name
+        "countryImagesManCount": len(saved_man_files),
+        "countryImagesWomanCount": len(saved_woman_files),
+        "progressUrl": f"/api/progress/{userSessionGUID}",
+        "resultsUrl": f"/api/results/{userSessionGUID}"
     }
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", 8000))
-    host = os.getenv("HOST", "0.0.0.0")
-    uvicorn.run("step82_backend_exec.main:app", host=host, port=port, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

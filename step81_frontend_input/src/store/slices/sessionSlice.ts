@@ -14,7 +14,8 @@ export interface SessionState {
   readonly userSessionGUID: string;
   customCountryName: string;
   customDatasetFiles: FileItem[];
-  customCountryImages: FileItem[];
+  customCountryImagesMan: FileItem[];
+  customCountryImagesWoman: FileItem[];
   fileErrors: string[];
   isSubmitting: boolean;
   error: string | null;
@@ -24,7 +25,8 @@ const initialState: SessionState = {
   userSessionGUID: getUserSessionGUID(),
   customCountryName: 'United States',
   customDatasetFiles: [],
-  customCountryImages: [],
+  customCountryImagesMan: [],
+  customCountryImagesWoman: [],
   fileErrors: [],
   isSubmitting: false,
   error: null,
@@ -63,14 +65,14 @@ export const sessionSlice = createSlice({
     clearDatasetFiles: (state) => {
       state.customDatasetFiles = [];
     },
-    addCountryImages: (state, action: PayloadAction<File[]>) => {
+    addCountryImagesMan: (state, action: PayloadAction<File[]>) => {
       const newErrors: string[] = [];
       const validFiles: FileItem[] = [];
 
       action.payload.forEach((file) => {
         if (file.size > DEFAULT_FILE_SIZE_LIMIT_BYTES) {
           newErrors.push(`"${file.name}" exceeds 1MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB).`);
-        } else if (state.customCountryImages.length + validFiles.length >= DEFAULT_NUMBER_OF_FILES) {
+        } else if (state.customCountryImagesMan.length + validFiles.length >= DEFAULT_NUMBER_OF_FILES) {
           newErrors.push(`Exceeded maximum limit of ${DEFAULT_NUMBER_OF_FILES} files.`);
         } else {
           validFiles.push({
@@ -83,11 +85,37 @@ export const sessionSlice = createSlice({
         }
       });
 
-      state.customCountryImages.push(...validFiles);
+      state.customCountryImagesMan.push(...validFiles);
       state.fileErrors = newErrors;
     },
-    clearCountryImages: (state) => {
-      state.customCountryImages = [];
+    clearCountryImagesMan: (state) => {
+      state.customCountryImagesMan = [];
+    },
+    addCountryImagesWoman: (state, action: PayloadAction<File[]>) => {
+      const newErrors: string[] = [];
+      const validFiles: FileItem[] = [];
+
+      action.payload.forEach((file) => {
+        if (file.size > DEFAULT_FILE_SIZE_LIMIT_BYTES) {
+          newErrors.push(`"${file.name}" exceeds 1MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB).`);
+        } else if (state.customCountryImagesWoman.length + validFiles.length >= DEFAULT_NUMBER_OF_FILES) {
+          newErrors.push(`Exceeded maximum limit of ${DEFAULT_NUMBER_OF_FILES} files.`);
+        } else {
+          validFiles.push({
+            id: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            file: file,
+          });
+        }
+      });
+
+      state.customCountryImagesWoman.push(...validFiles);
+      state.fileErrors = newErrors;
+    },
+    clearCountryImagesWoman: (state) => {
+      state.customCountryImagesWoman = [];
     },
     clearFileErrors: (state) => {
       state.fileErrors = [];
@@ -110,8 +138,10 @@ export const {
   setCustomCountryName,
   addDatasetFiles,
   clearDatasetFiles,
-  addCountryImages,
-  clearCountryImages,
+  addCountryImagesMan,
+  clearCountryImagesMan,
+  addCountryImagesWoman,
+  clearCountryImagesWoman,
   clearFileErrors,
   startExecution,
   executionSuccess,

@@ -16,10 +16,6 @@ export const ProgressTracker: React.FC = () => {
   const isSubmitting = useSelector((state: RootState) => state.session.isSubmitting);
   const { hasResults } = useSelector((state: RootState) => state.result);
 
-  if (!isActive && !isSubmitting && progress.percent === 0 && !hasResults) {
-    return null;
-  }
-
   const [maxMissionsStep, setMaxMissionsStep] = React.useState<number>(0);
 
   // Reset max step when a completely new execution starts
@@ -38,6 +34,10 @@ export const ProgressTracker: React.FC = () => {
       setMaxMissionsStep(5);
     }
   }, [progress.stepId, progress.percent, hasResults]);
+
+  if (!isActive && !isSubmitting && progress.percent === 0 && !hasResults) {
+    return null;
+  }
 
   const isCompleted = progress.percent >= 100 || hasResults || maxMissionsStep >= 5;
   const isError = progress.stepId === -1;
